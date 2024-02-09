@@ -1,4 +1,4 @@
-package seng468.scalability;
+package seng468.scalability.endpoints;
 
 import java.util.concurrent.atomic.AtomicLong;
 
