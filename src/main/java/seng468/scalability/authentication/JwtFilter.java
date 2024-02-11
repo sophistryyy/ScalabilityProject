@@ -35,15 +35,12 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         final String authorizationHeader = request.getHeader("Authorization");
-        System.out.println("Header");
-        System.out.println(authorizationHeader);
 
         String username = null;
         String jwtToken = null;
         
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwtToken = authorizationHeader.substring(7);
-            System.out.println(jwtToken);
             try {
                 username = jwtUtil.extractUsername(jwtToken);
             } catch (Exception e) {
@@ -56,15 +53,12 @@ public class JwtFilter extends OncePerRequestFilter {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if (jwtUtil.validateToken(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails.getUsername(), userDetails.getPassword());
+                        userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
-        System.out.println(SecurityContextHolder.getContext().getAuthentication());
-        //System.out.println(request.getRequestURL());
-        //System.out.println(request.getUserPrincipal().getName());
-        System.out.println("HELP");
+
         filterChain.doFilter(request, response);
     }
 }

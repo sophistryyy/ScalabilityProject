@@ -13,7 +13,6 @@ public class GreetingController {
 
 	@GetMapping("/greeting")
 	public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
-		System.out.println("HHH");
 		Random random = new Random();
 		return new Greeting(random.nextInt(10), String.format(template, name));
 	}
