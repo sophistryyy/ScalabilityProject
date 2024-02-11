@@ -34,11 +34,12 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
+        // Pull JWT token from username
         final String authorizationHeader = request.getHeader("Authorization");
 
         String username = null;
         String jwtToken = null;
-        
+
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwtToken = authorizationHeader.substring(7);
             try {
@@ -49,6 +50,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
+        // Authenticate user is possible
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if (jwtUtil.validateToken(jwtToken, userDetails)) {

@@ -16,6 +16,7 @@ public class UserServiceImpl implements UserService {
         this.userRespositry = userRepository;
     }
 
+    // Used by UserDetailsService to compare JWT user and a possible DB Repository user
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRespositry.findByUsername(username);

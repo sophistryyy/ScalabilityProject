@@ -16,6 +16,7 @@ public class User {
 
     public User(String username, String password, String name) {
         this.username = username;
+        // Encode password with BCrypt
         this.password = encode(password);
         this.name = name;
     }

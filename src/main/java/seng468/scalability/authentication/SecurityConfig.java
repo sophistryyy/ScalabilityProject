@@ -25,23 +25,27 @@ import jakarta.servlet.http.HttpServletResponse;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Autowired
     private JwtFilter jwtFilter;
+
     @Bean 
     public SecurityFilterChain securityFilerChain(HttpSecurity http) throws Exception {
+
+        // Disabling anything that might cause errors
         http.sessionManagement(httpSecuritySessionManagementConfigurer -> 
                httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
- 
+        http.csrf((csrf) -> csrf.disable()).cors((cors) -> cors.disable()).httpBasic((httpBasic) -> httpBasic.disable());
+
+        // Update with protected paths only. The rest are permitted to be caught by auth or error controllers
         http
             .authorizeHttpRequests((authorize) -> authorize
-                .requestMatchers("/auth/register").permitAll()
-                .requestMatchers("/auth/login").permitAll()
                 .requestMatchers("/greeting").authenticated()
-                .requestMatchers("/error").permitAll()
                 .anyRequest().permitAll()
-        ).csrf((csrf) -> csrf.disable()).cors((cors) -> cors.disable()).httpBasic((httpBasic) -> httpBasic.disable())
+        )
         .exceptionHandling((exception) -> {exception.accessDeniedPage("/error");})
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
