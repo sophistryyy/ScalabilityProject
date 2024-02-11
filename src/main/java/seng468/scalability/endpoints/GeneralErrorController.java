@@ -13,9 +13,10 @@ public class GeneralErrorController implements ErrorController {
 	@RequestMapping("/error")
 	public ResponseError responseError(HttpServletRequest request) {
 		Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-
-		String message = status.toString();
+		System.out.println(status);
+		String message = "Error";
 		if (status != null) {
+			message = status.toString();
 			Integer statusCode = Integer.valueOf(status.toString());
 			if (statusCode == HttpStatus.NOT_FOUND.value()) {
 				message = "PATH NOT FOUND";

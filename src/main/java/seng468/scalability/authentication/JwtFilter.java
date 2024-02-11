@@ -1,10 +1,10 @@
 package seng468.scalability.authentication;
 
 import java.io.IOException;
-
-import javax.sql.rowset.serial.SerialException;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+//import seng468.scalability.authentication.JwtUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,14 +33,17 @@ public class JwtFilter extends OncePerRequestFilter {
         if (request == null || response == null || filterChain == null) {
             return;
         }
-        
+
         final String authorizationHeader = request.getHeader("Authorization");
+        System.out.println("Header");
+        System.out.println(authorizationHeader);
 
         String username = null;
         String jwtToken = null;
-
+        
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwtToken = authorizationHeader.substring(7);
+            System.out.println(jwtToken);
             try {
                 username = jwtUtil.extractUsername(jwtToken);
             } catch (Exception e) {
@@ -51,18 +54,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
             if (jwtUtil.validateToken(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-
+                        userDetails.getUsername(), userDetails.getPassword());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
-        
         System.out.println(SecurityContextHolder.getContext().getAuthentication());
+        //System.out.println(request.getRequestURL());
+        //System.out.println(request.getUserPrincipal().getName());
+        System.out.println("HELP");
         filterChain.doFilter(request, response);
     }
 }

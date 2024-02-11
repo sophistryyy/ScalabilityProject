@@ -5,14 +5,12 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
     private UserRepository userRespositry;
-    @Autowired
-        private JwtUtil jwtUtil;
+
     @Autowired
     public UserServiceImpl(UserRepository userRepository){
         this.userRespositry = userRepository;
