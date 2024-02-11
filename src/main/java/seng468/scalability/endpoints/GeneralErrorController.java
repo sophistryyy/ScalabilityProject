@@ -14,7 +14,7 @@ public class GeneralErrorController implements ErrorController {
 	public ResponseError responseError(HttpServletRequest request) {
 		Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 
-		String message = "";
+		String message = status.toString();
 		if (status != null) {
 			Integer statusCode = Integer.valueOf(status.toString());
 			if (statusCode == HttpStatus.NOT_FOUND.value()) {
@@ -24,6 +24,6 @@ public class GeneralErrorController implements ErrorController {
 			}
 		}
 		
-		return new ResponseError(false, "Null", message);
+		return new ResponseError("false", "Null", message);
 	}
 }
