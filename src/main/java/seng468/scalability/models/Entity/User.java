@@ -1,4 +1,4 @@
-package seng468.scalability.authentication;
+package seng468.scalability.models.Entity;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 

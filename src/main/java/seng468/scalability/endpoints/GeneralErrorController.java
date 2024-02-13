@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
+import seng468.scalability.models.Response.ResponseError;
 
 @RestController
 public class GeneralErrorController implements ErrorController {
@@ -24,6 +25,6 @@ public class GeneralErrorController implements ErrorController {
 			}
 		}
 		
-		return new ResponseError("false", "Null", message);
+		return null;
 	}
 }

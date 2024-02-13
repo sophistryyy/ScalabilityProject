@@ -3,9 +3,13 @@ package seng468.scalability.authentication;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import seng468.scalability.models.Entity.User;
+import seng468.scalability.models.Exceptions.UsernameExistsException;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -33,7 +37,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveUser(User user) {
+    public void saveUser(User user) throws UsernameExistsException {
+        if (userRespositry.existsById(user.getUsername())) {
+            throw new UsernameExistsException("Username Already Exists");
+        }
+
         if (user != null) {
             userRespositry.save(user);
         }

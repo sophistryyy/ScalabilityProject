@@ -1,5 +1,8 @@
 package seng468.scalability.endpoints.authentication;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import seng468.scalability.authentication.JwtUtil;
-import seng468.scalability.endpoints.authentication.utility.LoginRequest;
+import seng468.scalability.models.Request.LoginRequest;
 
 @RequestMapping("/auth")
 @RestController
@@ -26,8 +29,9 @@ public class LoginController {
     private JwtUtil jwtUtil;
 
     @GetMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody LoginRequest userReq) {
-          try {
+    public Map<String, Object> loginUser(@RequestBody LoginRequest userReq) {
+        Map<String, Object> response = new LinkedHashMap<String, Object>();
+        try {
             Authentication authenticate = authenticationManager
             .authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -38,9 +42,17 @@ public class LoginController {
             UserDetails user = (UserDetails)authenticate.getPrincipal();
             String token = jwtUtil.generateToken(user.getUsername());
 
-            return ResponseEntity.ok(token);
+            Map<String, Object> data =  new LinkedHashMap<String, Object>();
+            data.put("token", token);
+
+            response.put("success", true);
+            response.put("data", data);
+            
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+            response.put("success", false);
+            response.put("data", null);
+            response.put("message", "Invalid Username or Password");
         }
+        return response;
     }
 }

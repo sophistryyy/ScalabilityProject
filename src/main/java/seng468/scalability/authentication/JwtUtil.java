@@ -1,7 +1,5 @@
 package seng468.scalability.authentication;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;

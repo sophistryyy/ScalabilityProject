@@ -1,5 +1,8 @@
 package seng468.scalability.endpoints;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Random;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +15,13 @@ public class GreetingController {
 	private static final String template = "Hello, %s!";
 
 	@GetMapping("/greeting")
-	public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
-		Random random = new Random();
-		return new Greeting(random.nextInt(10), String.format(template, name));
+	public Map<String, Object> greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
+
+		Map<String, Object> data =  new LinkedHashMap<String, Object>();
+
+		Map<String, Object> response = new LinkedHashMap<String, Object>();
+		response.put("success", true);
+		response.put("data", "HELLO");
+		return response;
 	}
 }
