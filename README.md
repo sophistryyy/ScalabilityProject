@@ -10,8 +10,8 @@ seng468 project
 
 ```
 create database spring;
-create user 'root' identified by '1234';
-grant all on spring.* to 'root';
+create user 'root'@'%' identified by '1234';
+grant all on spring.* to 'root'@'%';
 ```
 
 - I found [Spring's MySQL documentation](https://spring.io/guides/gs/accessing-data-mysql) to be helpful getting started creating entities and controllers.

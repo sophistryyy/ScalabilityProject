@@ -2,30 +2,37 @@ package seng468.scalability.wallet;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
 import seng468.scalability.authentication.User;
 
 @Entity
 public class Wallet {
 
-  @Id
-  private User owner;
-  private Integer balance;
+    @Id
+    private String username;
 
-  public Integer getBalance() {
-    return this.balance;
-  }
+    @OneToOne @MapsId
+    @JoinColumn(name = "owner_username")
+    private User owner;
+    private Integer balance;
 
-  public Integer incrementBalance(Integer amount) {
-    // TODO log the transaction
-    this.balance = this.balance + amount;
-    return this.balance;
-  }
+    public Integer getBalance() {
+        return this.balance;
+    }
 
-  public User getUser() {
-    return this.owner;
-  }
+    public Integer incrementBalance(Integer amount) {
+        // TODO log the transaction
+        this.balance = this.balance + amount;
+        return this.balance;
+    }
 
-  public void setUser(User owner) {
-    this.owner = owner;
-  }
+    public User getUser() {
+        return this.owner;
+    }
+
+    public void setUser(User owner) {
+        this.owner = owner;
+    }
 }

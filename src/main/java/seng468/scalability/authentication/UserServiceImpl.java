@@ -9,17 +9,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private UserRepository userRespositry;
+    private UserRepository userRespository;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository){
-        this.userRespositry = userRepository;
+        this.userRespository = userRepository;
     }
 
     // Used by UserDetailsService to compare JWT user and a possible DB Repository user
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRespositry.findByUsername(username);
+        User user = userRespository.findByUsername(username);
 
         if (user == null) {
             throw new UsernameNotFoundException("Invalid Username");
@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveUser(User user) {
         if (user != null) {
-            userRespositry.save(user);
+            userRespository.save(user);
         }
     }
 }
