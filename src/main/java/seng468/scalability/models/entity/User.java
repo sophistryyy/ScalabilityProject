@@ -1,10 +1,9 @@
-package seng468.scalability.models.entity;
+package seng468.scalability.models.Entity;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
