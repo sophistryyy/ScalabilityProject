@@ -18,6 +18,12 @@ public class Wallet {
     private User owner;
     private Integer balance;
 
+    public Wallet(String username, Integer balance) {
+        // TODO create from either User or username?
+        this.username = username;
+        this.balance = balance;
+    }
+
     public Integer getBalance() {
         return this.balance;
     }
