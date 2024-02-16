@@ -5,7 +5,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
-import seng468.scalability.authentication.User;
+import seng468.scalability.models.Entity.User;
 
 @Entity
 public class Wallet {

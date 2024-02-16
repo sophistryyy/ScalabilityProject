@@ -37,12 +37,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveUser(User user) throws UsernameExistsException {
-        if (userRespositry.existsById(user.getUsername())) {
+        if (user == null) {
+            return;
+        }
+
+        if (userRespository.existsById(user.getUsername())) {
             throw new UsernameExistsException("Username Already Exists");
         }
 
-        if (user != null) {
-            userRespository.save(user);
-        }
+        userRespository.save(user);
     }
 }
