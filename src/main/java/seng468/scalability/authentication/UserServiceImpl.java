@@ -7,6 +7,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import seng468.scalability.models.Entity.User;
+import seng468.scalability.models.Exceptions.UsernameExistsException;
+
 @Service
 public class UserServiceImpl implements UserService {
     private UserRepository userRespository;
@@ -33,7 +36,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveUser(User user) {
+    public void saveUser(User user) throws UsernameExistsException {
+        if (userRespositry.existsById(user.getUsername())) {
+            throw new UsernameExistsException("Username Already Exists");
+        }
+
         if (user != null) {
             userRespository.save(user);
         }

@@ -1,4 +1,4 @@
-package seng468.scalability.endpoints.authentication.utility;
+package seng468.scalability.models.Request;
 
 public class LoginRequest {
     private String username;
