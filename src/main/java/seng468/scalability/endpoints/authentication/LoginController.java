@@ -9,14 +9,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import seng468.scalability.authentication.JwtUtil;
 import seng468.scalability.models.Request.LoginRequest;
 
-@RequestMapping("/auth")
 @RestController
 public class LoginController {
 
@@ -26,7 +25,7 @@ public class LoginController {
     @Autowired 
     private JwtUtil jwtUtil;
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public Map<String, Object> loginUser(@RequestBody LoginRequest userReq) {
         Map<String, Object> response = new LinkedHashMap<String, Object>();
         try {

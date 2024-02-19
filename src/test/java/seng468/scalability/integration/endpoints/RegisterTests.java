@@ -15,6 +15,7 @@ import seng468.scalability.models.Entity.User;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,7 +37,7 @@ public class RegisterTests {
     @Test 
     public void testRegister() throws Exception {
         String requestBody = "{\"username\": \"VanguardETF\",\"password\": \"Vang@123\",\"name\": \"Vanguard Corp.\"}";
-        MvcResult res = mvc.perform(get("/auth/register")
+        MvcResult res = mvc.perform(post("/register")
         .contentType(MediaType.APPLICATION_JSON).content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -53,7 +54,7 @@ public class RegisterTests {
         userRepository.save(user);
         
         String requestBody = "{\"username\": \"VanguardETF\",\"password\": \"Comp@124\",\"name\": \"Vanguard Ltd.\"}";
-        MvcResult res = mvc.perform(get("/auth/register")
+        MvcResult res = mvc.perform(post("/register")
         .contentType(MediaType.APPLICATION_JSON).content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(false))
