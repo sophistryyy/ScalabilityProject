@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
+//general stocks available
 @Entity
 @Table(name = "`stocks`")
 public class Stock {
@@ -29,18 +30,15 @@ public class Stock {
     {
         this.id = id;
         this.name = name;
-        this.quantity = 0;
-        this.price = 0;
     }
 
     public Stock(Integer id, String name, Integer quantity, Integer price)
     {
         this.id = id;
         this.name = name;
-        this.quantity = quantity;
-        this.price = price;
     }
 
+<<<<<<< HEAD:src/main/java/seng468/scalability/models/entity/Stock.java
     public int getId() {
         return this.id;
     }
@@ -55,4 +53,11 @@ public class Stock {
     //basic set methods
     public void setPrice(Integer price) {this.price = price;}
     public void setQuantity(Integer quantity) {this.quantity = quantity;}
+=======
+
+    //basic get methods
+    public Integer getId(){return this.id;}
+    public String getName(){return this.name;}
+
+>>>>>>> d4ab8aa (Update stock class):src/main/java/seng468/scalability/models/Entity/Stock.java
 }
