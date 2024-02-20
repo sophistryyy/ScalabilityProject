@@ -13,8 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import seng468.scalability.authentication.UserRepository;
 import seng468.scalability.models.Entity.User;
+import seng468.scalability.repositories.UserRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc

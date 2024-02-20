@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import seng468.scalability.authentication.JwtUtil;
+import seng468.scalability.models.Response;
 import seng468.scalability.models.Request.LoginRequest;
 
 @RestController
@@ -26,8 +27,7 @@ public class LoginController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public Map<String, Object> loginUser(@RequestBody LoginRequest userReq) {
-        Map<String, Object> response = new LinkedHashMap<String, Object>();
+    public Response loginUser(@RequestBody LoginRequest userReq) {
         try {
             Authentication authenticate = authenticationManager
             .authenticate(
@@ -42,14 +42,9 @@ public class LoginController {
             Map<String, Object> data =  new LinkedHashMap<String, Object>();
             data.put("token", token);
 
-            response.put("success", true);
-            response.put("data", data);
-            
+            return Response.ok(data);
         } catch (Exception e) {
-            response.put("success", false);
-            response.put("data", null);
-            response.put("message", "Invalid Username or Password");
+            return Response.error(e.getMessage());
         }
-        return response;
     }
 }
