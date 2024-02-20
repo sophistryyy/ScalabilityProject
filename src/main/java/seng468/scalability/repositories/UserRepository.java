@@ -1,4 +1,4 @@
-package seng468.scalability.authentication;
+package seng468.scalability.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

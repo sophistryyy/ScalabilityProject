@@ -67,5 +67,26 @@ public class RegisterTests {
         assertEquals("Vanguard Corp.", foundUser.getName());;
     }
 
+    @Test
+    public void testRegisterWithTwoUsers() throws Exception {
+        User user = new User("VanguardETF", "Vang@123", "Vanguard Corp.");
+        userRepository.save(user);
+
+        String requestBody = "{\"username\": \"FinanceGuru\",\"password\": \"Fguru@2024\",\"name\": \"The Finance Guru\"}";
+        MvcResult res = mvc.perform(post("/register")
+        .contentType(MediaType.APPLICATION_JSON).content(requestBody))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.data").doesNotExist())
+        .andReturn();
+
+        User foundUser1 = userRepository.findByUsername("VanguardETF");
+        assertNotNull(foundUser1);
+        assertEquals("Vanguard Corp.", foundUser1.getName());
+        
+        User foundUser2 = userRepository.findByUsername("FinanceGuru");
+        assertEquals("The Finance Guru", foundUser2.getName());
+        assertNotNull(foundUser2);
+    }
 
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import seng468.scalability.models.Entity.User;
 import seng468.scalability.models.Exceptions.UsernameExistsException;
+import seng468.scalability.repositories.UserRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
