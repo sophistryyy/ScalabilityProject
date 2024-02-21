@@ -38,7 +38,6 @@ public class Stock {
         this.name = name;
     }
 
-<<<<<<< HEAD:src/main/java/seng468/scalability/models/entity/Stock.java
     public int getId() {
         return this.id;
     }
@@ -53,11 +52,4 @@ public class Stock {
     //basic set methods
     public void setPrice(Integer price) {this.price = price;}
     public void setQuantity(Integer quantity) {this.quantity = quantity;}
-=======
-
-    //basic get methods
-    public Integer getId(){return this.id;}
-    public String getName(){return this.name;}
-
->>>>>>> d4ab8aa (Update stock class):src/main/java/seng468/scalability/models/Entity/Stock.java
-}
+g}
