@@ -2,6 +2,9 @@ package seng468.scalability.matchingEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
+import seng468.scalability.models.Entity.StockOrder;
+
+import java.util.List;
 
 @Service
 public class MatchingEngineService {
@@ -15,6 +18,7 @@ public class MatchingEngineService {
 
     public void test()
     {
-        System.out.println(repository.findAll());
+        List<StockOrder> res = repository.findAll();
+        System.out.println(res);
     }
 }

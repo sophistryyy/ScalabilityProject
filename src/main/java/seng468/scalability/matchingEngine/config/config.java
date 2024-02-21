@@ -13,6 +13,7 @@ public class config {
         Stock st = new Stock("test");
         return args -> {
             StockOrder order = new StockOrder(st,false, StockOrder.OrderType.LIMIT,  150, 20);
+            repository.save(order);
         };
     }
 }
