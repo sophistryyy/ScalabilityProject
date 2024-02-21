@@ -17,9 +17,7 @@ import seng468.scalability.repositories.UserRepository;
 
 @RestController
 public class AddStockToUser {
-    @Autowired
-    UserRepository userRepository;
-   
+    
     @Autowired
     StockRepository stockRepository;
 
@@ -28,7 +26,9 @@ public class AddStockToUser {
 
     @PostMapping("/addStockToUser")
     public Response addStockToUser(@RequestBody AddStockToUserRequest req) {
-        if (stockRepository.findStockById(req.getStockId()) == null) {
+
+        String stockName = stockRepository.findStockById(req.getStockId()).getName();
+        if (stockName == null) {
             return Response.error("Invalid Stock Id");
         }
 
@@ -36,7 +36,7 @@ public class AddStockToUser {
 
         PortfolioEntry entry = portfolioRepository.findEntryByStockIdAndUsername(req.getStockId(), username);
         if (entry == null) {
-            entry = new PortfolioEntry(req.getStockId(), username, req.getQuantity());
+            entry = new PortfolioEntry(req.getStockId(), stockName, username, req.getQuantity());
         } else {
             entry.addQuantity(req.getQuantity());
         }
