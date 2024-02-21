@@ -1,4 +1,4 @@
-package seng468.scalability.models.Entity;
+package seng468.scalability.models.entity;
 
 import jakarta.persistence.*;
 

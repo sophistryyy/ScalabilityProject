@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import seng468.scalability.matchingEngine.MatchingEngineService;
-import seng468.scalability.models.Entity.StockOrder;
+import seng468.scalability.models.entity.StockOrder;
 
 @RestController
 @RequestMapping(path = "placeStockOrder")

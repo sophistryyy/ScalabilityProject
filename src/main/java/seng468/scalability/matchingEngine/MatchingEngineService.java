@@ -2,7 +2,7 @@ package seng468.scalability.matchingEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
-import seng468.scalability.models.Entity.StockOrder;
+import seng468.scalability.models.entity.StockOrder;
 
 import java.util.List;
 
