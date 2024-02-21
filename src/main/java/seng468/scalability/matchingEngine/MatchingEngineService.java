@@ -1,12 +1,20 @@
 package seng468.scalability.matchingEngine;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import seng468.scalability.models.Entity.Stock;
-import seng468.scalability.models.Entity.StockOrder;
-import seng468.scalability.models.Entity.StockOrder.OrderType;
-import seng468.scalability.models.Entity.StockOrder.OrderStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
+import org.springframework.stereotype.Service;
 
-public class MatchingEngine {
+@Service
+public class MatchingEngineService {
 
+    private final MatchingEngineOrdersRepository repository;
 
+    @Autowired
+    public MatchingEngineService(MatchingEngineOrdersRepository repository){
+        this.repository = repository;
+    }
+
+    public void test()
+    {
+        System.out.println(repository.findAll());
+    }
 }
