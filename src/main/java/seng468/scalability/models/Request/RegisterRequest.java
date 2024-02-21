@@ -1,4 +1,4 @@
-package seng468.scalability.models.Request;
+package seng468.scalability.models.request;
 
 public class RegisterRequest {
     private String username;

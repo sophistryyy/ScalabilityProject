@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import seng468.scalability.authentication.UserService;
 import seng468.scalability.models.Response;
-import seng468.scalability.models.Entity.User;
-import seng468.scalability.models.Exceptions.UsernameExistsException;
-import seng468.scalability.models.Request.RegisterRequest;
+import seng468.scalability.models.entity.User;
+import seng468.scalability.models.exceptions.UsernameExistsException;
+import seng468.scalability.models.request.RegisterRequest;
 
 @RestController
 public class RegisterController {

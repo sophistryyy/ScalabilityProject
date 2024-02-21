@@ -1,6 +1,6 @@
 package seng468.scalability.endpoints.authentication;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,14 +8,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import seng468.scalability.authentication.JwtUtil;
 import seng468.scalability.models.Response;
-import seng468.scalability.models.Request.LoginRequest;
+import seng468.scalability.models.request.LoginRequest;
 
 @RestController
 public class LoginController {
@@ -39,7 +38,7 @@ public class LoginController {
             UserDetails user = (UserDetails)authenticate.getPrincipal();
             String token = jwtUtil.generateToken(user.getUsername());
 
-            Map<String, Object> data =  new LinkedHashMap<String, Object>();
+            Map<String, Object> data =  new HashMap<String, Object>();
             data.put("token", token);
 
             return Response.ok(data);

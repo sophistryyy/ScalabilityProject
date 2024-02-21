@@ -1,11 +1,11 @@
-package seng468.scalability.models.Entity;
+package seng468.scalability.models.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "`stocks`")
+@Table(name = "`Portfolios`")
 public class PortfolioEntry {
     @Id
     private int stockId;
@@ -31,5 +31,9 @@ public class PortfolioEntry {
 
     public int getQuantity() {
         return this.quantity;
+    }
+
+    public void addQuantity(int quantityToAdd) {
+        quantity += quantityToAdd;
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import seng468.scalability.models.Entity.User;
+import seng468.scalability.models.entity.User;
 
 @Service
 public interface UserService extends UserDetailsService {
