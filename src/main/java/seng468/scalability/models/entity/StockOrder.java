@@ -1,5 +1,6 @@
 package seng468.scalability.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -29,13 +30,12 @@ public class StockOrder {
             generator = "stocksOrder_sequence"
     )
     private Integer transaction_id;
-    @ManyToOne
-    @JoinColumn(name = "stock_id")
-    private Stock stock;
-    @Transient
-    private Integer stock_id;
 
+    @JsonProperty("stock_id")
+    private int stock_id;
+    @JsonProperty("is_buy")
     private boolean is_buy;
+    @JsonProperty("order_type")
     private OrderType orderType;
     private Integer quantity;
     private Integer price;
@@ -46,9 +46,9 @@ public class StockOrder {
 
     public StockOrder() {}
 
-    public StockOrder(Stock stock, boolean is_buy, OrderType orderType, Integer quantity, Integer price) {
-        this.stock = stock;
-        this.stock_id = stock.getId();
+    public StockOrder(int stock_id, boolean is_buy, OrderType orderType, Integer quantity, Integer price) {
+
+        this.stock_id = stock_id;
         this.is_buy = is_buy;
         this.orderType = orderType;
         this.quantity = quantity;
@@ -57,6 +57,7 @@ public class StockOrder {
         this.orderStatus = OrderStatus.IN_PROGRESS;
     }
 
+    /*
     public StockOrder(Integer transaction_id, Stock stock, boolean is_buy,
                       OrderType orderType, Integer quantity, Integer price, LocalDate timestamp, OrderStatus orderStatus) {
         this.transaction_id = transaction_id;
@@ -68,17 +69,17 @@ public class StockOrder {
         this.price = price;
         this.timestamp = timestamp;
         this.orderStatus = orderStatus;
-    }
+    }*/
 
     public Integer getTransaction_id() {
         return transaction_id;
     }
 
-    public Integer getStockId() {
+    public int getStockId() {
         return stock_id;
     }
 
-    public boolean isIs_buy() {
+    public boolean getIs_buy() {
         return is_buy;
     }
 
@@ -130,11 +131,12 @@ public class StockOrder {
                 "transaction_id=" + transaction_id +
                 ", stock_id=" + stock_id +
                 ", is_buy=" + is_buy +
-                ", orderType=" + orderType.toString() +
+                ", orderType=" + (orderType != null ? orderType.toString() : null) +
                 ", quantity=" + quantity +
                 ", price=" + price +
                 ", timestamp=" + timestamp +
-                ", orderStatus=" + orderStatus.toString() +
+                ", orderStatus=" + (orderStatus != null ? orderStatus.toString() : null) +
                 '}';
     }
+
 }
