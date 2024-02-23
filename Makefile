@@ -22,7 +22,7 @@ build:
 
 # Run target
 run:
-    mvn spring-boot:run
+	mvn exec:java -Dexec.mainClass="com.example.Main"
 
 # Test target
 test:
