@@ -3,7 +3,9 @@ package seng468.scalability.models.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "stock_orders")
@@ -16,7 +18,8 @@ public class StockOrder {
     public enum OrderStatus{
         COMPLETED,
         IN_PROGRESS,
-        PARTIAL_FULFILLED
+        PARTIAL_FULFILLED,
+        EXPIRED
     }
 
     @Id
@@ -29,8 +32,9 @@ public class StockOrder {
             strategy = GenerationType.SEQUENCE,
             generator = "stocksOrder_sequence"
     )
-    private Integer transaction_id;
+    private Integer stock_tx_id;
 
+    private Integer parent_stock_tx_id;
     @JsonProperty("stock_id")
     private int stock_id;
     @JsonProperty("is_buy")
@@ -39,7 +43,7 @@ public class StockOrder {
     private OrderType orderType;
     private Integer quantity;
     private Integer price;
-    private LocalDate timestamp;
+    private LocalDateTime timestamp;
     private OrderStatus orderStatus;
 
 
@@ -47,33 +51,34 @@ public class StockOrder {
     public StockOrder() {}
 
     public StockOrder(int stock_id, boolean is_buy, OrderType orderType, Integer quantity, Integer price) {
-
+        this.parent_stock_tx_id = null;
         this.stock_id = stock_id;
         this.is_buy = is_buy;
         this.orderType = orderType;
         this.quantity = quantity;
         this.price = price;
-        this.timestamp = LocalDate.now();
+        this.timestamp = LocalDateTime.now();
         this.orderStatus = OrderStatus.IN_PROGRESS;
     }
 
-    /*
-    public StockOrder(Integer transaction_id, Stock stock, boolean is_buy,
-                      OrderType orderType, Integer quantity, Integer price, LocalDate timestamp, OrderStatus orderStatus) {
-        this.transaction_id = transaction_id;
-        this.stock = stock;
-        this.stock_id = stock.getId();
-        this.is_buy = is_buy;
-        this.orderType = orderType;
-        this.quantity = quantity;
-        this.price = price;
-        this.timestamp = timestamp;
-        this.orderStatus = orderStatus;
-    }*/
-
-    public Integer getTransaction_id() {
-        return transaction_id;
+    public StockOrder createCopy(Integer removing_quantity) {
+        StockOrder copy = new StockOrder();
+        copy.parent_stock_tx_id = this.parent_stock_tx_id;
+        copy.stock_id = this.stock_id;
+        copy.is_buy = this.is_buy;
+        copy.orderType = this.orderType;
+        copy.quantity = this.quantity - removing_quantity;
+        copy.price = this.price;
+        copy.timestamp = this.timestamp;//original timestamp
+        copy.orderStatus = OrderStatus.IN_PROGRESS;
+        return copy;
     }
+
+
+
+    public Integer getStock_tx_id() {return stock_tx_id;}
+
+    public Integer getParent_stock_tx_id() {return parent_stock_tx_id;}
 
     public int getStockId() {
         return stock_id;
@@ -95,7 +100,7 @@ public class StockOrder {
         return price;
     }
 
-    public LocalDate getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
@@ -104,6 +109,7 @@ public class StockOrder {
     }
 
 
+    public void setParent_stock_tx_id(Integer parent_stock_tx_id) {this.parent_stock_tx_id = parent_stock_tx_id;}
 
     public void setOrderType(OrderType orderType) {
         this.orderType = orderType;
@@ -117,7 +123,7 @@ public class StockOrder {
         this.price = price;
     }
 
-    public void setTimestamp(LocalDate timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -128,15 +134,16 @@ public class StockOrder {
     @Override
     public String toString() {
         return "StockOrder{" +
-                "transaction_id=" + transaction_id +
+                "stock_tx_id=" + stock_tx_id +
+                ", parent_stock_tx_id=" + parent_stock_tx_id +
                 ", stock_id=" + stock_id +
                 ", is_buy=" + is_buy +
-                ", orderType=" + (orderType != null ? orderType.toString() : null) +
+                ", orderType=" + (orderType != null ? orderType.toString() : "") + //doesn't compile otherwise
                 ", quantity=" + quantity +
                 ", price=" + price +
                 ", timestamp=" + timestamp +
-                ", orderStatus=" + (orderStatus != null ? orderStatus.toString() : null) +
-                '}';
+                ", orderStatus=" + (orderStatus != null ? orderStatus.toString() : "") +
+                "}\n";
     }
 
 }

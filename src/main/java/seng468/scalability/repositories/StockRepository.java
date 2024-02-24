@@ -8,7 +8,7 @@ public interface StockRepository extends JpaRepository<Stock, Integer> {
     public Stock findStockById(int id);
     public Stock findStockByName(String name);
     public Boolean existsByName(String name);
-    
+    public Boolean existsById(int id);
     @Override
     public <S extends Stock> S save(S entity);
 
