@@ -41,7 +41,37 @@ public class LoginTests {
         .contentType(MediaType.APPLICATION_JSON).content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.data").exists())
+        .andExpect(jsonPath("$.data.Error").value("Bad credentials"))
+        .andReturn();
+    }
+
+    @Test 
+    public void testCorrectLogin() throws Exception {
+        User user = new User("VanguardETF", "Vang@123", "Vanguard Corp.");
+        userRepository.save(user);
+
+        String requestBody = "{\"username\": \"VanguardETF\",\"password\": \"Vang@123\"}";
+        MvcResult res = mvc.perform(post("/login")
+        .contentType(MediaType.APPLICATION_JSON).content(requestBody))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.data.token").exists())
+        .andReturn();
+    }
+
+    @Test 
+    public void testCorrectLoginWithTwoExistingUsers() throws Exception {
+        User user1 = new User("VanguardETF", "Vang@123", "Vanguard Corp.");
+        userRepository.save(user1);
+        User user2 = new User("FinanceGuru", "Fguru@2024", "The Finance Guru");
+        userRepository.save(user2);
+
+        String requestBody = "{\"username\": \"FinanceGuru\",\"password\": \"Fguru@2024\"}";
+        MvcResult res = mvc.perform(post("/login")
+        .contentType(MediaType.APPLICATION_JSON).content(requestBody))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.data.token").exists())
         .andReturn();
     }
 }
