@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import seng468.scalability.matchingEngine.MatchingEngineService;
 import seng468.scalability.models.Response;
 import seng468.scalability.models.entity.StockOrder;
+import seng468.scalability.models.request.PlaceStockOrderRequest;
 import seng468.scalability.repositories.StockRepository;
 
 import java.util.List;
@@ -27,23 +28,21 @@ public class PlaceStockOrderController {
 
 
     @PostMapping
-    public Response placeStockOrder(@RequestBody StockOrder req) {
+    public Response placeStockOrder(@RequestBody PlaceStockOrderRequest req) {
         try {
 
-            int stock_id = req.getStockId();
-            if (!stockRepository.existsById(stock_id)) {
-                return Response.error("Invalid stock");
-            }
+            int stock_id = req.getStock_id();
+            if (!stockRepository.existsById(stock_id)) {return Response.error("Invalid stock");}
+
             String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
             // Check if the user has enough of that stock (use Wallet)
             //remove the stock amount from StockPorfolio
 
-            String message = matchingEngineService.placeOrder(req);
+            String message = matchingEngineService.placeOrder(req, username);
             if(message != null)
             {
                 return Response.error(message);
             }
-
             return Response.ok(null);
         } catch (Exception e) {
             return Response.error(e.getMessage());
