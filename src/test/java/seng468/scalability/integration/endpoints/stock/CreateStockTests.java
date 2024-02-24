@@ -50,7 +50,7 @@ public class CreateStockTests {
         String requestBody = "{\"stock_name\": \"Google\"}";
         MvcResult res = mvc.perform(post("/createStock")
         .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + token)
+        .header("token", token)
         .content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -70,7 +70,7 @@ public class CreateStockTests {
         String requestBody = "{\"stock_name\": \"Google\"}";
         MvcResult res = mvc.perform(post("/createStock")
         .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + token)
+        .header("token", token)
         .content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(false))
@@ -91,7 +91,7 @@ public class CreateStockTests {
         String requestBody = "{\"stock_name\": \"Apple\"}";
         MvcResult res = mvc.perform(post("/createStock")
         .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + token)
+        .header("token", token)
         .content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))

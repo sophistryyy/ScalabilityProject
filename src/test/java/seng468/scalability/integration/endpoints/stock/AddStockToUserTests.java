@@ -75,7 +75,7 @@ public class AddStockToUserTests {
         String requestBody = "{\"stock_id\": \"" + String.valueOf(googleStockId) + "\", \"quantity\": \"550\"}"; // Google stock ID should be 1
         MvcResult res = mvc.perform(post("/addStockToUser")
         .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + jwtToken)
+        .header("token", jwtToken)
         .content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -95,7 +95,7 @@ public class AddStockToUserTests {
         String requestBody = "{\"stock_id\": \"" + String.valueOf(invalidStockId) + "\", \"quantity\": \"550\"}"; // Google stock ID should be 1
         MvcResult res = mvc.perform(post("/addStockToUser")
         .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + jwtToken)
+        .header("token", jwtToken)
         .content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(false))
@@ -116,7 +116,7 @@ public class AddStockToUserTests {
         String requestBody = "{\"stock_id\": \"" + String.valueOf(appleStockId) + "\", \"quantity\": \"369\"}"; // Google stock ID should be 1
         MvcResult res = mvc.perform(post("/addStockToUser")
         .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + jwtToken)
+        .header("token", jwtToken)
         .content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -138,7 +138,7 @@ public class AddStockToUserTests {
         String requestBody = "{\"stock_id\": \"" + String.valueOf(googleStockId) + "\", \"quantity\": \"50\"}"; // Google stock ID should be 1
         MvcResult res = mvc.perform(post("/addStockToUser")
         .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + jwtToken)
+        .header("token", jwtToken)
         .content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))

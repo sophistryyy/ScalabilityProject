@@ -65,7 +65,7 @@ public class GetStockPortfolioTests {
 
         MvcResult res = mvc.perform(get("/getStockPortfolio")
         .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + jwtToken)
+        .header("token", jwtToken)
         .content(""))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data").isArray()) // Check if data is an array
@@ -82,7 +82,7 @@ public class GetStockPortfolioTests {
     public void testGetStockPortfolioEmpty() throws Exception {
         MvcResult res = mvc.perform(get("/getStockPortfolio")
         .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + jwtToken)
+        .header("token", jwtToken)
         .content(""))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data").isArray())
