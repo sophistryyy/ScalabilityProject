@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import seng468.scalability.authentication.JwtUtil;
-import seng468.scalability.models.Response;
 import seng468.scalability.models.request.LoginRequest;
+import seng468.scalability.models.response.Response;
 
 @RestController
 public class LoginController {

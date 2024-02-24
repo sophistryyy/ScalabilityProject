@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import seng468.scalability.models.Response;
 import seng468.scalability.models.entity.Stock;
 import seng468.scalability.models.request.CreateStockRequest;
+import seng468.scalability.models.response.Response;
 import seng468.scalability.repositories.StockRepository;
 
 @RestController

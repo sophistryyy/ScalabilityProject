@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import seng468.scalability.models.Response;
+import seng468.scalability.models.response.Response;
 
 @RestController
 public class GreetingController {

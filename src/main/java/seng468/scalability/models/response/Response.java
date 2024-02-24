@@ -1,4 +1,4 @@
-package seng468.scalability.models;
+package seng468.scalability.models.response;
 
 import java.util.HashMap;
 import java.util.Map;
