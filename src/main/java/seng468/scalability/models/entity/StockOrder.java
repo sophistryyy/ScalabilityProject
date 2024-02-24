@@ -34,10 +34,11 @@ public class StockOrder {
     )
     private Integer stock_tx_id;
 
+    private String username;
     private Integer parent_stock_tx_id;
     @JsonProperty("stock_id")
     private int stock_id;
-    @JsonProperty("is_buy")
+
     private boolean is_buy;
     @JsonProperty("order_type")
     private OrderType orderType;
@@ -50,7 +51,7 @@ public class StockOrder {
 
     public StockOrder() {}
 
-    public StockOrder(int stock_id, boolean is_buy, OrderType orderType, Integer quantity, Integer price) {
+    public StockOrder(int stock_id, boolean is_buy, OrderType orderType, Integer quantity, Integer price, String username) {
         this.parent_stock_tx_id = null;
         this.stock_id = stock_id;
         this.is_buy = is_buy;
@@ -59,6 +60,7 @@ public class StockOrder {
         this.price = price;
         this.timestamp = LocalDateTime.now();
         this.orderStatus = OrderStatus.IN_PROGRESS;
+        this.username = username;
     }
 
     public StockOrder createCopy(Integer removing_quantity) {
@@ -71,10 +73,11 @@ public class StockOrder {
         copy.price = this.price;
         copy.timestamp = this.timestamp;//original timestamp
         copy.orderStatus = OrderStatus.IN_PROGRESS;
+        copy.username = this.username;
         return copy;
     }
 
-
+    public String getUsername() {return username;}
 
     public Integer getStock_tx_id() {return stock_tx_id;}
 
@@ -143,7 +146,7 @@ public class StockOrder {
                 ", price=" + price +
                 ", timestamp=" + timestamp +
                 ", orderStatus=" + (orderStatus != null ? orderStatus.toString() : "") +
-                "}\n";
+                "}";
     }
 
 }
