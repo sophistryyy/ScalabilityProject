@@ -1,6 +1,7 @@
 package seng468.scalability.endpoints.stock;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,11 +34,17 @@ public class PlaceStockOrderController {
             if (!stockRepository.existsById(stock_id)) {
                 return Response.error("Invalid stock");
             }
-
+            String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
             // Check if the user has enough of that stock (use Wallet)
+            //remove the stock amount from StockPorfolio
 
-            StockOrder order = matchingEngineService.placeOrder(req);
-            return Response.ok(order.toString());
+            String message = matchingEngineService.placeOrder(req);
+            if(message != null)
+            {
+                return Response.error(message);
+            }
+
+            return Response.ok(null);
         } catch (Exception e) {
             return Response.error(e.getMessage());
         }
