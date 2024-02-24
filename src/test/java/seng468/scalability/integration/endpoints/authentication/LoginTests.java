@@ -1,4 +1,4 @@
-package seng468.scalability.integration.endpoints;
+package seng468.scalability.integration.endpoints.authentication;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import seng468.scalability.models.Response;
 import seng468.scalability.models.entity.PortfolioEntry;
+import seng468.scalability.models.entity.Stock;
 import seng468.scalability.models.entity.User;
 import seng468.scalability.models.request.AddStockToUserRequest;
 import seng468.scalability.repositories.PortfolioRepository;
@@ -27,8 +28,8 @@ public class AddStockToUser {
     @PostMapping("/addStockToUser")
     public Response addStockToUser(@RequestBody AddStockToUserRequest req) {
 
-        String stockName = stockRepository.findStockById(req.getStockId()).getName();
-        if (stockName == null) {
+        Stock stock = stockRepository.findStockById(req.getStockId());
+        if (stock == null) {
             return Response.error("Invalid Stock Id");
         }
 
@@ -36,6 +37,7 @@ public class AddStockToUser {
 
         PortfolioEntry entry = portfolioRepository.findEntryByStockIdAndUsername(req.getStockId(), username);
         if (entry == null) {
+            String stockName = stock.getName();
             entry = new PortfolioEntry(req.getStockId(), stockName, username, req.getQuantity());
         } else {
             entry.addQuantity(req.getQuantity());
