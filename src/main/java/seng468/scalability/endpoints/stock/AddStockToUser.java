@@ -1,7 +1,6 @@
 package seng468.scalability.endpoints.stock;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,12 +8,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import seng468.scalability.models.entity.PortfolioEntry;
 import seng468.scalability.models.entity.Stock;
-import seng468.scalability.models.entity.User;
 import seng468.scalability.models.request.AddStockToUserRequest;
 import seng468.scalability.models.response.Response;
 import seng468.scalability.repositories.PortfolioRepository;
 import seng468.scalability.repositories.StockRepository;
-import seng468.scalability.repositories.UserRepository;
 
 @RestController
 public class AddStockToUser {

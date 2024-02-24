@@ -1,6 +1,5 @@
 package seng468.scalability.endpoints.stock;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
