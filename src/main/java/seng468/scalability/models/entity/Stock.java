@@ -49,3 +49,4 @@ public class Stock {
     public void setPrice(Integer price) {this.price = price;}
     public void setQuantity(Integer quantity) {this.quantity = quantity;}
 }
+g

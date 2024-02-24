@@ -33,12 +33,9 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests((authorize) -> authorize
                 .requestMatchers("/greeting").authenticated()
-                .requestMatchers("/createStock").authenticated()
-                .requestMatchers("/addStockToUser").authenticated()
-                .requestMatchers("/getStockPortfolio").authenticated()
-                .requestMatchers("/addMoneyToWallet").authenticated()
-                .requestMatchers("/getWalletBalance").authenticated()
-                .requestMatchers("/getWalletTransactions").authenticated()
+                //.requestMatchers("/createStock").authenticated()
+                //.requestMatchers("/addStockToUser").authenticated()
+                //.requestMatchers("/placeStockOrder").authenticated()
                 .anyRequest().permitAll()
         )
         .exceptionHandling((exception) -> {exception.accessDeniedPage("/error");})
