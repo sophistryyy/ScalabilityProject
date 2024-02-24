@@ -34,9 +34,6 @@ public class GetStockPortfolioTests {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private StockRepository stockRepository;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
