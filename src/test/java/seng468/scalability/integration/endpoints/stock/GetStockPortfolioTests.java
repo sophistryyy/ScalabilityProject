@@ -1,7 +1,6 @@
 package seng468.scalability.integration.endpoints.stock;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -66,8 +65,6 @@ public class GetStockPortfolioTests {
         portfolioRepository.save(entry1);
         PortfolioEntry entry2 = new PortfolioEntry(2, "Apple", user.getUsername(), 369);
         portfolioRepository.save(entry2);
-
-        String expectedPortfolio =  "[{\"stock_id\":1,\"stock_name\":\"Google\",\"quantity_owned\":550},{\"stock_id\":2,\"stock_name\":\"Apple\",\"quantity_owned\":369}]";
 
         MvcResult res = mvc.perform(get("/getStockPortfolio")
         .contentType(MediaType.APPLICATION_JSON)
