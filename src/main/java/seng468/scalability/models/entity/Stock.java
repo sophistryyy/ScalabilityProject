@@ -30,3 +30,4 @@ public class Stock {
         return this.name;
     }
 }
+g

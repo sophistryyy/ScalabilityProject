@@ -33,22 +33,13 @@ public class SecurityConfig {
                httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.csrf((csrf) -> csrf.disable()).cors((cors) -> cors.disable()).httpBasic((httpBasic) -> httpBasic.disable());
 
-        http.headers(head -> head.frameOptions(frame -> frame.disable()));
-
         // Update with protected paths only. The rest are permitted to be caught by auth or error controllers
         http
             .authorizeHttpRequests((authorize) -> authorize
                 .requestMatchers("/greeting").authenticated()
-                .requestMatchers("/createStock").authenticated()
-                .requestMatchers("/addStockToUser").authenticated()
-                .requestMatchers("/placeStockOrder").authenticated()
-                .requestMatchers("/getStockTransactions").authenticated()
-                .requestMatchers("/cancelStockTransaction").authenticated()
-                .requestMatchers("/getStockPortfolio").authenticated()
-                .requestMatchers("/addMoneyToWallet").authenticated()
-                .requestMatchers("/getStockPrices").authenticated()
-                .requestMatchers("/getWalletBalance").authenticated()
-                .requestMatchers("/getWalletTransactions").authenticated()
+                //.requestMatchers("/createStock").authenticated()
+                //.requestMatchers("/addStockToUser").authenticated()
+                //.requestMatchers("/placeStockOrder").authenticated()
                 .anyRequest().permitAll()
         )
         .exceptionHandling(exception -> 
