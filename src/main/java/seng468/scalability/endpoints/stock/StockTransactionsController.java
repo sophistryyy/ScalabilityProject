@@ -6,8 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import seng468.scalability.matchingEngine.MatchingEngineOrdersRepository;
-import seng468.scalability.matchingEngine.MatchingEngineService;
-import seng468.scalability.models.Response;
+import seng468.scalability.models.response.Response;
 import seng468.scalability.models.entity.StockOrder;
 
 import java.util.List;

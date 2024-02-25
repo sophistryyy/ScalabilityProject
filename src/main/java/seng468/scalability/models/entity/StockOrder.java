@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Table(name = "stock_orders")
@@ -19,7 +20,7 @@ public class StockOrder {
         COMPLETED,
         IN_PROGRESS,
         PARTIAL_FULFILLED,
-        EXPIRED
+        EXPIRED,
     }
 
     @Id
@@ -47,6 +48,7 @@ public class StockOrder {
     private LocalDateTime timestamp;
     private OrderStatus orderStatus;
 
+    private Integer trueRemainingQuantity;
 
 
     public StockOrder() {}
@@ -61,18 +63,20 @@ public class StockOrder {
         this.timestamp = LocalDateTime.now();
         this.orderStatus = OrderStatus.IN_PROGRESS;
         this.username = username;
+        this.trueRemainingQuantity = quantity;
     }
 
-    public StockOrder createCopy(Integer removing_quantity) {
+    public StockOrder createCopy(Integer newQuantity, OrderStatus orderStatus) {
+        //if orderStatus is null then it's a OrderStatus.IN_PROGRESS_FROM_PARTIAL
         StockOrder copy = new StockOrder();
-        copy.parent_stock_tx_id = this.parent_stock_tx_id;
+        copy.parent_stock_tx_id = this.parent_stock_tx_id == null ? this.stock_tx_id : this.parent_stock_tx_id;
         copy.stock_id = this.stock_id;
         copy.is_buy = this.is_buy;
         copy.orderType = this.orderType;
-        copy.quantity = this.quantity - removing_quantity;
+        copy.quantity = newQuantity;
         copy.price = this.price;
-        copy.timestamp = this.timestamp;//original timestamp
-        copy.orderStatus = OrderStatus.IN_PROGRESS;
+        copy.timestamp = LocalDateTime.now();//original timestamp
+        copy.orderStatus = orderStatus;
         copy.username = this.username;
         return copy;
     }
@@ -111,6 +115,13 @@ public class StockOrder {
         return orderStatus;
     }
 
+    public Integer getTrueRemainingQuantity() {
+        return trueRemainingQuantity;
+    }
+
+    public void setTrueRemainingQuantity(Integer trueRemainingQuantity) {
+        this.trueRemainingQuantity = trueRemainingQuantity;
+    }
 
     public void setParent_stock_tx_id(Integer parent_stock_tx_id) {this.parent_stock_tx_id = parent_stock_tx_id;}
 

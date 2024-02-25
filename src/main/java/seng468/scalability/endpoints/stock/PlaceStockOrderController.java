@@ -7,12 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import seng468.scalability.matchingEngine.MatchingEngineService;
-import seng468.scalability.models.Response;
-import seng468.scalability.models.entity.StockOrder;
+import seng468.scalability.models.response.Response;
 import seng468.scalability.models.request.PlaceStockOrderRequest;
 import seng468.scalability.repositories.StockRepository;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "placeStockOrder")
@@ -35,6 +32,7 @@ public class PlaceStockOrderController {
             if (!stockRepository.existsById(stock_id)) {return Response.error("Invalid stock");}
 
             String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+
             // Check if the user has enough of that stock (use Wallet)
             //remove the stock amount from StockPorfolio
 

@@ -1,16 +1,13 @@
 package seng468.scalability.matchingEngine;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import seng468.scalability.models.entity.PortfolioEntry;
-import seng468.scalability.models.entity.Stock;
 import seng468.scalability.models.entity.StockOrder;
 import seng468.scalability.models.request.PlaceStockOrderRequest;
 import seng468.scalability.repositories.PortfolioRepository;
 import seng468.scalability.repositories.StockRepository;
-import seng468.scalability.wallet.Wallet;
-import seng468.scalability.wallet.WalletRepository;
+import seng468.scalability.models.entity.Wallet;
+import seng468.scalability.repositories.WalletRepository;
 
 import java.util.*;
 
@@ -44,10 +41,15 @@ public class MatchingEngineService {
         int req_stock_id = order.getStockId();
         LinkedList<StockOrder> lstOfSellStocks = matchingEngineOrdersRepository.getAllSellByStock_id(req_stock_id);//at least 1 element in it and no completed transactions
         LinkedList<StockOrder> lstOfBuyStocks = matchingEngineOrdersRepository.getAllBuyByStock_id(req_stock_id);
-        OrderBook orderBook = new OrderBook(matchingEngineOrdersRepository, portfolioRepository, walletRepository, lstOfSellStocks, lstOfBuyStocks);
+        OrderBook orderBook = new OrderBook(lstOfSellStocks, lstOfBuyStocks);
 
-        try_matching(orderBook);
-        return matchingEngineOrdersRepository.findAll().toString();//for testing
+        try {//just in case
+            try_matching(orderBook);
+        }catch(Exception e)
+        {
+            return e.getMessage();
+        }
+        return null;
     }
 
     public String basicVerifier(PlaceStockOrderRequest req)
@@ -58,19 +60,25 @@ public class MatchingEngineService {
         } catch (Exception e) {
             return "Incorrect value of order type";
         }
-
         if (orderType == StockOrder.OrderType.MARKET && req.getPrice() != null) {
             return "MARKET orders can't have price, set it to null.";
         }
-
-        if(req.getQuantity() != null && req.getQuantity() <= 0)
-        {
+        if (orderType == StockOrder.OrderType.LIMIT) {
+            if(req.getPrice() == null && req.getPrice() <= 0) {
+                return "LIMIT orders' price has to be more than 0";
+            }
+        }
+        if(req.getQuantity() != null && req.getQuantity() <= 0){
             return "Please set quantity to more than 0";
         }
         return null;
     }
     public void try_matching(OrderBook orderBook)
-            //case user has market order but no money
+            /*
+            * Assumed: if limit order MONEY IS ALREADY DEDUCTED AND USER HAS ENOUGH
+            * case: user has market order but no money
+            * */
+
     {
         StockOrder buyOrder =  orderBook.getBuyHead();
         StockOrder sellOrder = orderBook.getSellHead();
@@ -81,48 +89,114 @@ public class MatchingEngineService {
             if(!orderBook.isMatchPossible()){return;} //buyer's price is guaranteed to be higher
 
             int sellingPrice = sellOrder.getPrice();
-            int sellingStocks = sellOrder.getQuantity();
+            int sellingStocks = sellOrder.getTrueRemainingQuantity();
             int buyingPrice = buyOrder.getPrice();
-            int buyingStocks = buyOrder.getQuantity();
+            int buyingStocks = buyOrder.getTrueRemainingQuantity();
 
             if(buyingStocks > sellingStocks) // user wants to buy more than top seller has
             {
-                int money_to_add = sellingPrice * sellingPrice;
                 //SELL is completed
-                sellOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);
-                //add money to seller
+                if(sellOrder.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED) //create child transaction
+                {
+                    StockOrder completedSellStockOrder = sellOrder.createCopy(sellingStocks, StockOrder.OrderStatus.COMPLETED);
+                    matchingEngineOrdersRepository.save(completedSellStockOrder);
+                }
+                sellOrder.setTrueRemainingQuantity(0);
+                sellOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);//set previously PARTIAL FULFILLED or IN_PROGRESS to completed
+                Wallet sellerWallet = walletRepository.findByUsername(sellOrder.getUsername());
+                sellerWallet.incrementBalance(sellingPrice * sellingStocks);//add money to seller based on trueRemaining quantity
+                //create wallet transaction
+
+                //add SELLER PORTFOLIO
+
                 orderBook.popSellOrder();
 
                 //BUY is partially completed
+                buyOrder.setTrueRemainingQuantity(buyingStocks - sellingStocks);//still more to go
                 buyOrder.setOrderStatus(StockOrder.OrderStatus.PARTIAL_FULFILLED);
-                //add stocks to buyer's portfolio
-                StockOrder childStockOrder = buyOrder.createCopy(buyingStocks - sellingStocks);
-                matchingEngineOrdersRepository.save(childStockOrder);
-                orderBook.popBuyOrder();//remove parent so it doesn't match and transaction can be saved
-                orderBook.addHeadBuy(childStockOrder);//add copy of it
+                //add stock to portfolio (REFACTOR)
+                PortfolioEntry buyerPortfolioByStockId  = portfolioRepository.findEntryByStockIdAndUsername(buyOrder.getStockId(), buyOrder.getUsername()); //add stocks to buyer's portfolio
+                if (buyerPortfolioByStockId == null) {
+                    buyerPortfolioByStockId = new PortfolioEntry(buyOrder.getStockId(), buyOrder.getUsername(), sellingStocks);
+                } else {
+                    buyerPortfolioByStockId.addQuantity(sellingStocks);
+                }
+                portfolioRepository.save(buyerPortfolioByStockId);
+
+                //create wallet transaction for buyer
+
+                //add completed transaction to buy
+                StockOrder completedBuyerStockOrder = buyOrder.createCopy(sellingStocks, StockOrder.OrderStatus.COMPLETED);
+                completedBuyerStockOrder.setPrice(sellingPrice);//how much the stock was bought for
+                matchingEngineOrdersRepository.save(completedBuyerStockOrder);
             }
             else if(buyingStocks < sellingStocks)//seller has more
             {
                 //SELL is partially completed
                 sellOrder.setOrderStatus(StockOrder.OrderStatus.PARTIAL_FULFILLED);
-                //add money to seller
-                orderBook.popSellOrder();
-                StockOrder childStockOrder = sellOrder.createCopy(sellingStocks - buyingStocks );
-                matchingEngineOrdersRepository.save(childStockOrder);
-                orderBook.addHeadSell(childStockOrder);
+                sellOrder.setTrueRemainingQuantity(sellingStocks - buyingStocks);//still more to go
+                Wallet sellerWallet = walletRepository.findByUsername(sellOrder.getUsername());
+                sellerWallet.incrementBalance(sellingPrice * buyingStocks);//add money to seller based on trueRemaining quantity
+                //add wallet transaction
 
-                // BUY is COMPLETE
-                buyOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);
-                //add stocks to buyer's portfolio
+                //add SELLER PORTFOLIO
+
+                //add completed order transaction for seller
+                StockOrder completedSellerStockOrder = sellOrder.createCopy(buyingStocks, StockOrder.OrderStatus.COMPLETED);
+                matchingEngineOrdersRepository.save(completedSellerStockOrder);
+
+                //BUYER is complete
+                if(buyOrder.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED) //create child transaction since it was partially fulfilled before
+                {
+                    StockOrder completedBuyerStockOrder = buyOrder.createCopy(buyingStocks, StockOrder.OrderStatus.COMPLETED);
+                    matchingEngineOrdersRepository.save(completedBuyerStockOrder);
+                }
+                buyOrder.setTrueRemainingQuantity(0);
+                buyOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);//set previously PARTIAL FULFILLED or IN_PROGRESS to completed (original parent!)
+                //create wallet transaction
+
+                //add stock to portfolio (REFACTOR)
+                PortfolioEntry buyerPortfolioByStockId  = portfolioRepository.findEntryByStockIdAndUsername(buyOrder.getStockId(), buyOrder.getUsername()); //add stocks to buyer's portfolio
+                if (buyerPortfolioByStockId == null) {
+                    buyerPortfolioByStockId = new PortfolioEntry(buyOrder.getStockId(), buyOrder.getUsername(), buyingStocks);
+                } else {
+                    buyerPortfolioByStockId.addQuantity(buyingStocks);
+                }
+                portfolioRepository.save(buyerPortfolioByStockId);
+
+
                 orderBook.popBuyOrder();
             }
             else{//seller stocks = buyer stocks quantity, no more to match
+                if(sellOrder.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED) //create child transaction
+                {
+                    StockOrder completedSellStockOrder = sellOrder.createCopy(sellingStocks, StockOrder.OrderStatus.COMPLETED);
+                    matchingEngineOrdersRepository.save(completedSellStockOrder);
+                }
+                //SELLER PORTFOLIO
+                sellOrder.setTrueRemainingQuantity(0);
                 sellOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);
-                //add money to seller
+                //create wallet transaction
+
                 orderBook.popSellOrder();
 
+                if(buyOrder.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED) //create child transaction since it was partially fulfilled before
+                {
+                    StockOrder completedBuyerStockOrder = buyOrder.createCopy(buyingStocks, StockOrder.OrderStatus.COMPLETED);
+                    matchingEngineOrdersRepository.save(completedBuyerStockOrder);
+                }
+                buyOrder.setTrueRemainingQuantity(0);
                 buyOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);
-                //add stocks to buyer
+                //REFACTOR
+                PortfolioEntry buyerPortfolioByStockId  = portfolioRepository.findEntryByStockIdAndUsername(buyOrder.getStockId(), buyOrder.getUsername()); //add stocks to buyer's portfolio
+                if (buyerPortfolioByStockId == null) {
+                    buyerPortfolioByStockId = new PortfolioEntry(buyOrder.getStockId(), buyOrder.getUsername(), buyingStocks);
+                } else {
+                    buyerPortfolioByStockId.addQuantity(buyingStocks);
+                }
+                portfolioRepository.save(buyerPortfolioByStockId);
+                //create wallet transaction
+
                 orderBook.popBuyOrder();
             }
             try_matching(orderBook);
