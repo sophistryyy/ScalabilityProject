@@ -1,17 +1,15 @@
 package seng468.scalability.endpoints.authentication;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import seng468.scalability.authentication.UserService;
-import seng468.scalability.models.Entity.User;
-import seng468.scalability.models.Exceptions.UsernameExistsException;
-import seng468.scalability.models.Request.RegisterRequest;
+import seng468.scalability.models.entity.User;
+import seng468.scalability.models.exceptions.UsernameExistsException;
+import seng468.scalability.models.request.RegisterRequest;
+import seng468.scalability.models.response.Response;
 
 @RestController
 public class RegisterController {
@@ -19,20 +17,14 @@ public class RegisterController {
     private UserService userService;
 
     @PostMapping("/register")
-    public Map<String, Object> registerUser(@RequestBody RegisterRequest req) {
+    public Response registerUser(@RequestBody RegisterRequest req) {
         User user = new User(req.getUsername(), req.getPassword(), req.getName());
 
-        Map<String, Object> response = new LinkedHashMap<String, Object>();
         try {
             userService.saveUser(user);
-            response.put("success", true);
-            response.put("data", null);
+            return Response.ok(null);
         } catch (UsernameExistsException e) {
-            response.put("success", false);
-            response.put("data", null);
-            response.put("message", "Username Already Exists");
+            return Response.error(e.getMessage());
         }
-        
-        return response;
     }
 }

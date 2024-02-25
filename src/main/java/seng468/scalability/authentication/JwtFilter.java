@@ -31,14 +31,11 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Pull JWT token from username
-        final String authorizationHeader = request.getHeader("Authorization");
+        final String jwtToken = request.getHeader("token");
 
         String username = null;
-        String jwtToken = null;
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwtToken = authorizationHeader.substring(7);
+        if (jwtToken != null) {
             try {
                 username = jwtUtil.extractUsername(jwtToken);
             } catch (Exception e) {

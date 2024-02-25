@@ -33,6 +33,9 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests((authorize) -> authorize
                 .requestMatchers("/greeting").authenticated()
+                .requestMatchers("/createStock").authenticated()
+                .requestMatchers("/addStockToUser").authenticated()
+                .requestMatchers("/getStockPortfolio").authenticated()
                 .anyRequest().permitAll()
         )
         .exceptionHandling((exception) -> {exception.accessDeniedPage("/error");})

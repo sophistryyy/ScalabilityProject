@@ -1,4 +1,4 @@
-package seng468.scalability.integration.endpoints;
+package seng468.scalability.integration.endpoints.authentication;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,12 +9,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import seng468.scalability.authentication.UserRepository;
-import seng468.scalability.models.Entity.User;
+import seng468.scalability.models.entity.User;
+import seng468.scalability.repositories.UserRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -58,8 +57,7 @@ public class RegisterTests {
         .contentType(MediaType.APPLICATION_JSON).content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.data").doesNotExist())
-        .andExpect(jsonPath("$.message").value("Username Already Exists"))
+        .andExpect(jsonPath("$.data.Error").value("Username Already Exists"))
         .andReturn();
 
         User foundUser = userRepository.findByUsername("VanguardETF");
@@ -67,5 +65,26 @@ public class RegisterTests {
         assertEquals("Vanguard Corp.", foundUser.getName());;
     }
 
+    @Test
+    public void testRegisterWithTwoUsers() throws Exception {
+        User user = new User("VanguardETF", "Vang@123", "Vanguard Corp.");
+        userRepository.save(user);
+
+        String requestBody = "{\"username\": \"FinanceGuru\",\"password\": \"Fguru@2024\",\"name\": \"The Finance Guru\"}";
+        MvcResult res = mvc.perform(post("/register")
+        .contentType(MediaType.APPLICATION_JSON).content(requestBody))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.data").doesNotExist())
+        .andReturn();
+
+        User foundUser1 = userRepository.findByUsername("VanguardETF");
+        assertNotNull(foundUser1);
+        assertEquals("Vanguard Corp.", foundUser1.getName());
+        
+        User foundUser2 = userRepository.findByUsername("FinanceGuru");
+        assertEquals("The Finance Guru", foundUser2.getName());
+        assertNotNull(foundUser2);
+    }
 
 }
