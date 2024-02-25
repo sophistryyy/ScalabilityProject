@@ -1,4 +1,4 @@
-package seng468.scalability.models.entity;
+package seng468.scalability.wallet;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -21,24 +21,13 @@ public class Wallet {
         return this.balance;
     }
 
-    public String getUsername() {
-        return this.username;
-    }
-
-    public void incrementBalance(Integer amount) throws Exception {
-        if (amount < 0) {
-            throw new Exception("Invalid Amount");
-        }
-
+    public void incrementBalance(Integer amount) {
         this.balance = this.balance + amount;
     }
 
     public void decrementBalance(Integer amount) throws Exception {
         if (amount > balance) {
             throw new Exception("Insufficient Balance");
-        }
-        if (amount < 0) {
-            throw new Exception("Invalid Amount");
         }
 
         this.balance = this.balance - amount;
