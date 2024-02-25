@@ -52,6 +52,7 @@ public class AddMoneyToWalletTests {
 
         jwtToken = jwtUtil.generateToken(user.getUsername());
     } 
+    
     @BeforeEach
     void setUpBeforeEach() {
         walletRepository.deleteAll();
