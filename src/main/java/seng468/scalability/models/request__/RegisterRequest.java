@@ -1,12 +1,14 @@
-package seng468.scalability.models.request;
+package seng468.scalability.models.request__;
 
-public class LoginRequest {
+public class RegisterRequest {
     private String username;
     private String password;
+    private String name;
 
-    public LoginRequest(String username, String password) {
+    public RegisterRequest(String username, String password, String name) {
         this.username = username;
         this.password = password;
+        this.name = name;
     }
 
     public String getUsername() {
@@ -15,5 +17,9 @@ public class LoginRequest {
 
     public String getPassword() {
         return this.password;
+    }
+
+    public String getName() {
+        return this.name;
     }
 }
