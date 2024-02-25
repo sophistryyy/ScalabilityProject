@@ -1,22 +1,19 @@
 package seng468.scalability.models.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 
-//general stocks available
 @Entity
 @Table(name = "`stocks`")
 public class Stock {
     @Id
-    @SequenceGenerator(
-            name = "stocks_sequence",
-            sequenceName = "stocks_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "stocks_sequence"
-    )
-    private long id;
+    // Generate new unique id
+    @GeneratedValue(generator = "generatorName")
+    @SequenceGenerator(name = "generatorName", sequenceName = "SEQ_NAME")
+    private int id; 
     private String name;
 
     public Stock() {}
@@ -25,13 +22,7 @@ public class Stock {
         this.name = name;
     }
 
-    public Stock(Long id, String name)
-    {
-        this.id = id;
-        this.name = name;
-    }
-
-    public long getId() {
+    public int getId() {
         return this.id;
     }
 

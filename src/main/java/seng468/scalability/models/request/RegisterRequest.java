@@ -1,15 +1,13 @@
 package seng468.scalability.models.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class RegisterRequest {
     private String username;
     private String password;
     private String name;
 
-    public RegisterRequest(@JsonProperty("user_name") String username, String password, String name) {
-        this.username = username.trim();
-        this.password = password.trim();
+    public RegisterRequest(String username, String password, String name) {
+        this.username = username;
+        this.password = password;
         this.name = name;
     }
 

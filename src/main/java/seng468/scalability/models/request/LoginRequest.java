@@ -1,14 +1,12 @@
 package seng468.scalability.models.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class LoginRequest {
     private String username;
     private String password;
 
-    public LoginRequest(@JsonProperty("user_name") String username, String password) {
-        this.username = username.trim();
-        this.password = password.trim();
+    public LoginRequest(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
     public String getUsername() {
