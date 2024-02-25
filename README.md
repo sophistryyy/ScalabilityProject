@@ -7,5 +7,5 @@ seng468 project
 - Install Maven (4.0.0?).
 
 ## Run with Docker
-docker build --tag myimage .
-docker run -p 8080:8080 myimage
+- docker build --tag myimage .
+- docker run -p 8080:8080 myimage
