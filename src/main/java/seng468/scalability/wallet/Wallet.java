@@ -11,6 +11,8 @@ public class Wallet {
 
     private Integer balance = 0;
 
+    public Wallet() {}
+
     public Wallet(String username) {
         this.username = username;
     }
