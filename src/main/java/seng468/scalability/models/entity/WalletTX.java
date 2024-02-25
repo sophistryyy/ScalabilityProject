@@ -46,14 +46,7 @@ public class WalletTX {
         return this.amount;
     }
 
-<<<<<<< HEAD
-    public String getTimestamp() {
-        return this.timestamp;
-    }
-}
-=======
     public LocalDateTime getTimestamp() {
         return this.timestamp;
     }
 }
->>>>>>> b0a1ef9 (Wallet stuff from wallet branch)
