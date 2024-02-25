@@ -1,15 +1,13 @@
 package seng468.scalability.models.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class AddMoneyToWalletRequest {
-    Long amount;
+    Integer amount;
 
-    public AddMoneyToWalletRequest(@JsonProperty("amount") Long amount) {
+    public AddMoneyToWalletRequest(Integer amount) {
         this.amount = amount;
     }
 
-    public Long getAmount() {
+    public Integer getAmount() {
         return this.amount;
     }
 }

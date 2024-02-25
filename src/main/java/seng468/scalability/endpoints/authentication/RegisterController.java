@@ -6,9 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import seng468.scalability.authentication.UserService;
-import seng468.scalability.models.entity.PortfolioEntry;
 import seng468.scalability.models.entity.User;
-import seng468.scalability.models.entity.Wallet;
 import seng468.scalability.models.exceptions.UsernameExistsException;
 import seng468.scalability.models.request.RegisterRequest;
 import seng468.scalability.models.response.Response;
@@ -24,12 +22,13 @@ public class RegisterController {
 
     @PostMapping("/register")
     public Response registerUser(@RequestBody RegisterRequest req) {
+        User user = new User(req.getUsername(), req.getPassword(), req.getName());
+
         try {
-            User user = new User(req.getUsername(), req.getPassword(), req.getName());
             userService.saveUser(user);
-            walletRepository.saveNewWallet(new Wallet(req.getUsername()));
+            
             return Response.ok(null);
-        } catch (Exception e) {
+        } catch (UsernameExistsException e) {
             return Response.error(e.getMessage());
         }
     }

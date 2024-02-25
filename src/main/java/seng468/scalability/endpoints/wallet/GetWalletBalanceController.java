@@ -26,6 +26,7 @@ public class GetWalletBalanceController {
             String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 
             Wallet wallet = walletRepository.findByUsername(username);
+            
             Map<String, Object> data =  new HashMap<String, Object>();
             data.put("balance", wallet.getBalance());
 
