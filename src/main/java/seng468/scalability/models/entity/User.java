@@ -14,8 +14,6 @@ public class User {
     private String username;
     private String password;
     private String name;
-    @OneToOne(mappedBy = "owner")
-    private Wallet wallet;
 
     public User() {}
 

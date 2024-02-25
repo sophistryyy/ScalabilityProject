@@ -10,11 +10,15 @@ import seng468.scalability.models.entity.User;
 import seng468.scalability.models.exceptions.UsernameExistsException;
 import seng468.scalability.models.request.RegisterRequest;
 import seng468.scalability.models.response.Response;
+import seng468.scalability.repositories.WalletRepository;
 
 @RestController
 public class RegisterController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private WalletRepository walletRepository;
 
     @PostMapping("/register")
     public Response registerUser(@RequestBody RegisterRequest req) {
@@ -22,6 +26,7 @@ public class RegisterController {
 
         try {
             userService.saveUser(user);
+            
             return Response.ok(null);
         } catch (UsernameExistsException e) {
             return Response.error(e.getMessage());

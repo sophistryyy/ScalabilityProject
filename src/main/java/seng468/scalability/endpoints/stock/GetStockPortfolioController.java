@@ -15,7 +15,7 @@ import seng468.scalability.models.response.Response;
 import seng468.scalability.repositories.PortfolioRepository;
 
 @RestController
-public class GetStockPortfolio {
+public class GetStockPortfolioController {
 
     @Autowired
     PortfolioRepository portfolioRepository;    

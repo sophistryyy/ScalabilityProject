@@ -2,9 +2,6 @@ package seng468.scalability.models.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
 
 @Entity
 public class Wallet {
@@ -12,32 +9,25 @@ public class Wallet {
     @Id
     private String username;
 
-    @OneToOne @MapsId
-    @JoinColumn(name = "owner_username")
-    private User owner;
-    private Integer balance;
+    private Integer balance = 0;
 
-    public Wallet(String username, Integer balance) {
-        // TODO create from either User or username?
+    public Wallet(String username) {
         this.username = username;
-        this.balance = balance;
     }
 
     public Integer getBalance() {
         return this.balance;
     }
 
-    public Integer incrementBalance(Integer amount) {
-        // TODO log the transaction
+    public void incrementBalance(Integer amount) {
         this.balance = this.balance + amount;
-        return this.balance;
     }
 
-    public User getUser() {
-        return this.owner;
-    }
+    public void decrementBalance(Integer amount) throws Exception {
+        if (amount > balance) {
+            throw new Exception("Insufficient Balance");
+        }
 
-    public void setUser(User owner) {
-        this.owner = owner;
+        this.balance = this.balance - amount;
     }
 }
