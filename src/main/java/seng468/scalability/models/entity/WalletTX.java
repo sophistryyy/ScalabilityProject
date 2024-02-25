@@ -1,5 +1,6 @@
 package seng468.scalability.models.entity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import jakarta.persistence.Entity;
@@ -14,14 +15,19 @@ public class WalletTX {
     private long stockTXId;
     private boolean isDebit;
     private int amount;
-    private String timestamp;
+    private LocalDateTime timestamp;
+
 
     public WalletTX(long walletTXId, long stockTXId, boolean isDebit, int amount) {
         this.walletTXId = walletTXId;
         this.stockTXId = stockTXId;
         this.isDebit = isDebit;
         this.amount = amount;
-        this.timestamp = new Date().toString();
+        this.timestamp = LocalDateTime.now();
+    }
+
+    public WalletTX() {
+
     }
 
     public long getWalletTXId() {
@@ -40,7 +46,14 @@ public class WalletTX {
         return this.amount;
     }
 
+<<<<<<< HEAD
     public String getTimestamp() {
         return this.timestamp;
     }
 }
+=======
+    public LocalDateTime getTimestamp() {
+        return this.timestamp;
+    }
+}
+>>>>>>> b0a1ef9 (Wallet stuff from wallet branch)
