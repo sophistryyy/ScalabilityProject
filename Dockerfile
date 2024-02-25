@@ -6,5 +6,5 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 WORKDIR /usr/src/app
 
 COPY . .
-EXPOSE 3000
-CMD ["mvn", "clean"]
+EXPOSE 8080
+CMD ["mvn", "spring-boot:run"]
