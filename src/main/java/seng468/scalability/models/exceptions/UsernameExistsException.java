@@ -1,4 +1,4 @@
-package seng468.scalability.models.exceptions__;
+package seng468.scalability.models.exceptions;
 
 public class UsernameExistsException extends RuntimeException {
     public UsernameExistsException(String errorMessage) {

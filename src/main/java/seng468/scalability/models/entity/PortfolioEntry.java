@@ -1,4 +1,4 @@
-package seng468.scalability.models.entity__;
+package seng468.scalability.models.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

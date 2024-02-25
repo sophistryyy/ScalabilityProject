@@ -1,4 +1,4 @@
-package seng468.scalability.models.request__;
+package seng468.scalability.models.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
