@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import seng468.scalability.models.entity.User;
-import seng468.scalability.wallet.*;
+import seng468.scalability.models.entity.Wallet;
 
 
 @Controller
