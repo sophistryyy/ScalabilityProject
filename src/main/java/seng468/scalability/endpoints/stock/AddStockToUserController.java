@@ -10,6 +10,7 @@ import seng468.scalability.models.entity.Stock;
 import seng468.scalability.models.response.Response;
 import seng468.scalability.models.entity.PortfolioEntry;
 import seng468.scalability.models.request.AddStockToUserRequest;
+import seng468.scalability.models.response.Response;
 import seng468.scalability.repositories.PortfolioRepository;
 import seng468.scalability.repositories.StockRepository;
 

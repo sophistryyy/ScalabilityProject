@@ -2,7 +2,7 @@ package seng468.scalability.matchingEngine;
 import seng468.scalability.models.entity.StockOrder;
 
 import java.util.LinkedList;
-//OrderBook consists of StockOrders that beLong to the same stock_id
+//OrderBook consists of StockOrders that belong to the same stock_id
 // it's separated into buy and sell lists where it will later be matched
 // Queues are sorted by price, if price is the same, sort by timestamp
 
@@ -21,16 +21,12 @@ public class OrderBook {
         StockOrder buyOrder =  buy_orders.peek();
         StockOrder sellOrder = sell_orders.peek();
 
-        if(buyOrder == null || sellOrder == null){return false;}// one the lists are empty, so can't match
+        if(buyOrder == null || sellOrder == null){return false;}// one the queues are empty, so can't match
 
-        if(buyOrder.getOrderType() == StockOrder.OrderType.LIMIT ) //error handling, don't want to match null price
+        if(buyOrder.getOrderType() != StockOrder.OrderType.MARKET && sellOrder.getOrderType() != StockOrder.OrderType.MARKET) //error handling, don't want to match null price
         {
-            if(sellOrder.getOrderType() == StockOrder.OrderType.MARKET)
-            {
-                return true; //seller doesn't care what price it's sold
-            }
-            Long sellingPrice = sellOrder.getPrice();
-            Long buyingPrice = buyOrder.getPrice();
+            int sellingPrice = sellOrder.getPrice();
+            int buyingPrice = buyOrder.getPrice();
 
             return buyingPrice >= sellingPrice; //can buy at least 1 stock
         }

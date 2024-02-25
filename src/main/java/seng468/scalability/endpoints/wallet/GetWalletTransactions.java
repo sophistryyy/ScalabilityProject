@@ -7,7 +7,7 @@ import seng468.scalability.repositories.WalletRepository;
 
 @RestController
 public class GetWalletTransactions {
-        
+
     @Autowired
     private WalletRepository walletRepository;
 }

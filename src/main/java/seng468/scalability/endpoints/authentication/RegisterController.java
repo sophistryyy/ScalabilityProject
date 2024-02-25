@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import seng468.scalability.authentication.UserService;
+import seng468.scalability.models.entity.PortfolioEntry;
 import seng468.scalability.models.entity.User;
 import seng468.scalability.models.entity.Wallet;
 import seng468.scalability.models.exceptions.UsernameExistsException;
