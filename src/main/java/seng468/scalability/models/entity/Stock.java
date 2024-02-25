@@ -18,9 +18,6 @@ public class Stock {
     )
     private Integer id;
     private String name;
-    //not sure if needed
-    private Integer quantity;
-    private Integer price;
 
     public Stock() {}
 
@@ -41,12 +38,4 @@ public class Stock {
     public String getName() {
         return this.name;
     }
-
-    public Integer getQuantity(){return this.quantity;}
-    public Integer getPrice(){return this.price;}
-
-    //basic set methods
-    public void setPrice(Integer price) {this.price = price;}
-    public void setQuantity(Integer quantity) {this.quantity = quantity;}
 }
-g
