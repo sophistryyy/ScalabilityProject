@@ -10,7 +10,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import seng468.scalability.models.entity.User;
+import seng468.scalability.models.entity.Wallet;
 import seng468.scalability.repositories.UserRepository;
+import seng468.scalability.repositories.WalletRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,6 +29,9 @@ public class RegisterTests {
 
     @Autowired 
     private UserRepository userRepository;
+
+    @Autowired
+    private WalletRepository walletRepository;
 
     @BeforeEach
     void setup() {
@@ -45,6 +50,9 @@ public class RegisterTests {
 
         User foundUser = userRepository.findByUsername("VanguardETF");
         assertNotNull(foundUser);
+
+        Wallet userWallet = walletRepository.findByUsername("VanguardETF");
+        assertNotNull(userWallet);
     }
 
     @Test 
@@ -62,7 +70,10 @@ public class RegisterTests {
 
         User foundUser = userRepository.findByUsername("VanguardETF");
         assertNotNull(foundUser);
-        assertEquals("Vanguard Corp.", foundUser.getName());;
+        assertEquals("Vanguard Corp.", foundUser.getName());
+
+        Wallet userWallet = walletRepository.findByUsername("VanguardETF");
+        assertNotNull(userWallet);
     }
 
     @Test
@@ -85,6 +96,9 @@ public class RegisterTests {
         User foundUser2 = userRepository.findByUsername("FinanceGuru");
         assertEquals("The Finance Guru", foundUser2.getName());
         assertNotNull(foundUser2);
+
+        Wallet userWallet = walletRepository.findByUsername("FinanceGuru");
+        assertNotNull(userWallet);
     }
 
 }

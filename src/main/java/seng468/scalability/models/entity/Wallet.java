@@ -21,13 +21,20 @@ public class Wallet {
         return this.balance;
     }
 
-    public void incrementBalance(Integer amount) {
+    public void incrementBalance(Integer amount) throws Exception {
+        if (amount < 0) {
+            throw new Exception("Invalid Amount");
+        }
+
         this.balance = this.balance + amount;
     }
 
     public void decrementBalance(Integer amount) throws Exception {
         if (amount > balance) {
             throw new Exception("Insufficient Balance");
+        }
+        if (amount < 0) {
+            throw new Exception("Invalid Amount");
         }
 
         this.balance = this.balance - amount;
