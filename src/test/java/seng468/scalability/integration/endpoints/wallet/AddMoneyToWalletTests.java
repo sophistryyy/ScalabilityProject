@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,15 +52,8 @@ public class AddMoneyToWalletTests {
 
         jwtToken = jwtUtil.generateToken(user.getUsername());
     } 
-    
     @BeforeEach
     void setUpBeforeEach() {
-        walletRepository.deleteAll();
-    }
-
-    @AfterAll
-    void breakdownAfterAll() {
-        userRepository.deleteAll();
         walletRepository.deleteAll();
     }
 
@@ -87,7 +79,7 @@ public class AddMoneyToWalletTests {
     @Test
     public void testAddMoneyToWalletAddToExistingBalance() throws Exception {
         Wallet userWallet = new Wallet(user.getUsername());
-        userWallet.incrementBalance(50L);
+        userWallet.incrementBalance(50);
         walletRepository.save(userWallet);
 
         String requestBody = "{\"amount\": 10000}";
@@ -116,7 +108,7 @@ public class AddMoneyToWalletTests {
         .content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.data.error").value("Invalid Amount")) // Check if data is an array
+        .andExpect(jsonPath("$.data.Error").value("Invalid Amount")) // Check if data is an array
         .andReturn();
 
         Wallet foundWallet = walletRepository.findByUsername(user.getUsername());
