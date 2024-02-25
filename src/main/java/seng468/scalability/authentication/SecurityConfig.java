@@ -40,6 +40,7 @@ public class SecurityConfig {
                 //.requestMatchers("/createStock").authenticated()
                 //.requestMatchers("/addStockToUser").authenticated()
                 //.requestMatchers("/placeStockOrder").authenticated()
+                //.requestMatchers("/getStockTransactions").authenticated()
                 .anyRequest().permitAll()
         )
         .exceptionHandling(exception -> 
