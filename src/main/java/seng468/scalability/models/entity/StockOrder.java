@@ -153,8 +153,8 @@ public class StockOrder {
         this.orderStatus = orderStatus;
     }
 
-    public void setStock_tx_id(Integer stock_tx_id) {
-        this.stock_tx_id = stock_tx_id;
+    public void setWalletTXid(Integer walletTXid) {
+        this.walletTXid = walletTXid;
     }
 
     @Override
