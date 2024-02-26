@@ -124,8 +124,8 @@ public class MatchingEngineService {
             buyerWallet.decrementBalance(toDeduct); //might throw expcetion
 
             WalletTX buyerWalletTX = new WalletTX(buyOrder.getUsername(), buyOrder.getStock_tx_id(), true, toDeduct);
-            buyOrder.setWalletTXid(buyerWalletTX.getWalletTXId());
             walletTXRepository.saveNewWalletTX(buyerWalletTX);
+            buyOrder.setWalletTXid(buyerWalletTX.getWalletTXId());
         }
 
 
@@ -187,9 +187,6 @@ public class MatchingEngineService {
             if(buyOrder.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED) { // any partial completed
                 walletTXRepository.saveNewWalletTX(buyerWalletTX);
                 matchingEngineUtil.createStockTransaction(buyOrder, buyingStocks, sellingPrice, buyerWalletTX.getWalletTXId(), sellOrder.getOrderType());
-            }else if(buyOrder.getWalletTXid() == null)
-            {
-                buyOrder.setWalletTXid(buyerWalletTX.getWalletTXId());
             }
 
             //update status
@@ -212,9 +209,6 @@ public class MatchingEngineService {
             if(sellOrder.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED)
             {
                 matchingEngineUtil.createStockTransaction(sellOrder, sellingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), buyOrder.getOrderType());//create stock transaction
-            }else
-            {
-                sellOrder.setWalletTXid(sellerWalletTX.getWalletTXId());
             }
             matchingEngineUtil.createStockTransaction(sellOrder, sellingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), buyOrder.getOrderType());
             sellOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);
