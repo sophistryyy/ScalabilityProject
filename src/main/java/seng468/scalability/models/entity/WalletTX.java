@@ -1,7 +1,6 @@
 package seng468.scalability.models.entity;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -11,17 +10,15 @@ import jakarta.persistence.Table;
 @Table(name = "`Wallet Transactions`")
 public class WalletTX {
     @Id
-    private long walletTXId;
-    private String username;
+    private Integer walletTXId;
     private long stockTXId;
     private boolean isDebit;
     private int amount;
     private LocalDateTime timestamp;
 
 
-    public WalletTX(long walletTXId, String username, long stockTXId, boolean isDebit, int amount) {
+    public WalletTX(Integer walletTXId, long stockTXId, boolean isDebit, int amount) {
         this.walletTXId = walletTXId;
-        this.username = username;
         this.stockTXId = stockTXId;
         this.isDebit = isDebit;
         this.amount = amount;
@@ -32,12 +29,8 @@ public class WalletTX {
 
     }
 
-    public long getWalletTXId() {
+    public Integer getWalletTXId() {
         return this.walletTXId;
-    }
-
-    public String getUsername() {
-        return this.username;
     }
 
     public long getStockTXId() {
