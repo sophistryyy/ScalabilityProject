@@ -27,9 +27,9 @@ public class RegisterController {
 
         try {
             userService.saveUser(user);
-            walletRepository.save(new Wallet(req.getUsername()));
+            walletRepository.saveNewWallet(new Wallet(req.getUsername()));
             return Response.ok(null);
-        } catch (UsernameExistsException e) {
+        } catch (Exception e) {
             return Response.error(e.getMessage());
         }
     }
