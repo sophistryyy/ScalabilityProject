@@ -126,7 +126,6 @@ public class MatchingEngineService {
             WalletTX buyerWalletTX = new WalletTX(buyOrder.getUsername(), buyOrder.getStock_tx_id(), true, toDeduct);
             buyOrder.setWalletTXid(buyerWalletTX.getWalletTXId());
             walletTXRepository.saveNewWalletTX(buyerWalletTX);
-
         }
 
 
@@ -190,10 +189,8 @@ public class MatchingEngineService {
                 matchingEngineUtil.createStockTransaction(buyOrder, buyingStocks, sellingPrice, buyerWalletTX.getWalletTXId(), sellOrder.getOrderType());
             }else if(buyOrder.getWalletTXid() == null)
             {
-                walletTXRepository.saveNewWalletTX(buyerWalletTX);
                 buyOrder.setWalletTXid(buyerWalletTX.getWalletTXId());
             }
-
 
             //update status
             buyOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);//set previously PARTIAL FULFILLED or IN_PROGRESS to completed (original parent!)
@@ -232,7 +229,6 @@ public class MatchingEngineService {
                 matchingEngineUtil.createStockTransaction(buyOrder, buyingStocks, sellingPrice, buyerWalletTX.getWalletTXId(), sellOrder.getOrderType());
             }else if(buyOrder.getWalletTXid() == null)
             {
-                walletTXRepository.saveNewWalletTX(buyerWalletTX);
                 buyOrder.setWalletTXid(buyerWalletTX.getWalletTXId());
             }
 
@@ -246,6 +242,7 @@ public class MatchingEngineService {
             }
             orderBook.popBuyOrder();
         }
+
         try_matching(orderBook);
 
     }

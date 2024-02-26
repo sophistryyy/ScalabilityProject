@@ -143,7 +143,7 @@ public class MatchingEngineUtil {
         }
 
         completedSellStockOrder.setWalletTXid(walletTXid);
-        
+
         order.setOrderType(orderType);
         matchingEngineOrdersRepository.save(completedSellStockOrder);
 
