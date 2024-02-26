@@ -52,7 +52,7 @@ public class CancelStockOrder {
                     matchingEngineUtil.saveToPortfolio(foundOrder, foundOrder.getTrueRemainingQuantity());
                 } else//sell order
                 {
-                    matchingEngineUtil.returnMoney(foundOrder.getStock_tx_id(), foundOrder.getUsername(), 0);//change from 0
+                    matchingEngineUtil.returnMoney(foundOrder.getStock_tx_id(), foundOrder.getUsername(), 0);//change from 0, add logic to handle this
                 }
             } else {
                 return Response.error("Can't cancel this order. It's either completed or expired");
