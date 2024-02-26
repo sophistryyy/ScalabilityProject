@@ -27,4 +27,6 @@ public interface MatchingEngineOrdersRepository extends JpaRepository<StockOrder
     List<StockOrder> findAllByUsername(String username);
 
 
+    @Query("SELECT so from StockOrder so where so.stock_tx_id = ?1 AND so.username = ?2")
+    StockOrder findAllByUsernameAndStockTxId(Integer stockTxId, String username);
 }

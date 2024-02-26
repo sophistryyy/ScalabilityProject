@@ -37,10 +37,10 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests((authorize) -> authorize
                 .requestMatchers("/greeting").authenticated()
-                //.requestMatchers("/createStock").authenticated()
-                //.requestMatchers("/addStockToUser").authenticated()
-                //.requestMatchers("/placeStockOrder").authenticated()
-                //.requestMatchers("/getStockTransactions").authenticated()
+                .requestMatchers("/createStock").authenticated()
+                .requestMatchers("/addStockToUser").authenticated()
+                .requestMatchers("/placeStockOrder").authenticated()
+                .requestMatchers("/getStockTransactions").authenticated()
                 .anyRequest().permitAll()
         )
         .exceptionHandling(exception -> 
