@@ -1,14 +1,15 @@
 package seng468.scalability.matchingEngine;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
-import seng468.scalability.models.entity.PortfolioEntry;
-import seng468.scalability.models.entity.StockOrder;
-import seng468.scalability.models.entity.Wallet;
+import seng468.scalability.models.entity.*;
 import seng468.scalability.repositories.PortfolioRepository;
 import seng468.scalability.repositories.StockRepository;
 import seng468.scalability.repositories.WalletRepository;
 import seng468.scalability.repositories.WalletTXRepository;
+
+import java.util.*;
 
 @Component
 public class MatchingEngineUtil {
@@ -63,4 +64,33 @@ public class MatchingEngineUtil {
             matchingEngineOrdersRepository.save(completedSellStockOrder);
         }
     }
+
+    public List<StockPrices> getBestPrices()
+    {
+        List<StockPrices> stockPriceLst = new ArrayList<>();
+        List<Stock> lstOfStocks= stockRepository.findAll();
+
+        for(Stock stock : lstOfStocks)
+        {
+            LinkedList<StockOrder> lowestSellOrder = matchingEngineOrdersRepository.getLowestSellOrderByStockId(stock.getId(), PageRequest.of(0, 1));
+            if(lowestSellOrder.peek() != null) {
+                Integer price = lowestSellOrder.peek().getPrice();
+                StockPrices stockPrice = new StockPrices(stock, price);
+                stockPriceLst.add(stockPrice);
+            }
+        }
+        return stockPriceLst;
+    }
+
+    public Integer getBestPriceByStockId(int stock_id)
+    {
+        LinkedList<StockOrder> lowestSellOrder = matchingEngineOrdersRepository.getLowestSellOrderByStockId(stock_id, PageRequest.of(0, 1));
+        if(lowestSellOrder.peek() == null)
+        {
+            return null;
+        }
+        return lowestSellOrder.peek().getPrice();
+    }
+
+
 }
