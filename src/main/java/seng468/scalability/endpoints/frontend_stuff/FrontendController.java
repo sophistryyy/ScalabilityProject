@@ -3,15 +3,34 @@ package seng468.scalability.endpoints.frontend_stuff;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+import jakarta.servlet.http.HttpServletResponse;
+import seng468.scalability.models.response.Response;
+
+import java.io.IOException;
+
+
+@RestController
 public class FrontendController {
 
     @GetMapping("/login-ui")
-    public String loginUI() {
-        // Redirects to the static login.html page inside /static/frontend/
-        return "src/main/resources/static/frontend/login.html";
+    public void redirectToLogin(HttpServletResponse response) throws IOException {
+        response.sendRedirect("/frontend/login.html");
     }
 
-    // Add more mappings here as needed for other pages
-}
+    
+    @GetMapping("/register-ui")
+    public void redirectToRegister(HttpServletResponse response) throws IOException {
+        response.sendRedirect("/frontend/register.html");
+    }
+
+    @GetMapping("/dashboard-ui")
+    public void redirectToDashboard(HttpServletResponse response) throws IOException {
+        response.sendRedirect("/frontend/dashboard.html");
+    }
+        
+        
+    }
