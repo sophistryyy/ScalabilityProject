@@ -11,13 +11,15 @@ import jakarta.persistence.Table;
 public class WalletTX {
     @Id
     private long walletTXId;
+    private String username;
     private long stockTXId;
     private boolean isDebit;
     private int amount;
     private String timestamp;
 
-    public WalletTX(long walletTXId, long stockTXId, boolean isDebit, int amount) {
+    public WalletTX(long walletTXId, String username, long stockTXId, boolean isDebit, int amount) {
         this.walletTXId = walletTXId;
+        this.username = username;
         this.stockTXId = stockTXId;
         this.isDebit = isDebit;
         this.amount = amount;
@@ -26,6 +28,10 @@ public class WalletTX {
 
     public long getWalletTXId() {
         return this.walletTXId;
+    }
+
+    public String getUsername() {
+        return this.username;
     }
 
     public long getStockTXId() {
