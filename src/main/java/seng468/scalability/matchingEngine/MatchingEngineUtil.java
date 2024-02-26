@@ -144,7 +144,7 @@ public class MatchingEngineUtil {
 
         completedSellStockOrder.setWalletTXid(walletTXid);
 
-        order.setOrderType(orderType);
+        completedSellStockOrder.setOrderType(orderType);
         matchingEngineOrdersRepository.save(completedSellStockOrder);
 
     }

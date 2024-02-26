@@ -69,7 +69,6 @@ public class StockOrder {
     }
 
     public StockOrder createCopy(Integer newQuantity, OrderStatus orderStatus) {
-        //if orderStatus is null then it's a OrderStatus.IN_PROGRESS_FROM_PARTIAL
         StockOrder copy = new StockOrder();
         copy.parent_stock_tx_id = this.parent_stock_tx_id == null ? this.stock_tx_id : this.parent_stock_tx_id; //reference true parent
         copy.stock_id = this.stock_id;
