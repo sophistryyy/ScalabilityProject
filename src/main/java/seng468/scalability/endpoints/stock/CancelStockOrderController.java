@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import seng468.scalability.matchingEngine.MatchingEngineOrdersRepository;
 import seng468.scalability.matchingEngine.MatchingEngineUtil;
-import seng468.scalability.models.entity.PortfolioEntry;
 import seng468.scalability.models.entity.StockOrder;
 import seng468.scalability.models.request.CancelOrderRequest;
 import seng468.scalability.models.response.Response;
@@ -17,15 +16,15 @@ import seng468.scalability.repositories.WalletRepository;
 
 @RestController
 @RequestMapping(path = "cancelStockTransaction")
-public class CancelStockOrder {
+public class CancelStockOrderController {
 
     private final MatchingEngineOrdersRepository matchingEngineOrdersRepository;
     private final WalletRepository walletRepository;
     private final PortfolioRepository portfolioRepository;
     private final MatchingEngineUtil matchingEngineUtil;
     @Autowired
-    public CancelStockOrder(MatchingEngineOrdersRepository matchingEngineOrdersRepository, WalletRepository walletRepository,
-                            PortfolioRepository portfolioRepository, MatchingEngineUtil matchingEngineUtil)
+    public CancelStockOrderController(MatchingEngineOrdersRepository matchingEngineOrdersRepository, WalletRepository walletRepository,
+                                      PortfolioRepository portfolioRepository, MatchingEngineUtil matchingEngineUtil)
     {
         this.matchingEngineUtil = matchingEngineUtil;
         this.matchingEngineOrdersRepository = matchingEngineOrdersRepository;
