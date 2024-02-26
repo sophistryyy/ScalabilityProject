@@ -2,14 +2,20 @@ package seng468.scalability.models.entity;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "`Wallet Transactions`")
 public class WalletTX {
     @Id
+    @SequenceGenerator(
+            name = "walletTX_sequence",
+            sequenceName = "walletTX_sequence"
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "walletTX_sequence"
+    )
     private Integer walletTXId;
     private long stockTXId;
     private boolean isDebit;
@@ -17,8 +23,8 @@ public class WalletTX {
     private LocalDateTime timestamp;
 
 
-    public WalletTX(Integer walletTXId, long stockTXId, boolean isDebit, int amount) {
-        this.walletTXId = walletTXId;
+    public WalletTX(Integer stockTXId, boolean isDebit, int amount) {
+
         this.stockTXId = stockTXId;
         this.isDebit = isDebit;
         this.amount = amount;
