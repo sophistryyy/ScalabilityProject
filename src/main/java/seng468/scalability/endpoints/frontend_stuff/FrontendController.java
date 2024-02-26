@@ -31,6 +31,11 @@ public class FrontendController {
     public void redirectToDashboard(HttpServletResponse response) throws IOException {
         response.sendRedirect("/frontend/dashboard.html");
     }
+
+    @GetMapping("/AddStock-ui")
+    public void redirectToAddStock(HttpServletResponse response) throws IOException {
+        response.sendRedirect("/frontend/AddStock.html");
+    }
         
         
     }

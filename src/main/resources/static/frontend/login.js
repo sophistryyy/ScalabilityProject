@@ -26,10 +26,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json(); // Parse the JSON of the response
         })
         .then(data => {
-            if (data.success === true) {
+           // if (data.success === true) {
+            if (data.success === true && data.data && data.data.token){
                 // If the response contains success: "true", handle successful login
-                alert('Login successful!');
-                window.location.href = '/frontend/dashboard.html'; // Redirect user to the dashboard or another page
+                const token = data.data.token;
+                localStorage.setItem('token', data.data.token);
+                console.log('JWT Token:', token);
+                alert('Login successful!' + token);
+                window.location.href = '/frontend/AddStock.html'; // Redirect user to the dashboard or another page
             } else {
                 // If the success property does not equal "true", show an error message
                 throw new Error(data.message || 'Login failed. Please try again.');

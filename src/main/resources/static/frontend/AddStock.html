@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Stock</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-5">Create New Stock</h2>
+        <form id="createStockForm">
+            <div class="form-group">
+                <label for="stockName">Stock Name:</label>
+                <input type="text" class="form-control" id="stockName" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Stock</button>
+        </form>
+
+        <h2 class="mt-5">Add Stock to Your Portfolio</h2>
+        <form id="addStockToUserForm">
+            <div class="form-group">
+                <label for="stockId">Stock ID:</label>
+                <input type="number" class="form-control" id="stockId" required>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" class="form-control" id="quantity" required>
+            </div>
+            <button type="submit" class="btn btn-success">Add Stock to Portfolio</button>
+        </form>
+    </div>
+
+    <script src="AddStock.js"></script>
+</body>
+</html>
