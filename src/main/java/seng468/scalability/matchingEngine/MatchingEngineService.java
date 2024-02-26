@@ -1,13 +1,17 @@
 package seng468.scalability.matchingEngine;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import seng468.scalability.matchingEngine.specialReturnClass.IntOrError;
 import seng468.scalability.models.entity.PortfolioEntry;
 import seng468.scalability.models.entity.StockOrder;
+import seng468.scalability.models.entity.WalletTX;
 import seng468.scalability.models.request.PlaceStockOrderRequest;
 import seng468.scalability.repositories.PortfolioRepository;
 import seng468.scalability.repositories.StockRepository;
 import seng468.scalability.models.entity.Wallet;
 import seng468.scalability.repositories.WalletRepository;
+import seng468.scalability.repositories.WalletTXRepository;
 
 import java.util.*;
 
@@ -18,30 +22,34 @@ public class MatchingEngineService {
     private final PortfolioRepository portfolioRepository;
     private final WalletRepository walletRepository;
     private final StockRepository stockRepository;
+    private final WalletTXRepository walletTXRepository;
 
-    @Autowired
     private final MatchingEngineUtil matchingEngineUtil;
 
     @Autowired
-    public MatchingEngineService(MatchingEngineOrdersRepository repository, StockRepository stockRepository,
+    public MatchingEngineService(MatchingEngineOrdersRepository repository, StockRepository stockRepository,WalletTXRepository walletTXRepository,
                                  PortfolioRepository portfolioRepository, WalletRepository walletRepository, MatchingEngineUtil matchingEngineUtil){
         this.matchingEngineOrdersRepository = repository;
         this.portfolioRepository = portfolioRepository;
         this.walletRepository = walletRepository;
         this.stockRepository = stockRepository;
-
+        this.walletTXRepository = walletTXRepository;
         this.matchingEngineUtil = matchingEngineUtil;
     }
 
+    @Transactional
     public String placeOrder(PlaceStockOrderRequest req, String username)
     /*
     * If return type is String, error happened, otherwise null means success
     */ {
-        String message = basicVerifier(req);
+        String message = matchingEngineUtil.basicVerifier(req);
         if(message != null){return message;}
 
         StockOrder.OrderType orderType = StockOrder.OrderType.valueOf(req.getOrderType());
         StockOrder order = new StockOrder(req.getStock_id(), req.getIs_buy(), orderType, req.getQuantity(), req.getPrice(), username);
+        IntOrError verifier = matchingEngineUtil.verifyIfEnough(order);
+        if(verifier.getMessage() != null){return verifier.getMessage();}
+        order.setStock_tx_id(verifier.getWalletTXid());
         matchingEngineOrdersRepository.save(order);
 
         int req_stock_id = order.getStockId();
@@ -58,35 +66,17 @@ public class MatchingEngineService {
         return null;
     }
 
-    public String basicVerifier(PlaceStockOrderRequest req)
-    {
-        StockOrder.OrderType orderType;
-        try {
-            orderType = StockOrder.OrderType.valueOf(req.getOrderType());
-        } catch (Exception e) {
-            return "Incorrect value of order type";
-        }
-        if (orderType == StockOrder.OrderType.MARKET && req.getPrice() != null) {
-            return "MARKET orders can't have price, set it to null.";
-        }
-        if (orderType == StockOrder.OrderType.LIMIT) {
-            if(req.getPrice() == null && req.getPrice() <= 0) {
-                return "LIMIT orders' price has to be more than 0";
-            }
-        }
-        if(req.getQuantity() != null && req.getQuantity() <= 0){
-            return "Please set quantity to more than 0";
-        }
-        return null;
-    }
+
+    @Transactional
     public void try_matching(OrderBook orderBook)
-            /*
+        /*
             * Assumed: if limit order MONEY IS ALREADY DEDUCTED AND USER HAS ENOUGH
+            * MARKET order: money was not deducted!
             * case: user has market order but no money
             * */
 
     {
-        Integer priceBoughtFor;
+
         StockOrder buyOrder =  orderBook.getBuyHead();
         StockOrder sellOrder = orderBook.getSellHead();
 
@@ -98,96 +88,124 @@ public class MatchingEngineService {
             orderBook.popBuyOrder();
             orderBook.popSellOrder();
             try_matching(orderBook);
-            return; //not sure what to do
+            return; //not sure what to do, unhandked case
         }
-        if(buyOrder.getOrderType() != StockOrder.OrderType.MARKET) { //seller can be
-            if (!orderBook.isMatchPossible()) {
+        if(buyOrder.getOrderType() != StockOrder.OrderType.MARKET) {
+            if (!orderBook.isMatchPossible()) {//match isn't possible at all
                 return;
             } //buyer's price is guaranteed to be higher if limit
         }
-        int sellingPrice = sellOrder.getPrice() != null ? sellOrder.getPrice() : buyOrder.getPrice();
+        int sellingPrice = sellOrder.getPrice() != null ? sellOrder.getPrice() : buyOrder.getPrice(); //handle Market orders
         int sellingStocks = sellOrder.getTrueRemainingQuantity();
         //int buyingPrice = buyOrder.getPrice();
         int buyingStocks = buyOrder.getTrueRemainingQuantity();
 
+        Boolean isBuyOrderMarketOne = matchingEngineUtil.isOrderMarketOne(buyOrder);
+        Wallet buyerWallet = walletRepository.findByUsername(buyOrder.getUsername());
+        Wallet sellerWallet = walletRepository.findByUsername(sellOrder.getUsername());
+        //if market order need to check if any user enough money
+        if(isBuyOrderMarketOne) {//then sell is LIMIT
+
+            if (buyerWallet.getBalance() < sellingPrice) //user doesn't have enough even to buy 1
+            {                //buy order couldn't be matched, so do the rest
+                orderBook.popBuyOrder();
+                try_matching(orderBook);
+                return;
+            }
+            //buyer has enough money but maybe not enough to buy all stocks!
+            int buyerCanAffordQuantity = (int) Math.floor((double) buyerWallet.getBalance() / sellingPrice);
+            if(buyerCanAffordQuantity < buyingStocks)
+            {
+                buyingStocks = buyerCanAffordQuantity;
+            }
+            int toDeduct = sellingPrice * buyingStocks;
+            buyerWallet.decrementBalance(toDeduct); //might throw expcetion
+
+            WalletTX buyerWalletTX = new WalletTX(buyOrder.getUsername(), buyOrder.getStock_tx_id(), true, toDeduct);
+            walletTXRepository.saveNewWalletTX(buyerWalletTX);
+
+        }
+
+
         if(buyingStocks > sellingStocks) // user wants to buy more than top seller has
         {
-            //if market order need to check if any user enough money
-            if(matchingEngineUtil.isOrderMarketOne(buyOrder)) {//then sell is LIMIT
-                Wallet buyerWallet = walletRepository.findByUsername(buyOrder.getUsername());
-                if (buyerWallet.getBalance() < sellingPrice) //user doesn't have enough even to buy 1
-                {                //buy order couldn't be matched, so do the rest
-                    orderBook.popBuyOrder();
-                    try_matching(orderBook);
-                    return;
-                }
-                //buyer has enough money but maybe not enough to buy all stocks!
-                Integer userCanBuyQuantity = sellingPrice;
-            }
-            if(matchingEngineUtil.isOrderMarketOne(sellOrder))
-            {
-
-            }
             //SELL is completed
-            matchingEngineUtil.createStockTransaction(sellOrder, sellingStocks, -1);//create stock transaction
+            //create wallet transaction
+            WalletTX sellerWalletTX = new WalletTX(sellOrder.getUsername(),sellOrder.getStock_tx_id(), false, sellingPrice*sellingStocks);
+            walletTXRepository.saveNewWalletTX(sellerWalletTX);
+            //update status
+            matchingEngineUtil.createStockTransaction(sellOrder, sellingStocks, sellingPrice, sellerWalletTX.getWalletTXId());//create stock transaction
             sellOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);//set previously PARTIAL FULFILLED or IN_PROGRESS to completed
             sellOrder.setTrueRemainingQuantity(0);
-            Wallet sellerWallet = walletRepository.findByUsername(sellOrder.getUsername());
             sellerWallet.incrementBalance(sellingPrice * sellingStocks);//add money to seller based on trueRemaining quantity
-            //create wallet transaction
-
             orderBook.popSellOrder();
 
             //BUY is partially completed
+            //create wallet transaction for buyer
+            WalletTX buyerWalletTX = new WalletTX(buyOrder.getUsername(),buyOrder.getStock_tx_id(), true, sellingPrice*sellingStocks);
+            walletTXRepository.saveNewWalletTX(buyerWalletTX);
+            //update status
             buyOrder.setOrderStatus(StockOrder.OrderStatus.PARTIAL_FULFILLED);
-            matchingEngineUtil.createStockTransaction(buyOrder, sellingStocks, sellingPrice);// create a transaction with price bought for
+            matchingEngineUtil.createStockTransaction(buyOrder, sellingStocks, sellingPrice, buyerWalletTX.getWalletTXId());// create a transaction with price bought for
             buyOrder.setTrueRemainingQuantity(buyingStocks - sellingStocks);//still more to go
             //add stock to portfolio
+            if(buyOrder.getPrice() == null)
+            {
+                buyOrder.setPrice(sellingPrice);
+            }
             matchingEngineUtil.saveToPortfolio(buyOrder, sellingStocks);
-            //create wallet transaction for buyer
-
         }
         else if(buyingStocks < sellingStocks)//seller has more
         {
             //SELL is partially completed
-            sellOrder.setOrderStatus(StockOrder.OrderStatus.PARTIAL_FULFILLED);
-            matchingEngineUtil.createStockTransaction(sellOrder, buyingStocks, -1);
-            sellOrder.setTrueRemainingQuantity(sellingStocks - buyingStocks);//still more to go
-            Wallet sellerWallet = walletRepository.findByUsername(sellOrder.getUsername());
-            sellerWallet.incrementBalance(sellingPrice * buyingStocks);//add money to seller based on trueRemaining quantity
             //add wallet transaction
-
+            WalletTX sellerWalletTX = new WalletTX(sellOrder.getUsername(),sellOrder.getStock_tx_id(), false, sellingPrice*buyingStocks);
+            walletTXRepository.saveNewWalletTX(sellerWalletTX);
+            //update status
+            sellOrder.setOrderStatus(StockOrder.OrderStatus.PARTIAL_FULFILLED);
+            matchingEngineUtil.createStockTransaction(sellOrder, buyingStocks, sellingPrice, sellerWalletTX.getWalletTXId());//might have to change this number
+            sellOrder.setTrueRemainingQuantity(sellingStocks - buyingStocks);//still more to go
+            sellerWallet.incrementBalance(sellingPrice * buyingStocks);//add money to seller based on trueRemaining quantity
 
             //BUYER is complete
-            if(buyOrder.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED) //create child transaction since it was partially fulfilled before
-            {
-                StockOrder completedBuyerStockOrder = buyOrder.createCopy(buyingStocks, StockOrder.OrderStatus.COMPLETED);
-                matchingEngineOrdersRepository.save(completedBuyerStockOrder);
-            }
-            matchingEngineUtil.createStockTransaction(buyOrder, buyingStocks, sellingPrice);
+            WalletTX buyerWalletTX = new WalletTX(buyOrder.getUsername(),buyOrder.getStock_tx_id(), true, sellingPrice*buyingStocks);
+            walletTXRepository.saveNewWalletTX(buyerWalletTX);
+            //update status
+            matchingEngineUtil.createStockTransaction(buyOrder, buyingStocks, sellingPrice, buyerWalletTX.getWalletTXId());
             buyOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);//set previously PARTIAL FULFILLED or IN_PROGRESS to completed (original parent!)
             buyOrder.setTrueRemainingQuantity(0);
             //add stock to portfolio
+            if(buyOrder.getPrice() == null)
+            {
+               buyOrder.setPrice(sellingPrice);
+            }
             matchingEngineUtil.saveToPortfolio(buyOrder, buyingStocks);
             //create wallet transaction
-
             orderBook.popBuyOrder();
         }
         else{//seller stocks = buyer stocks quantity, no more to match
-            matchingEngineUtil.createStockTransaction(sellOrder, sellingStocks, -1);
+            //create wallet transaction
+            WalletTX sellerWalletTX = new WalletTX(sellOrder.getUsername(),sellOrder.getStock_tx_id(), false, sellingPrice*sellingStocks);
+            walletTXRepository.saveNewWalletTX(sellerWalletTX);
+            //update status
+            matchingEngineUtil.createStockTransaction(sellOrder, sellingStocks, sellingPrice, sellerWalletTX.getWalletTXId());
             sellOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);
             sellOrder.setTrueRemainingQuantity(0);
-            //create wallet transaction
-
             orderBook.popSellOrder();
 
-            matchingEngineUtil.createStockTransaction(buyOrder, buyingStocks, sellingPrice);
+            //create wallet transaction
+            WalletTX buyerWalletTX = new WalletTX(buyOrder.getUsername(),buyOrder.getStock_tx_id(), true, sellingPrice*buyingStocks);
+            walletTXRepository.saveNewWalletTX(buyerWalletTX);
+            //update status
+            matchingEngineUtil.createStockTransaction(buyOrder, buyingStocks, sellingPrice, buyerWalletTX.getWalletTXId());
             buyOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);
             buyOrder.setTrueRemainingQuantity(0);
             //save to portfolio
             matchingEngineUtil.saveToPortfolio(buyOrder, buyingStocks);
-            //create wallet transaction
-
+            if(buyOrder.getPrice() == null)
+            {
+                buyOrder.setPrice(sellingPrice);
+            }
             orderBook.popBuyOrder();
         }
         try_matching(orderBook);

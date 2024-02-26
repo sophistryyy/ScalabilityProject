@@ -4,7 +4,7 @@ import seng468.scalability.models.entity.StockOrder;
 
 public class IntOrError {
     private String message;
-    private Long walletTXid;
+    private Integer walletTXid;
 
     public IntOrError() {
         this.message = null;
@@ -19,11 +19,11 @@ public class IntOrError {
         this.message = message;
     }
 
-    public Long getWalletTXid() {
+    public Integer getWalletTXid() {
         return walletTXid;
     }
 
-    public void setWalletTXid(Long walletTXid) {
+    public void setWalletTXid(Integer walletTXid) {
         this.walletTXid = walletTXid;
     }
 }

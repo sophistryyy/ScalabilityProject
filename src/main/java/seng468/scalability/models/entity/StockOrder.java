@@ -48,6 +48,7 @@ public class StockOrder {
     private LocalDateTime timestamp;
     private OrderStatus orderStatus;
 
+    private Integer walletTXid;
     private Integer trueRemainingQuantity;
 
 
@@ -55,6 +56,7 @@ public class StockOrder {
 
     public StockOrder(int stock_id, boolean is_buy, OrderType orderType, Integer quantity, Integer price, String username) {
         this.parent_stock_tx_id = null;
+        this.walletTXid = null;
         this.stock_id = stock_id;
         this.is_buy = is_buy;
         this.orderType = orderType;
@@ -78,7 +80,13 @@ public class StockOrder {
         copy.timestamp = LocalDateTime.now();//original timestamp
         copy.orderStatus = orderStatus;
         copy.username = this.username;
+        copy.walletTXid = null; //for now
+        //add wallet
         return copy;
+    }
+
+    public Integer getWalletTXid() {
+        return walletTXid;
     }
 
     public String getUsername() {return username;}
@@ -143,6 +151,10 @@ public class StockOrder {
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public void setStock_tx_id(Integer stock_tx_id) {
+        this.stock_tx_id = stock_tx_id;
     }
 
     @Override
