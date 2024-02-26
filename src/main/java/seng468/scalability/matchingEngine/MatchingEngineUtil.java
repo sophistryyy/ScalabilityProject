@@ -1,8 +1,10 @@
 package seng468.scalability.matchingEngine;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+import seng468.scalability.matchingEngine.specialReturnClass.IntOrError;
 import seng468.scalability.models.entity.*;
 import seng468.scalability.models.request.PlaceStockOrderRequest;
 import seng468.scalability.repositories.PortfolioRepository;
@@ -31,17 +33,21 @@ public class MatchingEngineUtil {
 
     }
 
-    public String verifyIfEnough(StockOrder order)
+
+    public IntOrError verifyIfEnough(StockOrder order)
     {
         int stockId = order.getStockId();
-        if(order.getIs_buy()) {//for buyer remove
+        IntOrError completedOrError = new IntOrError();
+        if(!order.getIs_buy()) {//for buyer remove
             PortfolioEntry portfolioEntry = portfolioRepository.findEntryByStockIdAndUsername(stockId, order.getUsername());
             if (portfolioEntry == null) {
-                return "User doesn't have the following stock in portfolio: " + stockId;
+                completedOrError.setMessage("User doesn't have the following stock in portfolio: " + stockId);
+                return completedOrError;
             }
             String errorMessage = removeQuantityFromPortfolio(portfolioEntry, order.getQuantity());
             if (errorMessage != null) {
-                return errorMessage;
+                completedOrError.setMessage(errorMessage);
+                return completedOrError;
             }
         }else{
             Wallet wallet = walletRepository.findByUsername(order.getUsername());
@@ -52,22 +58,29 @@ public class MatchingEngineUtil {
                     wallet.decrementBalance(toDeduct);
                 }catch(Exception e)
                 {
-                    return "User doesn't have enough money to cover this stock. Current balance is " + wallet.getBalance();
+                    completedOrError.setMessage("User doesn't have enough money to cover this stock. Current balance is " + wallet.getBalance());
+                    return completedOrError;
                 }
                 //create wallet transaction
-                WalletTX walletTX = new WalletTX(order.getStock_tx_id(), true, toDeduct);
-
+                WalletTX walletTX = new WalletTX(order.getUsername(),order.getStock_tx_id(), true, toDeduct);
                 try{
+                    if(true){
+                        completedOrError.setMessage(walletTX.getWalletTXId() + " ");
+                        return completedOrError;
+                    }
                     walletTXRepository.saveNewWalletTX(walletTX);
+                    completedOrError.setWalletTXid(walletTX.getWalletTXId());
                 }catch(Exception e)
                 {
-                    return e.getMessage();
+                    completedOrError.setMessage(e.getMessage());
+                    return completedOrError;
                 }
             }
         }
 
-        return null;
+        return completedOrError;
     }
+
 
     public String basicVerifier(PlaceStockOrderRequest req)
     {
@@ -91,6 +104,7 @@ public class MatchingEngineUtil {
         return null;
     }
 
+
     public Boolean isOrderMarketOne(StockOrder order)
     {
         return order.getOrderType() == StockOrder.OrderType.MARKET;
@@ -102,7 +116,9 @@ public class MatchingEngineUtil {
         //return money
         Wallet wallet = walletRepository.findByUsername(username);
         wallet.incrementBalance(balance);
+
     }
+
 
     public void saveToPortfolio(StockOrder buyOrder, Integer buyingStocks)
     {
@@ -116,12 +132,17 @@ public class MatchingEngineUtil {
         portfolioRepository.save(buyerPortfolioByStockId);
     }
 
-    public void createStockTransaction(StockOrder order, Integer remainingStocks, Integer priceBoughtFor){
+
+    public void createStockTransaction(StockOrder order, Integer remainingStocks, Integer priceBoughtFor, Integer walletTXid){
         if(order.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED) //create child transaction
         {
             StockOrder completedSellStockOrder = order.createCopy(remainingStocks, StockOrder.OrderStatus.COMPLETED);
             if(priceBoughtFor > 0){
                 completedSellStockOrder.setPrice(priceBoughtFor);
+            }
+            if(order.getWalletTXid() != null)
+            {
+                completedSellStockOrder.setStock_tx_id(walletTXid);
             }
             matchingEngineOrdersRepository.save(completedSellStockOrder);
         }
@@ -144,6 +165,7 @@ public class MatchingEngineUtil {
         return stockPriceLst;
     }
 
+    @Transactional
     public Integer getBestPriceByStockId(int stock_id)
     {
         LinkedList<StockOrder> lowestSellOrder = matchingEngineOrdersRepository.getLowestSellOrderByStockId(stock_id, PageRequest.of(0, 1));
@@ -168,6 +190,8 @@ public class MatchingEngineUtil {
         }
         return null;
     }
+
+
 
 
 }

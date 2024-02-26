@@ -17,14 +17,15 @@ public class WalletTX {
             generator = "walletTX_sequence"
     )
     private Integer walletTXId;
+    private String username;
     private long stockTXId;
     private boolean isDebit;
     private int amount;
     private LocalDateTime timestamp;
 
 
-    public WalletTX(Integer stockTXId, boolean isDebit, int amount) {
-
+    public WalletTX(String username, Integer stockTXId, boolean isDebit, int amount) {
+        this.username = username;
         this.stockTXId = stockTXId;
         this.isDebit = isDebit;
         this.amount = amount;

@@ -1,6 +1,7 @@
 package seng468.scalability.endpoints.stock;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,12 +34,12 @@ public class GetStockPricesController {
         this.matchingEngineUtil = matchingEngineUtil;
     }
 
-    @PostMapping
+    @GetMapping
     public Response getStockPricesPost()
     {
         List<StockPrices> lstOfPrices = matchingEngineUtil.getBestPrices();
         List<Map<String, Object>> data = formatData(lstOfPrices);
-        return Response.ok(lstOfPrices);
+        return Response.ok(data);
     }
     private List<Map<String, Object>> formatData(List<StockPrices> entries) {
         List<Map<String, Object>> data = new LinkedList<>();

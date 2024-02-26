@@ -25,11 +25,19 @@ public class Wallet {
         this.balance = this.balance + amount;
     }
 
+    /*
     public void decrementBalance(Integer amount) throws Exception {
         if (amount > balance) {
             throw new Exception("Insufficient Balance");
         }
 
         this.balance = this.balance - amount;
+    }*/
+
+    public void decrementBalance(Integer amount){
+        if (amount <= balance) {
+            this.balance = this.balance - amount;
+        }
+
     }
 }
