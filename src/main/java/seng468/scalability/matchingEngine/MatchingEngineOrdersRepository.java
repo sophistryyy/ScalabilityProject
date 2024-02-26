@@ -15,11 +15,11 @@ public interface MatchingEngineOrdersRepository extends JpaRepository<StockOrder
 
 
     @Query("SELECT so FROM StockOrder so WHERE so.stock_id = ?1 AND so.orderStatus != seng468.scalability.models.entity.StockOrder$OrderStatus.COMPLETED" +
-            " AND so.orderStatus != seng468.scalability.models.entity.StockOrder$OrderStatus.EXPIRED AND so.is_buy = false ORDER BY so.price ASC , so.timestamp ASC")
+            " AND so.orderStatus != seng468.scalability.models.entity.StockOrder$OrderStatus.EXPIRED AND so.is_buy = false ORDER BY so.price ASC NULLS FIRST, so.timestamp ASC")
     LinkedList<StockOrder> getAllSellByStock_id(int stock_id);
 
     @Query("SELECT so FROM StockOrder so WHERE so.stock_id = ?1 AND so.orderStatus != seng468.scalability.models.entity.StockOrder$OrderStatus.COMPLETED " +
-            "AND so.orderStatus != seng468.scalability.models.entity.StockOrder$OrderStatus.EXPIRED AND so.is_buy = true ORDER BY so.price DESC , so.timestamp ASC")
+            "AND so.orderStatus != seng468.scalability.models.entity.StockOrder$OrderStatus.EXPIRED AND so.is_buy = true ORDER BY so.price DESC NULLS FIRST, so.timestamp ASC")
     LinkedList<StockOrder> getAllBuyByStock_id(int stock_id);
 
     @Query("SELECT so from StockOrder so WHERE so.username = ?1 AND so.orderStatus != seng468.scalability.models.entity.StockOrder$OrderStatus.EXPIRED "

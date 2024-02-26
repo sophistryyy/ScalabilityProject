@@ -11,7 +11,7 @@ public interface StockRepository extends JpaRepository<Stock, Integer> {
     public Boolean existsByName(String name);
     public Boolean existsById(int id);
 
-    @Query("SELECT s.name from Stock s where s.id = ?1 LIMIT 1")
+    @Query("SELECT s.name from Stock s where s.id = ?1")
     public String findStockNameById(int id);
     @Override
     public <S extends Stock> S save(S entity);
