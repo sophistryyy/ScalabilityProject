@@ -1,5 +1,6 @@
 package seng468.scalability.matchingEngine;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -29,4 +30,10 @@ public interface MatchingEngineOrdersRepository extends JpaRepository<StockOrder
 
     @Query("SELECT so from StockOrder so where so.stock_tx_id = ?1 AND so.username = ?2")
     StockOrder findAllByUsernameAndStockTxId(Integer stockTxId, String username);
+
+    @Query("SELECT so FROM StockOrder so WHERE so.stock_id = ?1 AND so.orderStatus != seng468.scalability.models.entity.StockOrder$OrderStatus.COMPLETED" +
+            " AND so.price is not null" +
+            " AND so.orderStatus != seng468.scalability.models.entity.StockOrder$OrderStatus.EXPIRED AND so.is_buy = false ORDER BY so.price ASC")
+    LinkedList<StockOrder> getLowestSellOrderByStockId(int stock_id, Pageable pageable);
+
 }

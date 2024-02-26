@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import seng468.scalability.models.entity.*;
+import seng468.scalability.models.request.PlaceStockOrderRequest;
 import seng468.scalability.repositories.PortfolioRepository;
 import seng468.scalability.repositories.StockRepository;
 import seng468.scalability.repositories.WalletRepository;
@@ -29,6 +30,67 @@ public class MatchingEngineUtil {
         this.walletTXRepository = walletTXRepository;
 
     }
+
+    public String verifyIfEnough(StockOrder order)
+    {
+        int stockId = order.getStockId();
+        if(order.getIs_buy()) {//for buyer remove
+            PortfolioEntry portfolioEntry = portfolioRepository.findEntryByStockIdAndUsername(stockId, order.getUsername());
+            if (portfolioEntry == null) {
+                return "User doesn't have the following stock in portfolio: " + stockId;
+            }
+            String errorMessage = removeQuantityFromPortfolio(portfolioEntry, order.getQuantity());
+            if (errorMessage != null) {
+                return errorMessage;
+            }
+        }else{
+            Wallet wallet = walletRepository.findByUsername(order.getUsername());
+            if(order.getOrderType() == StockOrder.OrderType.LIMIT)
+            {
+                int toDeduct = order.getPrice() * order.getQuantity();
+                try {
+                    wallet.decrementBalance(toDeduct);
+                }catch(Exception e)
+                {
+                    return "User doesn't have enough money to cover this stock. Current balance is " + wallet.getBalance();
+                }
+                //create wallet transaction
+                WalletTX walletTX = new WalletTX(order.getStock_tx_id(), true, toDeduct);
+
+                try{
+                    walletTXRepository.saveNewWalletTX(walletTX);
+                }catch(Exception e)
+                {
+                    return e.getMessage();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public String basicVerifier(PlaceStockOrderRequest req)
+    {
+        StockOrder.OrderType orderType;
+        try {
+            orderType = StockOrder.OrderType.valueOf(req.getOrderType());
+        } catch (Exception e) {
+            return "Incorrect value of order type";
+        }
+        if (orderType == StockOrder.OrderType.MARKET && req.getPrice() != null) {
+            return "MARKET orders can't have price, set it to null.";
+        }
+        if (orderType == StockOrder.OrderType.LIMIT) {
+            if(req.getPrice() == null && req.getPrice() <= 0) {
+                return "LIMIT orders' price has to be more than 0";
+            }
+        }
+        if(req.getQuantity() != null && req.getQuantity() <= 0){
+            return "Please set quantity to more than 0";
+        }
+        return null;
+    }
+
     public Boolean isOrderMarketOne(StockOrder order)
     {
         return order.getOrderType() == StockOrder.OrderType.MARKET;
@@ -90,6 +152,21 @@ public class MatchingEngineUtil {
             return null;
         }
         return lowestSellOrder.peek().getPrice();
+    }
+
+    public String removeQuantityFromPortfolio(PortfolioEntry portfolioEntry, Integer quantity)
+    {
+        try {
+            portfolioEntry.removeQuantity(quantity);
+            if(portfolioEntry.getQuantity() == 0) //if quantity is 0 remove it from portfolio
+            {
+                portfolioRepository.deleteByStockId(portfolioEntry.getStockId());
+            }
+        }catch(Exception e)
+        {
+            return e.getMessage();
+        }
+        return null;
     }
 
 

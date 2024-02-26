@@ -3,11 +3,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import seng468.scalability.models.entity.PortfolioEntry;
 import seng468.scalability.models.entity.StockOrder;
+import seng468.scalability.models.entity.WalletTX;
 import seng468.scalability.models.request.PlaceStockOrderRequest;
 import seng468.scalability.repositories.PortfolioRepository;
 import seng468.scalability.repositories.StockRepository;
 import seng468.scalability.models.entity.Wallet;
 import seng468.scalability.repositories.WalletRepository;
+import seng468.scalability.repositories.WalletTXRepository;
 
 import java.util.*;
 
@@ -18,18 +20,18 @@ public class MatchingEngineService {
     private final PortfolioRepository portfolioRepository;
     private final WalletRepository walletRepository;
     private final StockRepository stockRepository;
+    private final WalletTXRepository walletTXRepository;
 
-    @Autowired
     private final MatchingEngineUtil matchingEngineUtil;
 
     @Autowired
-    public MatchingEngineService(MatchingEngineOrdersRepository repository, StockRepository stockRepository,
+    public MatchingEngineService(MatchingEngineOrdersRepository repository, StockRepository stockRepository,WalletTXRepository walletTXRepository,
                                  PortfolioRepository portfolioRepository, WalletRepository walletRepository, MatchingEngineUtil matchingEngineUtil){
         this.matchingEngineOrdersRepository = repository;
         this.portfolioRepository = portfolioRepository;
         this.walletRepository = walletRepository;
         this.stockRepository = stockRepository;
-
+        this.walletTXRepository = walletTXRepository;
         this.matchingEngineUtil = matchingEngineUtil;
     }
 
@@ -37,11 +39,13 @@ public class MatchingEngineService {
     /*
     * If return type is String, error happened, otherwise null means success
     */ {
-        String message = basicVerifier(req);
+        String message = matchingEngineUtil.basicVerifier(req);
         if(message != null){return message;}
 
         StockOrder.OrderType orderType = StockOrder.OrderType.valueOf(req.getOrderType());
         StockOrder order = new StockOrder(req.getStock_id(), req.getIs_buy(), orderType, req.getQuantity(), req.getPrice(), username);
+        message = matchingEngineUtil.verifyIfEnough(order);
+        if(message != null){return message;}
         matchingEngineOrdersRepository.save(order);
 
         int req_stock_id = order.getStockId();
@@ -58,30 +62,11 @@ public class MatchingEngineService {
         return null;
     }
 
-    public String basicVerifier(PlaceStockOrderRequest req)
-    {
-        StockOrder.OrderType orderType;
-        try {
-            orderType = StockOrder.OrderType.valueOf(req.getOrderType());
-        } catch (Exception e) {
-            return "Incorrect value of order type";
-        }
-        if (orderType == StockOrder.OrderType.MARKET && req.getPrice() != null) {
-            return "MARKET orders can't have price, set it to null.";
-        }
-        if (orderType == StockOrder.OrderType.LIMIT) {
-            if(req.getPrice() == null && req.getPrice() <= 0) {
-                return "LIMIT orders' price has to be more than 0";
-            }
-        }
-        if(req.getQuantity() != null && req.getQuantity() <= 0){
-            return "Please set quantity to more than 0";
-        }
-        return null;
-    }
+
     public void try_matching(OrderBook orderBook)
             /*
             * Assumed: if limit order MONEY IS ALREADY DEDUCTED AND USER HAS ENOUGH
+            * MARKET order: money was not deducted!
             * case: user has market order but no money
             * */
 
