@@ -32,7 +32,6 @@ public class PlaceStockOrderController {
             if (!stockRepository.existsById(stock_id)) {return Response.error("Invalid stock");}
 
             String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-
             // Check if the user has enough of that stock (use Wallet)
             //remove the stock amount from StockPorfolio
 

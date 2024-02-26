@@ -23,8 +23,12 @@ public class OrderBook {
 
         if(buyOrder == null || sellOrder == null){return false;}// one the queues are empty, so can't match
 
-        if(buyOrder.getOrderType() != StockOrder.OrderType.MARKET && sellOrder.getOrderType() != StockOrder.OrderType.MARKET) //error handling, don't want to match null price
+        if(buyOrder.getOrderType() == StockOrder.OrderType.LIMIT ) //error handling, don't want to match null price
         {
+            if(sellOrder.getOrderType() == StockOrder.OrderType.MARKET)
+            {
+                return true; //seller doesn't care what price it's sold
+            }
             int sellingPrice = sellOrder.getPrice();
             int buyingPrice = buyOrder.getPrice();
 

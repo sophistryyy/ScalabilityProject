@@ -157,6 +157,7 @@ public class StockOrder {
                 ", price=" + price +
                 ", timestamp=" + timestamp +
                 ", orderStatus=" + (orderStatus != null ? orderStatus.toString() : "") +
+                ", TEST=username " + username +
                 "}";
     }
 
