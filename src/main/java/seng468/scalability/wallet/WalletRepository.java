@@ -13,7 +13,7 @@ public interface WalletRepository extends JpaRepository<Wallet, String> {
 
     default void saveNewWallet(Wallet wallet) throws Exception {
         if (existsById(wallet.getUsername())) {
-            throw new Exception("Wallet Transaction Already Exists");
+            throw new Exception("Wallet for User Already Exists");
         }
         this.save(wallet);
     }
