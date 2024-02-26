@@ -14,7 +14,7 @@ import seng468.scalability.repositories.PortfolioRepository;
 import seng468.scalability.repositories.StockRepository;
 
 @RestController
-public class AddStockToUser {
+public class AddStockToUserController {
     
     @Autowired
     StockRepository stockRepository;

@@ -8,17 +8,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import seng468.scalability.models.entity.User;
+import seng468.scalability.models.entity.Wallet;
 import seng468.scalability.models.exceptions.UsernameExistsException;
 import seng468.scalability.repositories.UserRepository;
+import seng468.scalability.repositories.WalletRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private UserRepository userRespository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository){
-        this.userRespository = userRepository;
-    }
+    private UserRepository userRespository;
 
     // Used by UserDetailsService to compare JWT user and a possible DB Repository user
     @Override
