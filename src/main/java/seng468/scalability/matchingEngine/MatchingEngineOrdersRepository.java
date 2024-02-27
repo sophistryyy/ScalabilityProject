@@ -1,5 +1,6 @@
 package seng468.scalability.matchingEngine;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +14,13 @@ import java.util.Optional;
 
 @Repository
 public interface MatchingEngineOrdersRepository extends JpaRepository<StockOrder, Integer> {
+
+
+
+    @Query("DELETE FROM StockOrder so WHERE so.stock_tx_id = ?1")
+    void deleteByStock_tx_id(Integer stock_tx_id);
+
+
 
 
     @Query("SELECT so FROM StockOrder so WHERE so.stock_id = ?1 AND so.orderStatus != seng468.scalability.models.entity.StockOrder$OrderStatus.COMPLETED" +

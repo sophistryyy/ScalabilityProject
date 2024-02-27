@@ -137,7 +137,8 @@ public class MatchingEngineService {
             if(sellOrder.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED) {
                 walletTXRepository.saveNewWalletTX(sellerWalletTX);
                 //update status
-                matchingEngineUtil.createStockTransaction(sellOrder, sellingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), buyOrder.getOrderType());//create stock transaction
+                Integer newStockTxId = matchingEngineUtil.createStockTransaction(sellOrder, sellingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), buyOrder.getOrderType());//create stock transaction
+                sellerWalletTX.setStockTXId(newStockTxId);
             }else //in progress MArket order, no walletTX was assigned
             {
                 walletTXRepository.saveNewWalletTX(sellerWalletTX);
@@ -177,7 +178,9 @@ public class MatchingEngineService {
             walletTXRepository.saveNewWalletTX(sellerWalletTX);
             //update status
             sellOrder.setOrderStatus(StockOrder.OrderStatus.PARTIAL_FULFILLED);
-            matchingEngineUtil.createStockTransaction(sellOrder, buyingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), buyOrder.getOrderType());//might have to change this number
+            //matchingEngineUtil.createStockTransaction(sellOrder, buyingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), buyOrder.getOrderType());//might have to change this number
+            Integer newStockTxId = matchingEngineUtil.createStockTransaction(sellOrder, buyingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), buyOrder.getOrderType());//create stock transaction
+            sellerWalletTX.setStockTXId(newStockTxId);//set walletTX to a new child stock transaction
             sellOrder.setTrueRemainingQuantity(sellingStocks - buyingStocks);//still more to go
             sellerWallet.incrementBalance(sellingPrice * buyingStocks);//add money to seller based on trueRemaining quantity
 

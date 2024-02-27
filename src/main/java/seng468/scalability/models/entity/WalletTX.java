@@ -18,7 +18,7 @@ public class WalletTX {
     )
     private Integer walletTXId;
     private String username;
-    private long stockTXId;
+    private Integer stockTXId;
     private boolean isDebit;
     private int amount;
     private LocalDateTime timestamp;
@@ -40,7 +40,7 @@ public class WalletTX {
         return this.walletTXId;
     }
 
-    public long getStockTXId() {
+    public Integer getStockTXId() {
         return this.stockTXId;
     }
 
@@ -54,5 +54,9 @@ public class WalletTX {
 
     public LocalDateTime getTimestamp() {
         return this.timestamp;
+    }
+
+    public void setStockTXId(Integer stockTXId) {
+        this.stockTXId = stockTXId;
     }
 }

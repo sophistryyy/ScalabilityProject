@@ -33,6 +33,8 @@ public class StockOrder {
             strategy = GenerationType.SEQUENCE,
             generator = "stocksOrder_sequence"
     )
+    @Column(name = "stock_tx_id")
+    @JsonProperty("stock_tx_id")
     private Integer stock_tx_id;
 
     private String username;

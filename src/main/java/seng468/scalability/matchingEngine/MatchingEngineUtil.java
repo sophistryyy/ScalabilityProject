@@ -134,7 +134,7 @@ public class MatchingEngineUtil {
     }
 
 
-    public void createStockTransaction(StockOrder order, Integer remainingStocks,
+    public Integer createStockTransaction(StockOrder order, Integer remainingStocks,
                                        Integer priceBoughtFor, Integer walletTXid, StockOrder.OrderType orderType){
 
         StockOrder completedSellStockOrder = order.createCopy(remainingStocks, StockOrder.OrderStatus.COMPLETED);
@@ -146,6 +146,8 @@ public class MatchingEngineUtil {
 
         completedSellStockOrder.setOrderType(orderType);
         matchingEngineOrdersRepository.save(completedSellStockOrder);
+
+        return completedSellStockOrder.getStock_tx_id();
 
     }
 
@@ -167,7 +169,6 @@ public class MatchingEngineUtil {
         return stockPriceLst;
     }
 
-    @Transactional
     public Integer getBestPriceByStockId(int stock_id)
     {
         LinkedList<StockOrder> lowestSellOrder = matchingEngineOrdersRepository.getLowestSellOrderByStockId(stock_id, PageRequest.of(0, 1));
@@ -193,6 +194,10 @@ public class MatchingEngineUtil {
         return null;
     }
 
+    public void removeStockTransaction(StockOrder order)
+    {
+        matchingEngineOrdersRepository.deleteByStock_tx_id(order.getStock_tx_id());
+    }
 
 
 

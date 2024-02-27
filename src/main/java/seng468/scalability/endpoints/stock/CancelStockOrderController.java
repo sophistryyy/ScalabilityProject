@@ -46,13 +46,14 @@ public class CancelStockOrderController {
                 return Response.error("You can only cancel LIMIT orders");
             }
             if (foundOrder.getOrderStatus() == StockOrder.OrderStatus.IN_PROGRESS || foundOrder.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED) {
-                if (foundOrder.getIs_buy())//return stocks
+                if (!foundOrder.getIs_buy())//return stocks
                 {
                     matchingEngineUtil.saveToPortfolio(foundOrder, foundOrder.getTrueRemainingQuantity());
-                } else//sell order
+                } else//buy order
                 {
-                    matchingEngineUtil.returnMoney(foundOrder.getStock_tx_id(), foundOrder.getUsername(), 0);//change from 0, add logic to handle this
+                    matchingEngineUtil.returnMoney(foundOrder.getStock_tx_id(), foundOrder.getUsername(), foundOrder.getPrice() * foundOrder.getTrueRemainingQuantity());//change from 0, add logic to handle this
                 }
+                matchingEngineUtil.removeStockTransaction(foundOrder);
             } else {
                 return Response.error("Can't cancel this order. It's either completed or expired");
             }
