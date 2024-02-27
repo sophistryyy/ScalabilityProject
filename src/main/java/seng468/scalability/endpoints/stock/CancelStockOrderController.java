@@ -31,7 +31,9 @@ public class CancelStockOrderController {
     public Response cancelStockTransaction(@RequestBody CancelOrderRequest req)
     {
         try {
-            String message = cancelOrderService.try_cancelling(req);
+            String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+            String message = cancelOrderService.try_cancelling(req, username);
+
             if(message != null)
             {
                 return Response.error(message);

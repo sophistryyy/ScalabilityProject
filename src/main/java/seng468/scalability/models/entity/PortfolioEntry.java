@@ -44,7 +44,7 @@ public class PortfolioEntry {
     }
 
     public void removeQuantity(int quantityToRemove) throws Exception {
-        if(quantityToRemove < this.quantity)
+        if(quantityToRemove > this.quantity)
         {
             throw new Exception("User doesn't have enough of stocks' quantity");
         }

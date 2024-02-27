@@ -29,10 +29,9 @@ public class CancelOrderService {
         this.portfolioRepository = portfolioRepository;
     }
     @Transactional
-    public String try_cancelling(CancelOrderRequest req)
+    public String try_cancelling(CancelOrderRequest req, String username)
     {
         Integer stock_tx_id = req.getTransactionId();
-        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 
         StockOrder foundOrder = matchingEngineOrdersRepository.findAllByUsernameAndStockTxId(stock_tx_id, username);
         if (foundOrder == null) {
