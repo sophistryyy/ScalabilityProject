@@ -1,5 +1,6 @@
 package seng468.scalability.endpoints.stock;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,33 +36,44 @@ public class CancelStockOrderController {
     public Response cancelStockTransaction(@RequestBody CancelOrderRequest req)
     {
         try {
-            Integer stock_tx_id = req.getTransactionId();
-            String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-
-            StockOrder foundOrder = matchingEngineOrdersRepository.findAllByUsernameAndStockTxId(stock_tx_id, username);
-            if (foundOrder == null) {
-                return Response.error("Transaction not found");
-            }
-            if (foundOrder.getOrderType() == StockOrder.OrderType.MARKET) {
-                return Response.error("You can only cancel LIMIT orders");
-            }
-            if (foundOrder.getOrderStatus() == StockOrder.OrderStatus.IN_PROGRESS || foundOrder.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED) {
-                if (!foundOrder.getIs_buy())//return stocks
-                {
-                    matchingEngineUtil.saveToPortfolio(foundOrder, foundOrder.getTrueRemainingQuantity());
-                } else//buy order
-                {
-                    matchingEngineUtil.returnMoney(foundOrder.getStock_tx_id(), foundOrder.getUsername(), foundOrder.getPrice() * foundOrder.getTrueRemainingQuantity());//change from 0, add logic to handle this
-                }
-                matchingEngineUtil.removeStockTransaction(foundOrder);
-            } else {
-                return Response.error("Can't cancel this order. It's either completed or expired");
+            String message = try_cancelling(req);
+            if(message != null)
+            {
+                return Response.error(message);
             }
             return Response.ok(null);
         }catch(Exception e)
         {
-            return Response.error("Couldn't return money.");
+            //return Response.error("Couldn't return money.");
+            return Response.error(e.getMessage());
         }
+    }
 
+    @Transactional
+    public String try_cancelling(CancelOrderRequest req)
+    {
+        Integer stock_tx_id = req.getTransactionId();
+        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+
+        StockOrder foundOrder = matchingEngineOrdersRepository.findAllByUsernameAndStockTxId(stock_tx_id, username);
+        if (foundOrder == null) {
+            return "Transaction not found";
+        }
+        if (foundOrder.getOrderType() == StockOrder.OrderType.MARKET) {
+            return "You can only cancel LIMIT orders";
+        }
+        if (foundOrder.getOrderStatus() == StockOrder.OrderStatus.IN_PROGRESS || foundOrder.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED) {
+            if (!foundOrder.getIs_buy())//return stocks
+            {
+                matchingEngineUtil.saveToPortfolio(foundOrder, foundOrder.getTrueRemainingQuantity());
+            } else//buy order
+            {
+                matchingEngineUtil.returnMoney(foundOrder.getStock_tx_id(), foundOrder.getUsername(), foundOrder.getPrice() * foundOrder.getTrueRemainingQuantity());//change from 0, add logic to handle this
+            }
+            matchingEngineUtil.removeStockTransaction(foundOrder);
+        } else {
+            return "Can't cancel this order. It's either completed or expired";
+        }
+        return null;
     }
 }
