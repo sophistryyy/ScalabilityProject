@@ -41,7 +41,7 @@ public class LoginTests {
         .contentType(MediaType.APPLICATION_JSON).content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.data.Error").value("Bad credentials"))
+        .andExpect(jsonPath("$.data.error").value("Bad credentials"))
         .andReturn();
     }
 

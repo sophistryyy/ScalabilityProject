@@ -74,7 +74,7 @@ public class CreateStockTests {
         .content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.data.Error").value("Stock Already Exists"))
+        .andExpect(jsonPath("$.data.error").value("Stock Already Exists"))
         .andReturn();
     }
 

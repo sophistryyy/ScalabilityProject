@@ -10,7 +10,7 @@ public record Response(Boolean success, Object data) {
 
     public static Response error(String message) {
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("Error", message);
+        data.put("error", message);
         return new Response(false, data);
     }
 }
