@@ -65,7 +65,7 @@ public class RegisterTests {
         .contentType(MediaType.APPLICATION_JSON).content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.data.Error").value("Username Already Exists"))
+        .andExpect(jsonPath("$.data.error").value("Username Already Exists"))
         .andReturn();
 
         User foundUser = userRepository.findByUsername("VanguardETF");

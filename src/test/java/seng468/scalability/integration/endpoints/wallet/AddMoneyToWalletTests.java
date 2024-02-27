@@ -109,7 +109,7 @@ public class AddMoneyToWalletTests {
         .content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.data.Error").value("Invalid Amount")) // Check if data is an array
+        .andExpect(jsonPath("$.data.error").value("Invalid Amount")) // Check if data is an array
         .andReturn();
 
         Wallet foundWallet = walletRepository.findByUsername(user.getUsername());
