@@ -211,9 +211,10 @@ public class MatchingEngineService {
             //update status
             if(sellOrder.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED)
             {
-                matchingEngineUtil.createStockTransaction(sellOrder, sellingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), buyOrder.getOrderType());//create stock transaction
+                Integer newStockTxId = matchingEngineUtil.createStockTransaction(sellOrder, buyingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), buyOrder.getOrderType());//create stock transaction
+                sellerWalletTX.setStockTXId(newStockTxId);//set walletTX to a new child stock transaction
             }
-            matchingEngineUtil.createStockTransaction(sellOrder, sellingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), buyOrder.getOrderType());
+
             sellOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);
             sellOrder.setTrueRemainingQuantity(0);
             orderBook.popSellOrder();
