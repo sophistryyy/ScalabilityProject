@@ -14,29 +14,24 @@ import seng468.scalability.models.request.CancelOrderRequest;
 import seng468.scalability.models.response.Response;
 import seng468.scalability.repositories.PortfolioRepository;
 import seng468.scalability.repositories.WalletRepository;
+import seng468.scalability.services.CancelOrderService;
 
 @RestController
 @RequestMapping(path = "cancelStockTransaction")
 public class CancelStockOrderController {
 
-    private final MatchingEngineOrdersRepository matchingEngineOrdersRepository;
-    private final WalletRepository walletRepository;
-    private final PortfolioRepository portfolioRepository;
-    private final MatchingEngineUtil matchingEngineUtil;
+    private final CancelOrderService cancelOrderService;
     @Autowired
-    public CancelStockOrderController(MatchingEngineOrdersRepository matchingEngineOrdersRepository, WalletRepository walletRepository,
-                                      PortfolioRepository portfolioRepository, MatchingEngineUtil matchingEngineUtil)
+    public CancelStockOrderController(CancelOrderService cancelOrderService)
     {
-        this.matchingEngineUtil = matchingEngineUtil;
-        this.matchingEngineOrdersRepository = matchingEngineOrdersRepository;
-        this.walletRepository = walletRepository;
-        this.portfolioRepository = portfolioRepository;
+        this.cancelOrderService = cancelOrderService;
     }
+
     @PostMapping
     public Response cancelStockTransaction(@RequestBody CancelOrderRequest req)
     {
         try {
-            String message = try_cancelling(req);
+            String message = cancelOrderService.try_cancelling(req);
             if(message != null)
             {
                 return Response.error(message);
@@ -49,31 +44,5 @@ public class CancelStockOrderController {
         }
     }
 
-    @Transactional
-    public String try_cancelling(CancelOrderRequest req)
-    {
-        Integer stock_tx_id = req.getTransactionId();
-        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 
-        StockOrder foundOrder = matchingEngineOrdersRepository.findAllByUsernameAndStockTxId(stock_tx_id, username);
-        if (foundOrder == null) {
-            return "Transaction not found";
-        }
-        if (foundOrder.getOrderType() == StockOrder.OrderType.MARKET) {
-            return "You can only cancel LIMIT orders";
-        }
-        if (foundOrder.getOrderStatus() == StockOrder.OrderStatus.IN_PROGRESS || foundOrder.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED) {
-            if (!foundOrder.getIs_buy())//return stocks
-            {
-                matchingEngineUtil.saveToPortfolio(foundOrder, foundOrder.getTrueRemainingQuantity());
-            } else//buy order
-            {
-                matchingEngineUtil.returnMoney(foundOrder.getStock_tx_id(), foundOrder.getUsername(), foundOrder.getPrice() * foundOrder.getTrueRemainingQuantity());//change from 0, add logic to handle this
-            }
-            matchingEngineUtil.removeStockTransaction(foundOrder);
-        } else {
-            return "Can't cancel this order. It's either completed or expired";
-        }
-        return null;
-    }
 }
