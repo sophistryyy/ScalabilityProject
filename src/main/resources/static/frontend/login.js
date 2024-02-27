@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
             password: document.getElementById('password').value,
         };
 
+
         // Send the user data to the server via POST request
         fetch('/login', {
             method: 'POST',
@@ -31,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // If the response contains success: "true", handle successful login
                 const token = data.data.token;
                 localStorage.setItem('token', data.data.token);
+                localStorage.setItem('username', loginData.user_name);
                 console.log('JWT Token:', token);
                 alert('Login successful!' + token);
                 window.location.href = '/frontend/AddStock.html'; // Redirect user to the dashboard or another page

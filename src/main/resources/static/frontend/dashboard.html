@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h2>Dashboard</h2>
+    <div>Welcome, <span id="usernameDisplay"></span>!</div>
+    <div>
+        <button id="getWalletBalanceBtn">Get Wallet Balance</button>
+        <p id="walletBalance">Wallet Balance: </p>
+    </div>
+    <div>
+        <input type="number" id="amountToAdd" placeholder="Amount to Add">
+        <button id="addMoneyBtn">Add Money to Wallet</button>
+    </div>
+    <div>
+        <button id="getStockPortfolioBtn">Get Stock Portfolio</button>
+        <ul id="stockPortfolio"></ul>
+    </div>
+    <button onclick="window.location.href='login.html';">Back to Login</button>
+    <script src="dashboard.js"></script>
+</body>
+</html>
