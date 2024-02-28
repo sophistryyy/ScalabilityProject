@@ -24,13 +24,12 @@ public class RegisterController {
 
     @PostMapping("/register")
     public Response registerUser(@RequestBody RegisterRequest req) {
-        User user = new User(req.getUsername(), req.getPassword(), req.getName());
-
         try {
+            User user = new User(req.getUsername(), req.getPassword(), req.getName());
             userService.saveUser(user);
-            walletRepository.save(new Wallet(req.getUsername()));
+            walletRepository.saveNewWallet(new Wallet(req.getUsername()));
             return Response.ok(null);
-        } catch (UsernameExistsException e) {
+        } catch (Exception e) {
             return Response.error(e.getMessage());
         }
     }

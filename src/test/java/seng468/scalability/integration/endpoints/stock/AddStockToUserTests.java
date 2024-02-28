@@ -99,7 +99,7 @@ public class AddStockToUserTests {
         .content(requestBody))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.data.Error").value("Invalid Stock Id"))
+        .andExpect(jsonPath("$.data.error").value("Invalid Stock Id"))
         .andReturn();
 
          PortfolioEntry entry = portfolioRepository.findEntryByStockIdAndUsername(invalidStockId, user.getUsername());

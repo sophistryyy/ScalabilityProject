@@ -26,14 +26,14 @@ public class GetWalletTransactions {
 
         List<WalletTX> entries = walletTXRepository.findAllByUsername(username);
         List<Map<String, Object>> data = fromatData(entries);
-
         return Response.ok(data);
     }
 
     private List<Map<String, Object>> fromatData(List<WalletTX> entries) {
         List<Map<String, Object>> data = new LinkedList<>();
         for (WalletTX entry : entries) {
-            Map<String, Object> entryMap = new LinkedHashMap<>();
+            Map<String, Object> entryMap =  new LinkedHashMap<>();
+
             entryMap.put("wallet_tx_id", entry.getWalletTXId());
             entryMap.put("stock_tx_id", entry.getStockTXId());
             entryMap.put("is_debit", entry.getIsDebit());
@@ -44,4 +44,6 @@ public class GetWalletTransactions {
 
         return data;
     }
+
 }
+

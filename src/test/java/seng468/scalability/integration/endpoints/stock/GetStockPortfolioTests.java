@@ -41,7 +41,7 @@ public class GetStockPortfolioTests {
 
     private String jwtToken;
 
-    User user;
+    private User user;
     
     @BeforeAll
     void setupBeforeAll() {
@@ -68,6 +68,7 @@ public class GetStockPortfolioTests {
         .header("token", jwtToken)
         .content(""))
         .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data").isArray()) // Check if data is an array
         .andExpect(jsonPath("$.data[0].stock_id").value(1)) // Check first element
         .andExpect(jsonPath("$.data[0].stock_name").value("Google"))
