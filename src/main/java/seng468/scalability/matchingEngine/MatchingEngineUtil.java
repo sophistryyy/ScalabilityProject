@@ -38,14 +38,16 @@ public class MatchingEngineUtil {
     {
         int stockId = order.getStockId();
         IntOrError completedOrError = new IntOrError();
-        if(!order.getIs_buy()) {//for buyer remove
+        if(!order.getIs_buy()) {//for seller
             PortfolioEntry portfolioEntry = portfolioRepository.findEntryByStockIdAndUsername(stockId, order.getUsername());
             if (portfolioEntry == null) {
+                matchingEngineOrdersRepository.delete(order);
                 completedOrError.setMessage("User doesn't have the following stock in portfolio: " + stockId);
                 return completedOrError;
             }
             String errorMessage = removeQuantityFromPortfolio(portfolioEntry, order.getQuantity());
             if (errorMessage != null) {
+                matchingEngineOrdersRepository.delete(order);
                 completedOrError.setMessage(errorMessage);
                 return completedOrError;
             }
@@ -58,20 +60,19 @@ public class MatchingEngineUtil {
                     wallet.decrementBalance(toDeduct);
                 }catch(Exception e)
                 {
+                    matchingEngineOrdersRepository.delete(order);
                     completedOrError.setMessage("User doesn't have enough money to cover this stock. Current balance is " + wallet.getBalance());
                     return completedOrError;
                 }
                 //create wallet transaction
                 WalletTX walletTX = new WalletTX(order.getUsername(),order.getStock_tx_id(), true, toDeduct);
                 try{
-                    if(true){
-                        completedOrError.setMessage(walletTX.getWalletTXId() + " ");
-                        return completedOrError;
-                    }
+
                     walletTXRepository.saveNewWalletTX(walletTX);
                     completedOrError.setWalletTXid(walletTX.getWalletTXId());
                 }catch(Exception e)
                 {
+                    matchingEngineOrdersRepository.delete(order);
                     completedOrError.setMessage(e.getMessage());
                     return completedOrError;
                 }
@@ -133,20 +134,23 @@ public class MatchingEngineUtil {
     }
 
 
-    public void createStockTransaction(StockOrder order, Integer remainingStocks, Integer priceBoughtFor, Integer walletTXid){
-        if(order.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED) //create child transaction
-        {
-            StockOrder completedSellStockOrder = order.createCopy(remainingStocks, StockOrder.OrderStatus.COMPLETED);
-            if(priceBoughtFor > 0){
-                completedSellStockOrder.setPrice(priceBoughtFor);
-            }
-            if(order.getWalletTXid() != null)
-            {
-                completedSellStockOrder.setStock_tx_id(walletTXid);
-            }
-            matchingEngineOrdersRepository.save(completedSellStockOrder);
+    public Integer createStockTransaction(StockOrder order, Integer remainingStocks,
+                                       Integer priceBoughtFor, Integer walletTXid, StockOrder.OrderType orderType){
+
+        StockOrder completedStockOrder = order.createCopy(remainingStocks, StockOrder.OrderStatus.COMPLETED);
+        if(priceBoughtFor > 0){
+            completedStockOrder.setPrice(priceBoughtFor);
         }
+        completedStockOrder.setTrueRemainingQuantity(0);
+        completedStockOrder.setWalletTXid(walletTXid);
+
+        completedStockOrder.setOrderType(orderType);
+        matchingEngineOrdersRepository.save(completedStockOrder);
+
+        return completedStockOrder.getStock_tx_id();
+
     }
+
 
     public List<StockPrices> getBestPrices()
     {
@@ -165,7 +169,6 @@ public class MatchingEngineUtil {
         return stockPriceLst;
     }
 
-    @Transactional
     public Integer getBestPriceByStockId(int stock_id)
     {
         LinkedList<StockOrder> lowestSellOrder = matchingEngineOrdersRepository.getLowestSellOrderByStockId(stock_id, PageRequest.of(0, 1));
@@ -191,6 +194,11 @@ public class MatchingEngineUtil {
         return null;
     }
 
+
+    public void removeStockTransaction(StockOrder order)
+    {
+        matchingEngineOrdersRepository.deleteByStock_tx_id(order.getStock_tx_id());
+    }
 
 
 

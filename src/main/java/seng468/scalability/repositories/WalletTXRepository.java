@@ -1,18 +1,22 @@
 package seng468.scalability.repositories;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import seng468.scalability.models.entity.WalletTX;
 
-import java.util.List;
 
-public interface WalletTXRepository extends JpaRepository<WalletTX, Integer> {
+public interface WalletTXRepository extends JpaRepository<WalletTX, Long> {
+
+    public List<WalletTX> findAllByUsername(String username);
+
     WalletTX findByWalletTXId(Integer walletTXId);
     void deleteByWalletTXId(Integer walletTXId);
 
     void deleteByStockTXId(Integer stockTXId);
 
-    List<WalletTX> findAllByUsername(String username);
+
     @Override
     <S extends WalletTX> S save(S entity);
 
