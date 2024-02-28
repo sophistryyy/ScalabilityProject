@@ -14,6 +14,8 @@ public interface WalletTXRepository extends JpaRepository<WalletTX, Long> {
     WalletTX findByWalletTXId(Integer walletTXId);
     void deleteByWalletTXId(Integer walletTXId);
 
+    void deleteByStockTXId(Integer stockTXId);
+
 
     @Override
     <S extends WalletTX> S save(S entity);

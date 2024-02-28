@@ -38,7 +38,7 @@ public class MatchingEngineUtil {
     {
         int stockId = order.getStockId();
         IntOrError completedOrError = new IntOrError();
-        if(!order.getIs_buy()) {//for buyer remove
+        if(!order.getIs_buy()) {//for seller
             PortfolioEntry portfolioEntry = portfolioRepository.findEntryByStockIdAndUsername(stockId, order.getUsername());
             if (portfolioEntry == null) {
                 matchingEngineOrdersRepository.delete(order);
@@ -137,17 +137,17 @@ public class MatchingEngineUtil {
     public Integer createStockTransaction(StockOrder order, Integer remainingStocks,
                                        Integer priceBoughtFor, Integer walletTXid, StockOrder.OrderType orderType){
 
-        StockOrder completedSellStockOrder = order.createCopy(remainingStocks, StockOrder.OrderStatus.COMPLETED);
+        StockOrder completedStockOrder = order.createCopy(remainingStocks, StockOrder.OrderStatus.COMPLETED);
         if(priceBoughtFor > 0){
-            completedSellStockOrder.setPrice(priceBoughtFor);
+            completedStockOrder.setPrice(priceBoughtFor);
         }
+        completedStockOrder.setTrueRemainingQuantity(0);
+        completedStockOrder.setWalletTXid(walletTXid);
 
-        completedSellStockOrder.setWalletTXid(walletTXid);
+        completedStockOrder.setOrderType(orderType);
+        matchingEngineOrdersRepository.save(completedStockOrder);
 
-        completedSellStockOrder.setOrderType(orderType);
-        matchingEngineOrdersRepository.save(completedSellStockOrder);
-
-        return completedSellStockOrder.getStock_tx_id();
+        return completedStockOrder.getStock_tx_id();
 
     }
 
