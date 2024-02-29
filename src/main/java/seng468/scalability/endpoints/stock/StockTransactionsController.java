@@ -51,7 +51,7 @@ public class StockTransactionsController {
             entryMap.put("order_type", entry.getOrderType().toString());
             entryMap.put("stock_price", entry.getPrice());
             entryMap.put("quantity", entry.getQuantity());
-            entryMap.put("timestamp", entry.getTimestamp());
+            entryMap.put("time_stamp", entry.getTimestamp());
 
             data.add(entryMap);
         }

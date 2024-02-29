@@ -21,6 +21,8 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
     public <S extends Stock> S save(S entity);
 
     default void saveNewStock(Stock stock) throws Exception {
+        System.out.println("SAMEE");
+        System.out.println(stock.getName());
         if (existsByName(stock.getName())) {
             throw new Exception("Stock Already Exists");
         }
