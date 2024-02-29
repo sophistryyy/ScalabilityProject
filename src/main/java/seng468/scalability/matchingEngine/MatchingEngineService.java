@@ -66,7 +66,7 @@ public class MatchingEngineService {
 
 
     @Transactional
-    public void try_matching(OrderBook orderBook)
+    public void try_matching(OrderBook orderBook) throws Exception
         /*
             * Assumed: if limit order MONEY IS ALREADY DEDUCTED AND USER HAS ENOUGH
             *           MARKET order: money was not deducted!

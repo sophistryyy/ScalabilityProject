@@ -70,6 +70,20 @@ public class StockOrder {
         this.trueRemainingQuantity = quantity;
     }
 
+    public StockOrder(Integer parent_stock_tx_id, Integer walletTXid, int stock_id, boolean is_buy, OrderType orderType, Integer quantity, Integer price, OrderStatus orderStatus, String username) {
+        this.parent_stock_tx_id = parent_stock_tx_id;
+        this.walletTXid = walletTXid;
+        this.stock_id = stock_id;
+        this.is_buy = is_buy;
+        this.orderType = orderType;
+        this.quantity = quantity;
+        this.price = price;
+        this.timestamp = null; // Assign the provided timestamp
+        this.orderStatus = orderStatus;
+        this.username = username;
+        this.trueRemainingQuantity = quantity;
+    }
+
     public StockOrder createCopy(Integer newQuantity, OrderStatus orderStatus) {
         StockOrder copy = new StockOrder();
         copy.parent_stock_tx_id = this.parent_stock_tx_id == null ? this.stock_tx_id : this.parent_stock_tx_id; //reference true parent

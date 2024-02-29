@@ -29,7 +29,7 @@ public class CancelOrderService {
         this.portfolioRepository = portfolioRepository;
     }
     @Transactional
-    public String try_cancelling(CancelOrderRequest req, String username)
+    public String try_cancelling(CancelOrderRequest req, String username) throws Exception
     {
         Integer stock_tx_id = req.getTransactionId();
 

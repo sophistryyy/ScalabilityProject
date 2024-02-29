@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,6 +56,12 @@ public class AddMoneyToWalletTests {
     
     @BeforeEach
     void setUpBeforeEach() {
+        walletRepository.deleteAll();
+    }
+
+    @AfterAll
+    void breakdownAfterAll() {
+        userRepository.deleteAll();
         walletRepository.deleteAll();
     }
 

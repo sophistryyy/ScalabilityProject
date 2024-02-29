@@ -27,6 +27,14 @@ public class WalletTX {
 
 
     public WalletTX(String username, Integer stockTXId, boolean isDebit, int amount) {
+        this.username = username;
+        this.stockTXId = stockTXId;
+        this.isDebit = isDebit;
+        this.amount = amount;
+        this.timestamp = LocalDateTime.now();
+    }
+
+    public WalletTX(Integer walletTXId, String username, Integer stockTXId, boolean isDebit, int amount) {
         this.walletTXId = walletTXId;
         this.username = username;
         this.stockTXId = stockTXId;

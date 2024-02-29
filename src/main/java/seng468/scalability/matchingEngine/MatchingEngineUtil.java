@@ -111,7 +111,7 @@ public class MatchingEngineUtil {
         return order.getOrderType() == StockOrder.OrderType.MARKET;
     }
 
-    public void returnMoney(Integer stockTXid,String username, Integer balance){
+    public void returnMoney(Integer stockTXid,String username, Integer balance) throws Exception{
         //remove wallet transaction
         walletTXRepository.deleteByStockTXId(stockTXid);
         //return money
