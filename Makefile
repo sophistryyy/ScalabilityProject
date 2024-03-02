@@ -51,7 +51,6 @@ backup:
 # Init target
 init:
 	mvn archetype:generate -DgroupId=com.example -DartifactId=myproject -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-
 dockertest:
 	make build
 	make run
