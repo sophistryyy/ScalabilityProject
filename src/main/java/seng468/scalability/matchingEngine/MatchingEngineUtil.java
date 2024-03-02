@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import seng468.scalability.matchingEngine.specialReturnClass.IntOrError;
 import seng468.scalability.models.entity.*;
 import seng468.scalability.models.request.PlaceStockOrderRequest;
+import seng468.scalability.models.response.Response;
 import seng468.scalability.repositories.PortfolioRepository;
 import seng468.scalability.repositories.StockRepository;
 import seng468.scalability.repositories.WalletRepository;
@@ -33,16 +34,42 @@ public class MatchingEngineUtil {
 
     }
 
+    public String basicVerifier(PlaceStockOrderRequest req)
+    {
+        StockOrder.OrderType orderType;
+        try {
+            orderType = StockOrder.OrderType.valueOf(req.getOrderType());
+        } catch (Exception e) {
+            return "Incorrect value of order type";
+        }
+        if (orderType == StockOrder.OrderType.MARKET && req.getPrice() != null) {
+            return "MARKET orders can't have price, set it to null.";
+        }
+        if (orderType == StockOrder.OrderType.LIMIT) {
+            if(req.getPrice() == null && req.getPrice() <= 0) {
+                return "LIMIT orders' price has to be more than 0";
+            }
+        }
+        if(req.getQuantity() == null || req.getQuantity() <= 0){
+            return "Please set quantity to more than 0";
+        }
+        return null;
+    }
 
     public IntOrError verifyIfEnough(StockOrder order)
     {
+        IntOrError completedOrError = new IntOrError();//class that has message and WalletTXid. if message then error happened
         int stockId = order.getStockId();
-        IntOrError completedOrError = new IntOrError();
+        if (!stockRepository.existsById(stockId))
+        {
+            completedOrError.setMessage("Invalid stock Id. It doesn't exist");
+            return completedOrError;
+        }
         if(!order.getIs_buy()) {//for seller
             PortfolioEntry portfolioEntry = portfolioRepository.findEntryByStockIdAndUsername(stockId, order.getUsername());
             if (portfolioEntry == null) {
                 matchingEngineOrdersRepository.delete(order);
-                completedOrError.setMessage("User doesn't have the following stock in portfolio: " + stockId);
+                completedOrError.setMessage("User doesn't have the following stock id in portfolio: " + stockId);
                 return completedOrError;
             }
             String errorMessage = removeQuantityFromPortfolio(portfolioEntry, order.getQuantity());
@@ -64,10 +91,9 @@ public class MatchingEngineUtil {
                     completedOrError.setMessage("User doesn't have enough money to cover this stock. Current balance is " + wallet.getBalance());
                     return completedOrError;
                 }
-                //create wallet transaction
+                //create wallet transaction for LIMIT buy orders
                 WalletTX walletTX = new WalletTX(order.getUsername(),order.getStock_tx_id(), true, toDeduct);
                 try{
-
                     walletTXRepository.saveNewWalletTX(walletTX);
                     completedOrError.setWalletTXid(walletTX.getWalletTXId());
                 }catch(Exception e)
@@ -82,25 +108,17 @@ public class MatchingEngineUtil {
         return completedOrError;
     }
 
-
-    public String basicVerifier(PlaceStockOrderRequest req)
+    public String removeQuantityFromPortfolio(PortfolioEntry portfolioEntry, Integer quantity)
     {
-        StockOrder.OrderType orderType;
         try {
-            orderType = StockOrder.OrderType.valueOf(req.getOrderType());
-        } catch (Exception e) {
-            return "Incorrect value of order type";
-        }
-        if (orderType == StockOrder.OrderType.MARKET && req.getPrice() != null) {
-            return "MARKET orders can't have price, set it to null.";
-        }
-        if (orderType == StockOrder.OrderType.LIMIT) {
-            if(req.getPrice() == null && req.getPrice() <= 0) {
-                return "LIMIT orders' price has to be more than 0";
+            portfolioEntry.removeQuantity(quantity);
+            if(portfolioEntry.getQuantity() == 0) //if quantity is 0 remove it from portfolio
+            {
+                portfolioRepository.deleteByStockId(portfolioEntry.getStockId());
             }
-        }
-        if(req.getQuantity() != null && req.getQuantity() <= 0){
-            return "Please set quantity to more than 0";
+        }catch(Exception e)
+        {
+            return e.getMessage();
         }
         return null;
     }
@@ -111,13 +129,13 @@ public class MatchingEngineUtil {
         return order.getOrderType() == StockOrder.OrderType.MARKET;
     }
 
-    public void returnMoney(Integer stockTXid,String username, Integer balance) throws Exception{
+    public void returnMoney(Integer stockTXid, String username, Integer balance) throws Exception{
+        //must be used in @Transactional
         //remove wallet transaction
         walletTXRepository.deleteByStockTXId(stockTXid);
         //return money
         Wallet wallet = walletRepository.findByUsername(username);
         wallet.incrementBalance(balance);
-
     }
 
 
@@ -126,7 +144,7 @@ public class MatchingEngineUtil {
         PortfolioEntry buyerPortfolioByStockId  = portfolioRepository.findEntryByStockIdAndUsername(buyOrder.getStockId(), buyOrder.getUsername()); //add stocks to buyer's portfolio
         int stock_id = buyOrder.getStockId();
         if (buyerPortfolioByStockId == null) {
-            buyerPortfolioByStockId = new PortfolioEntry(stock_id,stockRepository.findStockNameById(stock_id) ,buyOrder.getUsername(), buyingStocks);
+            buyerPortfolioByStockId = new PortfolioEntry(stock_id, stockRepository.findStockNameById(stock_id) ,buyOrder.getUsername(), buyingStocks);
         } else {
             buyerPortfolioByStockId.addQuantity(buyingStocks);
         }
@@ -141,17 +159,13 @@ public class MatchingEngineUtil {
         if(priceBoughtFor > 0){
             completedStockOrder.setPrice(priceBoughtFor);
         }
-        completedStockOrder.setTrueRemainingQuantity(0);
         completedStockOrder.setWalletTXid(walletTXid);
-
         completedStockOrder.setOrderType(orderType);
         matchingEngineOrdersRepository.save(completedStockOrder);
-
         return completedStockOrder.getStock_tx_id();
-
     }
 
-
+    //Rework this!
     public List<StockPrices> getBestPrices()
     {
         List<StockPrices> stockPriceLst = new ArrayList<>();
@@ -179,22 +193,9 @@ public class MatchingEngineUtil {
         return lowestSellOrder.peek().getPrice();
     }
 
-    public String removeQuantityFromPortfolio(PortfolioEntry portfolioEntry, Integer quantity)
-    {
-        try {
-            portfolioEntry.removeQuantity(quantity);
-            if(portfolioEntry.getQuantity() == 0) //if quantity is 0 remove it from portfolio
-            {
-                portfolioRepository.deleteByStockId(portfolioEntry.getStockId());
-            }
-        }catch(Exception e)
-        {
-            return e.getMessage();
-        }
-        return null;
-    }
 
 
+    //use with @Transactional
     public void removeStockTransaction(StockOrder order)
     {
         matchingEngineOrdersRepository.deleteByStock_tx_id(order.getStock_tx_id());

@@ -33,10 +33,6 @@ public class PlaceStockOrderController {
     @PostMapping
     public Response placeStockOrder(@RequestBody PlaceStockOrderRequest req) {
         try {
-
-            int stock_id = req.getStock_id();
-            if (!stockRepository.existsById(stock_id)) {return Response.error("Invalid stock");}
-
             String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
             String message = matchingEngineService.placeOrder(req, username);
             if(message != null)

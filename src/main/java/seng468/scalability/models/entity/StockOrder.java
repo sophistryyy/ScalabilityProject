@@ -19,8 +19,7 @@ public class StockOrder {
     public enum OrderStatus{
         COMPLETED,
         IN_PROGRESS,
-        PARTIAL_FULFILLED,
-        EXPIRED,
+        PARTIAL_FULFILLED
     }
 
     @Id
@@ -36,12 +35,10 @@ public class StockOrder {
     @Column(name = "stock_tx_id")
     @JsonProperty("stock_tx_id")
     private Integer stock_tx_id;
-
     private String username;
     private Integer parent_stock_tx_id;
     @JsonProperty("stock_id")
     private int stock_id;
-
     private boolean is_buy;
     @JsonProperty("order_type")
     private OrderType orderType;
@@ -49,9 +46,10 @@ public class StockOrder {
     private Integer price;
     private LocalDateTime timestamp;
     private OrderStatus orderStatus;
-
     private Integer walletTXid;
     private Integer trueRemainingQuantity;
+
+    private boolean expired;
 
 
     public StockOrder() {}
@@ -68,6 +66,7 @@ public class StockOrder {
         this.orderStatus = OrderStatus.IN_PROGRESS;
         this.username = username;
         this.trueRemainingQuantity = quantity;
+        this.expired = false;
     }
 
     public StockOrder(Integer parent_stock_tx_id, Integer walletTXid, int stock_id, boolean is_buy, OrderType orderType, Integer quantity, Integer price, OrderStatus orderStatus, String username) {
@@ -86,7 +85,8 @@ public class StockOrder {
 
     public StockOrder createCopy(Integer newQuantity, OrderStatus orderStatus) {
         StockOrder copy = new StockOrder();
-        copy.parent_stock_tx_id = this.parent_stock_tx_id == null ? this.stock_tx_id : this.parent_stock_tx_id; //reference true parent
+        copy.parent_stock_tx_id = this.parent_stock_tx_id == null ? this.stock_tx_id
+                                                                  : this.parent_stock_tx_id; //reference true parent
         copy.stock_id = this.stock_id;
         copy.is_buy = this.is_buy;
         copy.orderType = this.orderType;
@@ -95,8 +95,9 @@ public class StockOrder {
         copy.timestamp = LocalDateTime.now();
         copy.orderStatus = orderStatus;
         copy.username = this.username;
-        copy.walletTXid = null; //for now
-        //add wallet
+        copy.walletTXid = null; //set it
+        copy.trueRemainingQuantity = 0;
+        expired = false;
         return copy;
     }
 
@@ -142,9 +143,9 @@ public class StockOrder {
         return trueRemainingQuantity;
     }
 
-    public void setTrueRemainingQuantity(Integer trueRemainingQuantity) {
-        this.trueRemainingQuantity = trueRemainingQuantity;
-    }
+    public boolean isExpired() {return expired;}
+
+    public void setTrueRemainingQuantity(Integer trueRemainingQuantity) {this.trueRemainingQuantity = trueRemainingQuantity;}
 
     public void setParent_stock_tx_id(Integer parent_stock_tx_id) {this.parent_stock_tx_id = parent_stock_tx_id;}
 
@@ -172,6 +173,9 @@ public class StockOrder {
         this.walletTXid = walletTXid;
     }
 
+    public void setExpired(boolean expired) {this.expired = expired;}
+
+
     @Override
     public String toString() {
         return "StockOrder{" +
@@ -184,7 +188,7 @@ public class StockOrder {
                 ", price=" + price +
                 ", timestamp=" + timestamp +
                 ", orderStatus=" + (orderStatus != null ? orderStatus.toString() : "") +
-                ", TEST=username " + username +
+                ", username: " + username +
                 "}";
     }
 

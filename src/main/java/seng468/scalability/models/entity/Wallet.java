@@ -33,7 +33,7 @@ public class Wallet {
     }
 
     public void decrementBalance(Integer amount) throws Exception {
-        if (amount > balance) {
+        if (amount > this.balance) {
             throw new Exception("Insufficient Balance");
         }
         if (amount < 0) {

@@ -2,7 +2,6 @@ package seng468.scalability.services;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import seng468.scalability.matchingEngine.MatchingEngineOrdersRepository;
 import seng468.scalability.matchingEngine.MatchingEngineUtil;
@@ -33,7 +32,7 @@ public class CancelOrderService {
     {
         Integer stock_tx_id = req.getTransactionId();
 
-        StockOrder foundOrder = matchingEngineOrdersRepository.findAllByUsernameAndStockTxId(stock_tx_id, username);
+        StockOrder foundOrder = matchingEngineOrdersRepository.findByUsernameAndStockTxId(stock_tx_id, username);
         if (foundOrder == null) {
             return "Transaction not found";
         }

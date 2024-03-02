@@ -1,12 +1,11 @@
 package seng468.scalability.matchingEngine;
+
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import seng468.scalability.matchingEngine.specialReturnClass.IntOrError;
 import seng468.scalability.models.entity.*;
 import seng468.scalability.models.request.PlaceStockOrderRequest;
-import seng468.scalability.repositories.PortfolioRepository;
-import seng468.scalability.repositories.StockRepository;
 import seng468.scalability.repositories.WalletRepository;
 import seng468.scalability.repositories.WalletTXRepository;
 
@@ -14,22 +13,16 @@ import java.util.*;
 
 @Service
 public class MatchingEngineService {
-
     private final MatchingEngineOrdersRepository matchingEngineOrdersRepository;
-    private final PortfolioRepository portfolioRepository;
     private final WalletRepository walletRepository;
-    private final StockRepository stockRepository;
     private final WalletTXRepository walletTXRepository;
-
     private final MatchingEngineUtil matchingEngineUtil;
 
     @Autowired
-    public MatchingEngineService(MatchingEngineOrdersRepository repository, StockRepository stockRepository,WalletTXRepository walletTXRepository,
-                                 PortfolioRepository portfolioRepository, WalletRepository walletRepository, MatchingEngineUtil matchingEngineUtil){
+    public MatchingEngineService(MatchingEngineOrdersRepository repository, WalletTXRepository walletTXRepository,
+                                 WalletRepository walletRepository, MatchingEngineUtil matchingEngineUtil){
         this.matchingEngineOrdersRepository = repository;
-        this.portfolioRepository = portfolioRepository;
         this.walletRepository = walletRepository;
-        this.stockRepository = stockRepository;
         this.walletTXRepository = walletTXRepository;
         this.matchingEngineUtil = matchingEngineUtil;
     }
@@ -51,7 +44,8 @@ public class MatchingEngineService {
         order.setWalletTXid(verifier.getWalletTXid());
 
         int req_stock_id = order.getStockId();
-        LinkedList<StockOrder> lstOfSellStocks = matchingEngineOrdersRepository.getAllSellByStock_id(req_stock_id);//at least 1 element in it and no completed transactions
+        //at least 1 element in it and no completed transactions
+        LinkedList<StockOrder> lstOfSellStocks = matchingEngineOrdersRepository.getAllSellByStock_id(req_stock_id);
         LinkedList<StockOrder> lstOfBuyStocks = matchingEngineOrdersRepository.getAllBuyByStock_id(req_stock_id);
         OrderBook orderBook = new OrderBook(lstOfSellStocks, lstOfBuyStocks);
 
