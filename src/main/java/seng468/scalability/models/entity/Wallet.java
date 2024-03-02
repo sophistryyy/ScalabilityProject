@@ -21,6 +21,10 @@ public class Wallet {
         return this.balance;
     }
 
+    public String getUsername() {
+        return this.username;
+    }
+
     public void incrementBalance(Integer amount) throws Exception {
         if (amount < 0) {
             throw new Exception("Invalid Amount");

@@ -36,7 +36,7 @@ public class LoginTests {
         User user = new User("VanguardETF", "Vang@123", "Vanguard Corp.");
         userRepository.save(user);
 
-        String requestBody = "{\"username\": \"VanguardETF\",\"password\": \"Vang@1234\",\"name\": \"Vanguard Corp.\"}";
+        String requestBody = "{\"user_name\": \"VanguardETF\",\"password\": \"Vang@1234\",\"name\": \"Vanguard Corp.\"}";
         MvcResult res = mvc.perform(post("/login")
         .contentType(MediaType.APPLICATION_JSON).content(requestBody))
         .andExpect(status().isOk())
@@ -50,7 +50,7 @@ public class LoginTests {
         User user = new User("VanguardETF", "Vang@123", "Vanguard Corp.");
         userRepository.save(user);
 
-        String requestBody = "{\"username\": \"VanguardETF\",\"password\": \"Vang@123\"}";
+        String requestBody = "{\"user_name\": \"VanguardETF\",\"password\": \"Vang@123\"}";
         MvcResult res = mvc.perform(post("/login")
         .contentType(MediaType.APPLICATION_JSON).content(requestBody))
         .andExpect(status().isOk())
@@ -66,7 +66,7 @@ public class LoginTests {
         User user2 = new User("FinanceGuru", "Fguru@2024", "The Finance Guru");
         userRepository.save(user2);
 
-        String requestBody = "{\"username\": \"FinanceGuru\",\"password\": \"Fguru@2024\"}";
+        String requestBody = "{\"user_name\": \"FinanceGuru\",\"password\": \"Fguru@2024\"}";
         MvcResult res = mvc.perform(post("/login")
         .contentType(MediaType.APPLICATION_JSON).content(requestBody))
         .andExpect(status().isOk())
