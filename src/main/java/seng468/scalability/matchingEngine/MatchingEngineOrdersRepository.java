@@ -44,4 +44,7 @@ public interface MatchingEngineOrdersRepository extends JpaRepository<StockOrder
     @Query("SELECT so from StockOrder so WHERE so.orderType = seng468.scalability.models.entity.StockOrder$OrderType.LIMIT AND " +
             " so.expired = false ORDER BY so.timestamp ASC")
     LinkedList<StockOrder> getAllLimitOrders();
+
+    @Query("SELECT so from StockOrder so WHERE so.parent_stock_tx_id = ?1")
+    LinkedList<StockOrder> findAllParentChildTransactions(Integer parentStockTxId);
 }

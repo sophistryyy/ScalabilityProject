@@ -1,5 +1,6 @@
 package seng468.scalability.services;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -7,59 +8,75 @@ import org.springframework.stereotype.Service;
 import seng468.scalability.matchingEngine.MatchingEngineOrdersRepository;
 import seng468.scalability.matchingEngine.MatchingEngineUtil;
 import seng468.scalability.models.entity.StockOrder;
+import seng468.scalability.models.entity.WalletTX;
 import seng468.scalability.repositories.PortfolioRepository;
 import seng468.scalability.repositories.WalletRepository;
+import seng468.scalability.repositories.WalletTXRepository;
 
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 
 @Service
 public class ExpirationService {
+    private final int MINUTES_TO_EXPIRE = 15;
     private final MatchingEngineOrdersRepository matchingEngineOrdersRepository;
-    private final WalletRepository walletRepository;
-    private final PortfolioRepository portfolioRepository;
+    private final WalletTXRepository walletTXRepository;
     private final MatchingEngineUtil matchingEngineUtil;
 
     @Autowired
-    public ExpirationService(MatchingEngineOrdersRepository matchingEngineOrdersRepository, WalletRepository walletRepository,
-                              PortfolioRepository portfolioRepository, MatchingEngineUtil matchingEngineUtil)
-    {
+    public ExpirationService(MatchingEngineOrdersRepository matchingEngineOrdersRepository, WalletTXRepository walletTXRepository,
+                            MatchingEngineUtil matchingEngineUtil) {
         this.matchingEngineUtil = matchingEngineUtil;
         this.matchingEngineOrdersRepository = matchingEngineOrdersRepository;
-        this.walletRepository = walletRepository;
-        this.portfolioRepository = portfolioRepository;
+        this.walletTXRepository = walletTXRepository;
     }
 
     @Async
-    @Scheduled(fixedRate = 6000)//every minute
-    public void expireStocks(){
+    @Scheduled(fixedRate = 60000)//every minute
+    public void expireStocks() {
         LinkedList<StockOrder> stockOrders = matchingEngineOrdersRepository.getAllLimitOrders();
-        LocalDateTime timeNow = LocalDateTime.now();
-        for(StockOrder order: stockOrders)
+        for (StockOrder order : stockOrders)//contains only IN_PROGRESS and PARTIALLY FULFILLED ones
         {
-            LocalDateTime timestampExpireTime = order.getTimestamp().plusMinutes(15);
-            if(timestampExpireTime.isAfter(timeNow))//expired
+            LocalDateTime timeNow = LocalDateTime.now();
+            LocalDateTime timestampExpireTime = order.getTimestamp().plusMinutes(MINUTES_TO_EXPIRE);
+            boolean partialFulfilled = order.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED;
+            if (timestampExpireTime.isAfter(timeNow))//expired
             {
-                boolean partialFulfilled = order.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED;
                 order.setExpired(true);
-                if(order.getIs_buy())//buy
+                if (order.getIs_buy())//buy
                 {
-                    if(partialFulfilled){
-                        
-                    }else{
+                    refundMoney(order, partialFulfilled);
 
-                    }
-                }else{///sell
-                    if(partialFulfilled){
-
-                    }else{
-
-                    }
+                } else {///sell
+                    matchingEngineUtil.saveToPortfolio(order, order.getTrueRemainingQuantity());
                 }
-            }else{
+
+                if (!partialFulfilled) {
+                    matchingEngineUtil.removeStockTransaction(order);
+                }
+            }else{//sorted by time
                 break;
             }
+        }
+    }
 
+
+    public void refundMoney(StockOrder order, Boolean partialFulfilled) {
+        WalletTX originalWalletTx = walletTXRepository.findByWalletTXId(order.getWalletTXid());
+        Integer toRefund = originalWalletTx.getAmount();
+        if (partialFulfilled) {
+            LinkedList<StockOrder> lstOfOrders = matchingEngineOrdersRepository.findAllParentChildTransactions(order.getStock_tx_id());
+            for (StockOrder childOrder : lstOfOrders) {
+                //childorder holds a price with how much it was bought for!
+                toRefund -= childOrder.getPrice();
+            }
+        }
+        if (toRefund > 0) {
+            try {
+                matchingEngineUtil.returnMoney(order.getStock_tx_id(), order.getUsername(), toRefund);
+            } catch (Exception e) {
+                ;
+            }
         }
     }
 }
