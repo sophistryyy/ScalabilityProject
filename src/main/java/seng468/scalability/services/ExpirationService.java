@@ -19,7 +19,7 @@ import java.util.LinkedList;
 
 @Service
 public class ExpirationService {
-    private final int MINUTES_TO_EXPIRE = 1;
+    private final int MINUTES_TO_EXPIRE = 15;
     private final MatchingEngineOrdersRepository matchingEngineOrdersRepository;
     private final WalletTXRepository walletTXRepository;
     private final MatchingEngineUtil matchingEngineUtil;
