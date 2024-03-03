@@ -33,15 +33,21 @@ public class ExpirationService {
     }
 
     @Async
-    @Scheduled(fixedRate = 60000)//every minute
+    @Scheduled(fixedRate = 500)
     public void expireStocks() {
         LinkedList<StockOrder> stockOrders = matchingEngineOrdersRepository.getAllLimitOrders();
         for (StockOrder order : stockOrders)//contains only IN_PROGRESS and PARTIALLY FULFILLED ones
-        {
+        {   
             LocalDateTime timeNow = LocalDateTime.now();
             LocalDateTime timestampExpireTime = order.getTimestamp().plusMinutes(MINUTES_TO_EXPIRE);
+
             boolean partialFulfilled = order.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED;
-            if (timestampExpireTime.isAfter(timeNow) && order.getOrderStatus() != OrderStatus.COMPLETED )//expired
+            // Quick solve. Refactor later.
+            if (order.getOrderStatus() == OrderStatus.COMPLETED || order.isExpired()) {
+               continue; 
+            }
+
+            if (timeNow.isAfter(timestampExpireTime))//expired
             {
                 order.setExpired(true);
                 if (order.getIs_buy())//buy
@@ -50,13 +56,14 @@ public class ExpirationService {
 
                 } else {///sell
                     matchingEngineUtil.saveToPortfolio(order, order.getTrueRemainingQuantity());
+                    matchingEngineOrdersRepository.save(order);
                 }
 
                 if (!partialFulfilled) {
                     matchingEngineUtil.removeStockTransaction(order);
                 }
             }else{//sorted by time
-                break;
+                break;  
             }
         }
     }

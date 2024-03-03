@@ -29,7 +29,7 @@ public interface MatchingEngineOrdersRepository extends JpaRepository<StockOrder
             "AND so.expired = false AND so.is_buy = true ORDER BY so.price DESC NULLS FIRST, so.timestamp ASC")
     LinkedList<StockOrder> getAllBuyByStock_id(int stock_id);
 
-    @Query("SELECT so from StockOrder so WHERE so.username = ?1 AND so.expired = false")
+    @Query("SELECT so from StockOrder so WHERE so.username = ?1")
     List<StockOrder> findAllByUsername(String username);
 
 
