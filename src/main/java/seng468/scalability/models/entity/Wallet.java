@@ -25,16 +25,15 @@ public class Wallet {
         return this.username;
     }
 
-    public void incrementBalance(Integer amount) throws Exception {
+    public void incrementBalance(Integer amount) throws Exception { 
         if (amount < 0) {
             throw new Exception("Invalid Amount");
         }
-
         this.balance = this.balance + amount;
     }
 
     public void decrementBalance(Integer amount) throws Exception {
-        if (amount > balance) {
+        if (amount > this.balance) {
             throw new Exception("Insufficient Balance");
         }
         if (amount < 0) {

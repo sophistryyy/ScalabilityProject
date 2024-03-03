@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,6 +57,12 @@ public class GetStockPortfolioTests {
         portfolioRepository.deleteAll();
     }
     
+    @AfterAll
+    void breakdownAfterAll() {
+        userRepository.deleteAll();
+        portfolioRepository.deleteAll();
+    }
+
     @Test 
     public void testGetStockPortfolio() throws Exception {
         PortfolioEntry entry1 = new PortfolioEntry(1, "Google", user.getUsername(), 550);

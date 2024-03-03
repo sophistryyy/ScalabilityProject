@@ -1,41 +1,63 @@
 package seng468.scalability.models.entity;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "`Wallet Transactions`")
 public class WalletTX {
     @Id
-    private long walletTXId;
+    @SequenceGenerator(
+            name = "walletTX_sequence",
+            sequenceName = "walletTX_sequence"
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "walletTX_sequence"
+    )
+    private Integer walletTXId;
     private String username;
-    private long stockTXId;
+    private Integer stockTXId;
+
     private boolean isDebit;
     private int amount;
-    private String timestamp;
+    private LocalDateTime timestamp;
 
-    public WalletTX(long walletTXId, String username, long stockTXId, boolean isDebit, int amount) {
+
+
+    public WalletTX(String username, Integer stockTXId, boolean isDebit, int amount) {
+        this.username = username;
+        this.stockTXId = stockTXId;
+        this.isDebit = isDebit;
+        this.amount = amount;
+        this.timestamp = LocalDateTime.now();
+    }
+
+    public WalletTX(Integer walletTXId, String username, Integer stockTXId, boolean isDebit, int amount) {
         this.walletTXId = walletTXId;
         this.username = username;
         this.stockTXId = stockTXId;
         this.isDebit = isDebit;
         this.amount = amount;
-        this.timestamp = new Date().toString();
+        this.timestamp = LocalDateTime.now();
     }
 
-    public long getWalletTXId() {
+    public WalletTX() {
+
+    }
+
+    public Integer getWalletTXId() {
         return this.walletTXId;
+    }
+
+
+    public Integer getStockTXId() {
+        return this.stockTXId;
     }
 
     public String getUsername() {
         return this.username;
-    }
-
-    public long getStockTXId() {
-        return this.stockTXId;
     }
 
     public boolean getIsDebit() {
@@ -46,7 +68,11 @@ public class WalletTX {
         return this.amount;
     }
 
-    public String getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return this.timestamp;
+    }
+
+    public void setStockTXId(Integer stockTXId) {
+        this.stockTXId = stockTXId;
     }
 }
