@@ -41,4 +41,7 @@ public interface MatchingEngineOrdersRepository extends JpaRepository<StockOrder
             " AND so.price is not null AND so.expired = false AND so.is_buy = false ORDER BY so.price ASC")
     LinkedList<StockOrder> getLowestSellOrderByStockId(int stock_id, Pageable pageable);
 
+    @Query("SELECT so from StockOrder so WHERE so.orderType = seng468.scalability.models.entity.StockOrder$OrderType.LIMIT AND " +
+            " so.expired = false ORDER BY so.timestamp ASC")
+    LinkedList<StockOrder> getAllLimitOrders();
 }
