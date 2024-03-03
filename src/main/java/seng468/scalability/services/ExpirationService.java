@@ -9,6 +9,7 @@ import seng468.scalability.matchingEngine.MatchingEngineOrdersRepository;
 import seng468.scalability.matchingEngine.MatchingEngineUtil;
 import seng468.scalability.models.entity.StockOrder;
 import seng468.scalability.models.entity.WalletTX;
+import seng468.scalability.models.entity.StockOrder.OrderStatus;
 import seng468.scalability.repositories.PortfolioRepository;
 import seng468.scalability.repositories.WalletRepository;
 import seng468.scalability.repositories.WalletTXRepository;
@@ -40,7 +41,7 @@ public class ExpirationService {
             LocalDateTime timeNow = LocalDateTime.now();
             LocalDateTime timestampExpireTime = order.getTimestamp().plusMinutes(MINUTES_TO_EXPIRE);
             boolean partialFulfilled = order.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED;
-            if (timestampExpireTime.isAfter(timeNow))//expired
+            if (timestampExpireTime.isAfter(timeNow) && order.getOrderStatus() != OrderStatus.COMPLETED )//expired
             {
                 order.setExpired(true);
                 if (order.getIs_buy())//buy
