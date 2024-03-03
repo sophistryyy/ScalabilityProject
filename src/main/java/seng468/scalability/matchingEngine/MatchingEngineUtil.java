@@ -196,9 +196,10 @@ public class MatchingEngineUtil {
 
 
     //use with @Transactional
+    @Transactional
     public void removeStockTransaction(StockOrder order)
     {
-        matchingEngineOrdersRepository.deleteByStock_tx_id(order.getStock_tx_id());
+        matchingEngineOrdersRepository.delete(order);
     }
 
 

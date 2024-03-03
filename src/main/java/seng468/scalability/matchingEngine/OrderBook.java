@@ -21,7 +21,7 @@ public class OrderBook {
         StockOrder buyOrder =  buy_orders.peek();
         StockOrder sellOrder = sell_orders.peek();
 
-        if(buyOrder == null || sellOrder == null){return false;}// one the queues are empty, so can't match
+        if(buyOrder == null || sellOrder == null){return false;}// one the lists are empty, so can't match
 
         if(buyOrder.getOrderType() == StockOrder.OrderType.LIMIT ) //error handling, don't want to match null price
         {
