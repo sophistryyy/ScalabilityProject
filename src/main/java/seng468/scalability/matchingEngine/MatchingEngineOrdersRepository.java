@@ -37,12 +37,17 @@ public interface MatchingEngineOrdersRepository extends JpaRepository<StockOrder
     StockOrder findByUsernameAndStockTxId(Integer stockTxId, String username);
 
     //rework this!
+    @Query("SELECT so FROM StockOrder so WHERE so.stock_id = ?1 AND so.orderStatus = seng468.scalability.models.entity.StockOrder$OrderStatus.COMPLETED" +
+            " AND so.price is not null AND so.expired = false AND so.is_buy = false ORDER BY so.timestamp DESC")
+    LinkedList<StockOrder> getLastSellOrderByStockId(int stock_id, Pageable pageable);
+
     @Query("SELECT so FROM StockOrder so WHERE so.stock_id = ?1 AND so.orderStatus != seng468.scalability.models.entity.StockOrder$OrderStatus.COMPLETED" +
-            " AND so.price is not null AND so.expired = false AND so.is_buy = false ORDER BY so.price ASC")
+            " AND so.price is not null AND so.expired = false AND so.is_buy = false ORDER BY so.price DESC")
     LinkedList<StockOrder> getLowestSellOrderByStockId(int stock_id, Pageable pageable);
 
+
     @Query("SELECT so from StockOrder so WHERE so.orderType = seng468.scalability.models.entity.StockOrder$OrderType.LIMIT AND " +
-            " so.expired = false ORDER BY so.timestamp ASC")
+            " so.orderStatus != seng468.scalability.models.entity.StockOrder$OrderStatus.COMPLETED  AND so.expired = false ORDER BY so.timestamp ASC")
     LinkedList<StockOrder> getAllLimitOrders();
 
     @Query("SELECT so from StockOrder so WHERE so.parent_stock_tx_id = ?1")
