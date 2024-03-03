@@ -36,6 +36,19 @@ public class FrontendController {
     public void redirectToAddStock(HttpServletResponse response) throws IOException {
         response.sendRedirect("/frontend/AddStock.html");
     }
+
+    @GetMapping("/getWalletTransactions-ui")
+    public void redirectToWalletTransactions(HttpServletResponse response) throws IOException{
+        response.sendRedirect("/frontend/getWalletTransactions");
+    }
+    @GetMapping("/getStockTransactions-ui")
+    public void redirectToStockTransactions(HttpServletResponse response) throws IOException{
+        response.sendRedirect("/frontend/getStockTransactions");
+    }
+
+  
+
+
         
         
     }
