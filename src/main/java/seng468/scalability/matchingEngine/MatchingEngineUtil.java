@@ -14,6 +14,7 @@ import seng468.scalability.repositories.WalletRepository;
 import seng468.scalability.repositories.WalletTXRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class MatchingEngineUtil {
@@ -166,23 +167,24 @@ public class MatchingEngineUtil {
     }
 
     //Rework this!
-    public List<StockPrices> getBestPrices()
-    {
-        List<StockPrices> stockPriceLst = new ArrayList<>();
-        List<Stock> lstOfStocks= stockRepository.findAll();
+    public List<StockPrices> getBestPrices() {
+        return stockRepository.findAll().stream()
+                .map(stock -> {
+                    StockOrder lowestSellOrder = matchingEngineOrdersRepository.getLastSellOrderByStockId(stock.getId(), PageRequest.of(0, 1)).peekFirst();
 
-        for(Stock stock : lstOfStocks)
-        {
-            LinkedList<StockOrder> lowestSellOrder = matchingEngineOrdersRepository.getLowestSellOrderByStockId(stock.getId(), PageRequest.of(0, 1));
-            if(lowestSellOrder.peek() != null) {
-                Integer price = lowestSellOrder.peek().getPrice();
-                StockPrices stockPrice = new StockPrices(stock, price);
-                stockPriceLst.add(stockPrice);
-            }
-        }
-        return stockPriceLst;
+                    if (lowestSellOrder == null) {
+                        lowestSellOrder = matchingEngineOrdersRepository.getLowestSellOrderByStockId(stock.getId(), PageRequest.of(0, 1)).peekFirst();
+                    }
+
+                    return lowestSellOrder != null
+                            ? new StockPrices(stock, lowestSellOrder.getPrice())
+                            : null;
+                })
+                .filter(stockPrice -> stockPrice != null)
+                .collect(Collectors.toList());
     }
 
+    /*
     public Integer getBestPriceByStockId(int stock_id)
     {
         LinkedList<StockOrder> lowestSellOrder = matchingEngineOrdersRepository.getLowestSellOrderByStockId(stock_id, PageRequest.of(0, 1));
@@ -192,7 +194,7 @@ public class MatchingEngineUtil {
         }
         return lowestSellOrder.peek().getPrice();
     }
-
+    */
 
 
     //use with @Transactional
