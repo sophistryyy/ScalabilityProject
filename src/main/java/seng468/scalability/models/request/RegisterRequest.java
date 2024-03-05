@@ -8,8 +8,8 @@ public class RegisterRequest {
     private String name;
 
     public RegisterRequest(@JsonProperty("user_name") String username, String password, String name) {
-        this.username = username;
-        this.password = password;
+        this.username = username.trim();
+        this.password = password.trim();
         this.name = name;
     }
 

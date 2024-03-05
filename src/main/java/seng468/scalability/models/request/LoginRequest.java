@@ -7,8 +7,8 @@ public class LoginRequest {
     private String password;
 
     public LoginRequest(@JsonProperty("user_name") String username, String password) {
-        this.username = username;
-        this.password = password;
+        this.username = username.trim();
+        this.password = password.trim();
     }
 
     public String getUsername() {
