@@ -3,9 +3,9 @@ package seng468.scalability.models.entity;
 
 public class StockPrices {
     Stock stock;
-    Integer price;
+    Long price;
 
-    public StockPrices(Stock stock, Integer price) {
+    public StockPrices(Stock stock, Long price) {
         this.stock = stock;
         this.price = price;
     }
@@ -14,7 +14,7 @@ public class StockPrices {
         return stock;
     }
 
-    public Integer getPrice() {
+    public Long getPrice() {
         return price;
     }
 }

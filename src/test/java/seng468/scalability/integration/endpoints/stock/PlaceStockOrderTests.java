@@ -113,7 +113,7 @@ public class PlaceStockOrderTests {
     public void testPlaceOrderInitialLimitSellOrder() throws Exception {
         Wallet userWallet = new Wallet(companyUser.getUsername());
         walletRepository.save(userWallet);
-        PortfolioEntry initialPortfolioEntry = new PortfolioEntry(stock1.getId(), "Google", companyUser.getUsername(), 100);
+        PortfolioEntry initialPortfolioEntry = new PortfolioEntry(stock1.getId(), "Google", companyUser.getUsername(), 100L);
         portfolioRepository.save(initialPortfolioEntry);
 
         String jwtToken = jwtUtil.generateToken(companyUser.getUsername());
@@ -133,7 +133,7 @@ public class PlaceStockOrderTests {
         List<StockOrder> entries = matchingEngineOrdersRepository.findAllByUsername(companyUser.getUsername());
         assertEquals(1, entries.size());
         StockOrder entry = entries.get(0);
-        StockOrder expected = new StockOrder(null, null, stock1.getId(), false, OrderType.LIMIT, 100, 80, OrderStatus.IN_PROGRESS, companyUser.getUsername());
+        StockOrder expected = new StockOrder(null, null, stock1.getId(), false, OrderType.LIMIT, 100L, 80L, OrderStatus.IN_PROGRESS, companyUser.getUsername());
         assertStockTX(expected, entry);
 
         // No wallet transactions for creating sell order
@@ -148,9 +148,9 @@ public class PlaceStockOrderTests {
     @Test
     public void testPlaceOrderInitialLimitBuyOrder() throws Exception {
         Wallet userWallet = new Wallet(user.getUsername());
-        userWallet.incrementBalance(8000);
+        userWallet.incrementBalance(8000L);
         walletRepository.save(userWallet);
-        PortfolioEntry initialPortfolioEntry = new PortfolioEntry(1L, "Google", user.getUsername(), 0);
+        PortfolioEntry initialPortfolioEntry = new PortfolioEntry(1L, "Google", user.getUsername(), 0L);
         portfolioRepository.save(initialPortfolioEntry);
 
         String jwtToken = jwtUtil.generateToken(user.getUsername());
@@ -170,14 +170,14 @@ public class PlaceStockOrderTests {
         List<StockOrder> stockOrderEntries = matchingEngineOrdersRepository.findAllByUsername(user.getUsername());
         assertEquals(1, stockOrderEntries.size());
         StockOrder stockOrderEntry = stockOrderEntries.get(0);
-        StockOrder expectedOrderEntry = new StockOrder(null, 1L, stock1.getId(), true, OrderType.LIMIT, 100, 80, OrderStatus.IN_PROGRESS, user.getUsername());
+        StockOrder expectedOrderEntry = new StockOrder(null, 1L, stock1.getId(), true, OrderType.LIMIT, 100L, 80L, OrderStatus.IN_PROGRESS, user.getUsername());
         assertStockTX(expectedOrderEntry, stockOrderEntry);
 
         // Check if wallet transaction entries was updated correctly
         List<WalletTX> walletTXEntries = walletTXRepository.findAllByUsername(user.getUsername());
         assertEquals(1, walletTXEntries.size());
         WalletTX walletTXEntry = walletTXEntries.get(0);
-        WalletTX expectedWalletTXEntry = new WalletTX(stockOrderEntry.getWalletTXid(), user.getUsername(), stockOrderEntry.getStock_tx_id(), true, 100*80);
+        WalletTX expectedWalletTXEntry = new WalletTX(stockOrderEntry.getWalletTXid(), user.getUsername(), stockOrderEntry.getStock_tx_id(), true, 100*80L);
         assertWalletTX(expectedWalletTXEntry, walletTXEntry);
 
         // Stock should not have a portfolio entry on buy order creation

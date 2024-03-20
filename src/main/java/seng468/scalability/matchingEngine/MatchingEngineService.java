@@ -88,11 +88,11 @@ public class MatchingEngineService {
             } //buyer's price is guaranteed to be higher if limit
         }
         //if sellingOrder is a MARKET one then set the price to current buyer.
-        int sellingPrice = sellOrder.getPrice() != null ? sellOrder.getPrice()
+        Long sellingPrice = sellOrder.getPrice() != null ? sellOrder.getPrice()
                                                         : buyOrder.getPrice(); //handle Market orders
-        int sellingStocks = sellOrder.getTrueRemainingQuantity();
+        Long sellingStocks = sellOrder.getTrueRemainingQuantity();
         //int buyingPrice = buyOrder.getPrice();
-        int buyingStocks = buyOrder.getTrueRemainingQuantity();
+        Long buyingStocks = buyOrder.getTrueRemainingQuantity();
 
         Boolean isBuyOrderMarketOne = matchingEngineUtil.isOrderMarketOne(buyOrder);
         Boolean isSellOrderMarketOne = matchingEngineUtil.isOrderMarketOne(sellOrder);
@@ -114,12 +114,12 @@ public class MatchingEngineService {
                 return;
             }
             //buyer has enough money but maybe not enough to buy all stocks!
-            int buyerCanAffordQuantity = (int) Math.floor((double) buyerWallet.getBalance() / sellingPrice);
+            Long buyerCanAffordQuantity = (long) Math.floor((double) buyerWallet.getBalance() / sellingPrice);
             if(buyerCanAffordQuantity < buyingStocks)//buyer can afford less than asked
             {
                 buyingStocks = buyerCanAffordQuantity;
             }//otherwise buyer can afford all
-            int toDeduct = sellingPrice * buyingStocks;
+            Long toDeduct = sellingPrice * buyingStocks;
             buyerWallet.decrementBalance(toDeduct); //deduct whole amount even if seller doesn't have enough stocks, refund later
 
             WalletTX buyerWalletTX = new WalletTX(buyOrder.getUsername(), buyOrderStockTXid, true, toDeduct);
@@ -167,7 +167,7 @@ public class MatchingEngineService {
                 sellOrder.setWalletTXid(sellerWalletTX.getWalletTXId());
             }
             sellOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);//set previously PARTIAL FULFILLED or IN_PROGRESS to completed
-            sellOrder.setTrueRemainingQuantity(0); // no more needed
+            sellOrder.setTrueRemainingQuantity(0L); // no more needed
             sellerWallet.incrementBalance(sellingPrice * sellingStocks);//add money to seller based on trueRemaining quantity
             orderBook.popSellOrder();
 
@@ -186,7 +186,7 @@ public class MatchingEngineService {
             buyOrder.setOrderStatus(StockOrder.OrderStatus.PARTIAL_FULFILLED);
             if(isBuyOrderMarketOne)
             {
-                Integer toReturn = walletTXRepository.findByWalletTXId(buyOrder.getWalletTXid()).getAmount() - sellingPrice * sellingStocks;
+                Long toReturn = walletTXRepository.findByWalletTXId(buyOrder.getWalletTXid()).getAmount() - sellingPrice * sellingStocks;
                 matchingEngineUtil.returnMoney(buyOrderStockTXid, buyOrder.getUsername(), toReturn);
                 buyOrder.setWalletTXid(null);//next round new wallet TX will be assigned
             }
@@ -226,7 +226,7 @@ public class MatchingEngineService {
 
             //update status
             buyOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);//set previously PARTIAL FULFILLED or IN_PROGRESS to completed (original parent!)
-            buyOrder.setTrueRemainingQuantity(0);
+            buyOrder.setTrueRemainingQuantity(0L);
             //add stock to portfolio
             matchingEngineUtil.saveToPortfolio(buyOrder, buyingStocks);
             //create wallet transaction
@@ -245,7 +245,7 @@ public class MatchingEngineService {
                 sellOrder.setWalletTXid(sellerWalletTX.getWalletTXId());
             }
             sellOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);
-            sellOrder.setTrueRemainingQuantity(0);
+            sellOrder.setTrueRemainingQuantity(0L);
             sellerWallet.incrementBalance(sellingPrice * sellingStocks);//add money to seller based on trueRemaining quantity
             orderBook.popSellOrder();
 
@@ -264,7 +264,7 @@ public class MatchingEngineService {
 
 
             buyOrder.setOrderStatus(StockOrder.OrderStatus.COMPLETED);
-            buyOrder.setTrueRemainingQuantity(0);
+            buyOrder.setTrueRemainingQuantity(0L);
             //save to portfolio
             matchingEngineUtil.saveToPortfolio(buyOrder, buyingStocks);
             orderBook.popBuyOrder();

@@ -21,12 +21,12 @@ public class WalletTX {
     private Long stockTXId;
 
     private boolean isDebit;
-    private int amount;
+    private Long amount;
     private LocalDateTime timestamp;
 
 
 
-    public WalletTX(String username, Long stockTXId, boolean isDebit, int amount) {
+    public WalletTX(String username, Long stockTXId, boolean isDebit, Long amount) {
         this.username = username;
         this.stockTXId = stockTXId;
         this.isDebit = isDebit;
@@ -34,7 +34,7 @@ public class WalletTX {
         this.timestamp = LocalDateTime.now();
     }
 
-    public WalletTX(Long walletTXId, String username, Long stockTXId, boolean isDebit, int amount) {
+    public WalletTX(Long walletTXId, String username, Long stockTXId, boolean isDebit, Long amount) {
         this.walletTXId = walletTXId;
         this.username = username;
         this.stockTXId = stockTXId;
@@ -64,7 +64,7 @@ public class WalletTX {
         return this.isDebit;
     }
 
-    public int getAmount() {
+    public Long getAmount() {
         return this.amount;
     }
 

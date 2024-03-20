@@ -117,7 +117,7 @@ public class AddStockToUserTests {
     @Test
     public void testAddStockToUserWithExistingEntry() throws Exception {
         Long googleStockId = 1L;
-        PortfolioEntry entry1 = new PortfolioEntry(googleStockId, "Google", user.getUsername(), 550);
+        PortfolioEntry entry1 = new PortfolioEntry(googleStockId, "Google", user.getUsername(), 550L);
         portfolioRepository.save(entry1);
 
         Long appleStockId = 2L;
@@ -140,7 +140,7 @@ public class AddStockToUserTests {
     @Test
     public void testAddStockToUserAddQuantityToExistingEntry() throws Exception {
         Long googleStockId = 1L;
-        PortfolioEntry entry1 = new PortfolioEntry(googleStockId, "Google", user.getUsername(), 550);
+        PortfolioEntry entry1 = new PortfolioEntry(googleStockId, "Google", user.getUsername(), 550L);
         portfolioRepository.save(entry1);
 
         String requestBody = "{\"stock_id\": \"" + String.valueOf(googleStockId) + "\", \"quantity\": \"50\"}"; // Google stock ID should be 1

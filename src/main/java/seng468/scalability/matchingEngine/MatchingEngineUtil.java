@@ -83,7 +83,7 @@ public class MatchingEngineUtil {
             Wallet wallet = walletRepository.findByUsername(order.getUsername());
             if(order.getOrderType() == StockOrder.OrderType.LIMIT)
             {
-                int toDeduct = order.getPrice() * order.getQuantity();
+                Long toDeduct = order.getPrice() * order.getQuantity();
                 try {
                     wallet.decrementBalance(toDeduct);
                 }catch(Exception e)
@@ -109,7 +109,7 @@ public class MatchingEngineUtil {
         return completedOrError;
     }
 
-    public String removeQuantityFromPortfolio(PortfolioEntry portfolioEntry, Integer quantity)
+    public String removeQuantityFromPortfolio(PortfolioEntry portfolioEntry, Long quantity)
     {
         try {
             portfolioEntry.removeQuantity(quantity);
@@ -130,7 +130,7 @@ public class MatchingEngineUtil {
         return order.getOrderType() == StockOrder.OrderType.MARKET;
     }
 
-    public void returnMoney(Long stockTXid, String username, Integer balance) throws Exception{
+    public void returnMoney(Long stockTXid, String username, Long balance) throws Exception{
         //must be used in @Transactional
         //remove wallet transaction
         walletTXRepository.deleteByStockTXId(stockTXid);
@@ -140,7 +140,7 @@ public class MatchingEngineUtil {
     }
 
 
-    public void saveToPortfolio(StockOrder buyOrder, Integer buyingStocks)
+    public void saveToPortfolio(StockOrder buyOrder, Long buyingStocks)
     {
         PortfolioEntry buyerPortfolioByStockId  = portfolioRepository.findEntryByStockIdAndUsername(buyOrder.getStockId(), buyOrder.getUsername()); //add stocks to buyer's portfolio
         Long stock_id = buyOrder.getStockId();
@@ -153,8 +153,8 @@ public class MatchingEngineUtil {
     }
 
 
-    public Long createStockTransaction(StockOrder order, Integer remainingStocks,
-                                       Integer priceBoughtFor, Long walletTXid, StockOrder.OrderType orderType){
+    public Long createStockTransaction(StockOrder order, Long remainingStocks,
+                                       Long priceBoughtFor, Long walletTXid, StockOrder.OrderType orderType){
 
         StockOrder completedStockOrder = order.createCopy(remainingStocks, StockOrder.OrderStatus.COMPLETED);
         if(priceBoughtFor > 0){

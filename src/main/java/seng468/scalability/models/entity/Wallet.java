@@ -9,7 +9,7 @@ public class Wallet {
     @Id
     private String username;
 
-    private Integer balance = 0;
+    private Long balance = 0L;
 
     public Wallet() {}
 
@@ -17,7 +17,7 @@ public class Wallet {
         this.username = username;
     }
 
-    public Integer getBalance() {
+    public Long getBalance() {
         return this.balance;
     }
 
@@ -25,14 +25,14 @@ public class Wallet {
         return this.username;
     }
 
-    public void incrementBalance(Integer amount) throws Exception { 
+    public void incrementBalance(Long amount) throws Exception { 
         if (amount < 0) {
             throw new Exception("Invalid Amount");
         }
         this.balance = this.balance + amount;
     }
 
-    public void decrementBalance(Integer amount) throws Exception {
+    public void decrementBalance(Long amount) throws Exception {
         if (amount > this.balance) {
             throw new Exception("Insufficient Balance");
         }

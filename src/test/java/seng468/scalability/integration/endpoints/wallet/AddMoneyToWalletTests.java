@@ -87,7 +87,7 @@ public class AddMoneyToWalletTests {
     @Test
     public void testAddMoneyToWalletAddToExistingBalance() throws Exception {
         Wallet userWallet = new Wallet(user.getUsername());
-        userWallet.incrementBalance(50);
+        userWallet.incrementBalance(50L);
         walletRepository.save(userWallet);
 
         String requestBody = "{\"amount\": 10000}";

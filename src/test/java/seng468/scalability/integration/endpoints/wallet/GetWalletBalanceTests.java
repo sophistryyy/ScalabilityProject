@@ -67,7 +67,7 @@ public class GetWalletBalanceTests {
     @Test
     public void getWalletBalanceTest() throws Exception {
         Wallet userWallet = new Wallet(user.getUsername());
-        userWallet.incrementBalance(10000);
+        userWallet.incrementBalance(10000L);
         walletRepository.save(userWallet);
 
         MvcResult res = mvc.perform(get("/getWalletBalance")
@@ -83,11 +83,11 @@ public class GetWalletBalanceTests {
     @Test
     public void getWalletBalanceTestWithTwoWallets() throws Exception {
         Wallet userWallet1 = new Wallet(user.getUsername());
-        userWallet1.incrementBalance(10000);
+        userWallet1.incrementBalance(10000L);
         walletRepository.save(userWallet1);
 
         Wallet userWallet2 = new Wallet("user2");
-        userWallet2.incrementBalance(50);
+        userWallet2.incrementBalance(50L);
         walletRepository.save(userWallet2);
 
         MvcResult res = mvc.perform(get("/getWalletBalance")

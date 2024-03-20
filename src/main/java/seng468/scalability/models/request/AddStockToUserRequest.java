@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AddStockToUserRequest {
     private Long stockId;
-    private int quantity;
+    private Long quantity;
 
-    public AddStockToUserRequest(@JsonProperty("stock_id") Long stockId, int quantity) {
+    public AddStockToUserRequest(@JsonProperty("stock_id") Long stockId, Long quantity) {
         this.stockId = stockId;
         this.quantity = quantity;
     }
@@ -15,7 +15,7 @@ public class AddStockToUserRequest {
         return this.stockId;
     }
 
-    public int getQuantity() {
+    public Long getQuantity() {
         return this.quantity;
     }
 }

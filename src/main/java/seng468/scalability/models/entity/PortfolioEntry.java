@@ -12,11 +12,11 @@ public class PortfolioEntry {
     // username of owner of stock
     private String stockName;
     private String username;
-    private int quantity;
+    private Long quantity;
     
     public PortfolioEntry() {}
 
-    public PortfolioEntry(Long stockId, String stockName, String username, int quantity) {
+    public PortfolioEntry(Long stockId, String stockName, String username, Long quantity) {
         this.stockId = stockId;
         this.stockName = stockName;
         this.username = username;
@@ -35,15 +35,15 @@ public class PortfolioEntry {
         return this.username;
     }
 
-    public int getQuantity() {
+    public Long getQuantity() {
         return this.quantity;
     }
 
-    public void addQuantity(int quantityToAdd) {
+    public void addQuantity(Long quantityToAdd) {
         quantity += quantityToAdd;
     }
 
-    public void removeQuantity(int quantityToRemove) throws Exception {
+    public void removeQuantity(Long quantityToRemove) throws Exception {
         if(quantityToRemove > this.quantity)
         {
             throw new Exception("User doesn't have enough of stocks' quantity");

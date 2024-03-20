@@ -71,7 +71,7 @@ public class ExpirationService {
 
     public void refundMoney(StockOrder order, Boolean partialFulfilled) {
         WalletTX originalWalletTx = walletTXRepository.findByWalletTXId(order.getWalletTXid());
-        Integer toRefund = originalWalletTx.getAmount();
+        Long toRefund = originalWalletTx.getAmount();
         if (partialFulfilled) {
             LinkedList<StockOrder> lstOfOrders = matchingEngineOrdersRepository.findAllParentChildTransactions(order.getStock_tx_id());
             for (StockOrder childOrder : lstOfOrders) {

@@ -9,8 +9,8 @@ public class PlaceStockOrderRequest {
     private boolean is_buy;
     @JsonProperty("order_type")
     private String orderType;
-    private Integer quantity;
-    private Integer price;
+    private Long quantity;
+    private Long price;
     public PlaceStockOrderRequest()
     {}
 
@@ -26,11 +26,11 @@ public class PlaceStockOrderRequest {
         return orderType;
     }
 
-    public Integer getQuantity() {
+    public Long getQuantity() {
         return quantity;
     }
 
-    public Integer getPrice() {
+    public Long getPrice() {
         return price;
     }
 }
