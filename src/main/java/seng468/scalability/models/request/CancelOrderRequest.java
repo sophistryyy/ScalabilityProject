@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CancelOrderRequest {
     @JsonProperty("stock_tx_id")
-    private Integer transactionId;
+    private Long transactionId;
 
     public CancelOrderRequest() {
 
     }
 
-    public Integer getTransactionId() {
+    public Long getTransactionId() {
         return transactionId;
     }
 }

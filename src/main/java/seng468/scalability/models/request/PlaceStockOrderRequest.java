@@ -5,7 +5,7 @@ import seng468.scalability.models.entity.StockOrder;
 
 public class PlaceStockOrderRequest {
 
-    private int stock_id;
+    private Long stock_id;
     private boolean is_buy;
     @JsonProperty("order_type")
     private String orderType;
@@ -14,7 +14,7 @@ public class PlaceStockOrderRequest {
     public PlaceStockOrderRequest()
     {}
 
-    public int getStock_id() {
+    public Long getStock_id() {
         return stock_id;
     }
 

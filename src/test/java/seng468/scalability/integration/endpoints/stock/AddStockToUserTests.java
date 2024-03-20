@@ -78,7 +78,7 @@ public class AddStockToUserTests {
     
     @Test 
     public void testAddStockToUser() throws Exception {
-        int googleStockId = 1;
+        Long googleStockId = 1L;
 
         String requestBody = "{\"stock_id\": \"" + String.valueOf(googleStockId) + "\", \"quantity\": \"550\"}"; // Google stock ID should be 1
         MvcResult res = mvc.perform(post("/addStockToUser")
@@ -98,7 +98,7 @@ public class AddStockToUserTests {
 
     @Test
     public void testAddStockToUserWithInvalidStock() throws Exception {
-        int invalidStockId = 3;
+        Long invalidStockId = 3L;
 
         String requestBody = "{\"stock_id\": \"" + String.valueOf(invalidStockId) + "\", \"quantity\": \"550\"}"; // Google stock ID should be 1
         MvcResult res = mvc.perform(post("/addStockToUser")
@@ -116,11 +116,11 @@ public class AddStockToUserTests {
 
     @Test
     public void testAddStockToUserWithExistingEntry() throws Exception {
-        int googleStockId = 1;
+        Long googleStockId = 1L;
         PortfolioEntry entry1 = new PortfolioEntry(googleStockId, "Google", user.getUsername(), 550);
         portfolioRepository.save(entry1);
 
-        int appleStockId = 2;
+        Long appleStockId = 2L;
         String requestBody = "{\"stock_id\": \"" + String.valueOf(appleStockId) + "\", \"quantity\": \"369\"}"; // Google stock ID should be 1
         MvcResult res = mvc.perform(post("/addStockToUser")
         .contentType(MediaType.APPLICATION_JSON)
@@ -139,7 +139,7 @@ public class AddStockToUserTests {
 
     @Test
     public void testAddStockToUserAddQuantityToExistingEntry() throws Exception {
-        int googleStockId = 1;
+        Long googleStockId = 1L;
         PortfolioEntry entry1 = new PortfolioEntry(googleStockId, "Google", user.getUsername(), 550);
         portfolioRepository.save(entry1);
 

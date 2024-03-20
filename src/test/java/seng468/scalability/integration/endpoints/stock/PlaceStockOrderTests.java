@@ -150,7 +150,7 @@ public class PlaceStockOrderTests {
         Wallet userWallet = new Wallet(user.getUsername());
         userWallet.incrementBalance(8000);
         walletRepository.save(userWallet);
-        PortfolioEntry initialPortfolioEntry = new PortfolioEntry(1, "Google", user.getUsername(), 0);
+        PortfolioEntry initialPortfolioEntry = new PortfolioEntry(1L, "Google", user.getUsername(), 0);
         portfolioRepository.save(initialPortfolioEntry);
 
         String jwtToken = jwtUtil.generateToken(user.getUsername());
@@ -170,7 +170,7 @@ public class PlaceStockOrderTests {
         List<StockOrder> stockOrderEntries = matchingEngineOrdersRepository.findAllByUsername(user.getUsername());
         assertEquals(1, stockOrderEntries.size());
         StockOrder stockOrderEntry = stockOrderEntries.get(0);
-        StockOrder expectedOrderEntry = new StockOrder(null, 1, stock1.getId(), true, OrderType.LIMIT, 100, 80, OrderStatus.IN_PROGRESS, user.getUsername());
+        StockOrder expectedOrderEntry = new StockOrder(null, 1L, stock1.getId(), true, OrderType.LIMIT, 100, 80, OrderStatus.IN_PROGRESS, user.getUsername());
         assertStockTX(expectedOrderEntry, stockOrderEntry);
 
         // Check if wallet transaction entries was updated correctly

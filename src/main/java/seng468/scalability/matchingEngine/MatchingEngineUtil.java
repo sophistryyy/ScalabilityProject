@@ -60,7 +60,7 @@ public class MatchingEngineUtil {
     public IntOrError verifyIfEnough(StockOrder order)
     {
         IntOrError completedOrError = new IntOrError();//class that has message and WalletTXid. if message then error happened
-        int stockId = order.getStockId();
+        Long stockId = order.getStockId();
         if (!stockRepository.existsById(stockId))
         {
             completedOrError.setMessage("Invalid stock Id. It doesn't exist");
@@ -130,7 +130,7 @@ public class MatchingEngineUtil {
         return order.getOrderType() == StockOrder.OrderType.MARKET;
     }
 
-    public void returnMoney(Integer stockTXid, String username, Integer balance) throws Exception{
+    public void returnMoney(Long stockTXid, String username, Integer balance) throws Exception{
         //must be used in @Transactional
         //remove wallet transaction
         walletTXRepository.deleteByStockTXId(stockTXid);
@@ -143,7 +143,7 @@ public class MatchingEngineUtil {
     public void saveToPortfolio(StockOrder buyOrder, Integer buyingStocks)
     {
         PortfolioEntry buyerPortfolioByStockId  = portfolioRepository.findEntryByStockIdAndUsername(buyOrder.getStockId(), buyOrder.getUsername()); //add stocks to buyer's portfolio
-        int stock_id = buyOrder.getStockId();
+        Long stock_id = buyOrder.getStockId();
         if (buyerPortfolioByStockId == null) {
             buyerPortfolioByStockId = new PortfolioEntry(stock_id, stockRepository.findStockNameById(stock_id) ,buyOrder.getUsername(), buyingStocks);
         } else {
@@ -153,8 +153,8 @@ public class MatchingEngineUtil {
     }
 
 
-    public Integer createStockTransaction(StockOrder order, Integer remainingStocks,
-                                       Integer priceBoughtFor, Integer walletTXid, StockOrder.OrderType orderType){
+    public Long createStockTransaction(StockOrder order, Integer remainingStocks,
+                                       Integer priceBoughtFor, Long walletTXid, StockOrder.OrderType orderType){
 
         StockOrder completedStockOrder = order.createCopy(remainingStocks, StockOrder.OrderStatus.COMPLETED);
         if(priceBoughtFor > 0){

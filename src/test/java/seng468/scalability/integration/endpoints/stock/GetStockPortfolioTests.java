@@ -65,9 +65,9 @@ public class GetStockPortfolioTests {
 
     @Test 
     public void testGetStockPortfolio() throws Exception {
-        PortfolioEntry entry1 = new PortfolioEntry(1, "Google", user.getUsername(), 550);
+        PortfolioEntry entry1 = new PortfolioEntry(1L, "Google", user.getUsername(), 550);
         portfolioRepository.save(entry1);
-        PortfolioEntry entry2 = new PortfolioEntry(2, "Apple", user.getUsername(), 369);
+        PortfolioEntry entry2 = new PortfolioEntry(2L, "Apple", user.getUsername(), 369);
         portfolioRepository.save(entry2);
 
         MvcResult res = mvc.perform(get("/getStockPortfolio")

@@ -3,10 +3,7 @@ package seng468.scalability.models.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Entity
 @Table(name = "stock_orders")
@@ -34,11 +31,11 @@ public class StockOrder {
     )
     @Column(name = "stock_tx_id")
     @JsonProperty("stock_tx_id")
-    private Integer stock_tx_id;
+    private Long stock_tx_id;
     private String username;
-    private Integer parent_stock_tx_id;
+    private Long parent_stock_tx_id;
     @JsonProperty("stock_id")
-    private int stock_id;
+    private Long stock_id;
     private boolean is_buy;
     @JsonProperty("order_type")
     private OrderType orderType;
@@ -46,7 +43,7 @@ public class StockOrder {
     private Integer price;
     private LocalDateTime timestamp;
     private OrderStatus orderStatus;
-    private Integer walletTXid;
+    private Long walletTXid;
     private Integer trueRemainingQuantity;
 
     private boolean expired;
@@ -54,7 +51,7 @@ public class StockOrder {
 
     public StockOrder() {}
 
-    public StockOrder(int stock_id, boolean is_buy, OrderType orderType, Integer quantity, Integer price, String username) {
+    public StockOrder(Long stock_id, boolean is_buy, OrderType orderType, Integer quantity, Integer price, String username) {
         this.parent_stock_tx_id = null;
         this.walletTXid = null;
         this.stock_id = stock_id;
@@ -69,7 +66,7 @@ public class StockOrder {
         this.expired = false;
     }
 
-    public StockOrder(Integer parent_stock_tx_id, Integer walletTXid, int stock_id, boolean is_buy, OrderType orderType, Integer quantity, Integer price, OrderStatus orderStatus, String username) {
+    public StockOrder(Long parent_stock_tx_id, Long walletTXid, Long stock_id, boolean is_buy, OrderType orderType, Integer quantity, Integer price, OrderStatus orderStatus, String username) {
         this.parent_stock_tx_id = parent_stock_tx_id;
         this.walletTXid = walletTXid;
         this.stock_id = stock_id;
@@ -101,17 +98,17 @@ public class StockOrder {
         return copy;
     }
 
-    public Integer getWalletTXid() {
+    public Long getWalletTXid() {
         return walletTXid;
     }
 
     public String getUsername() {return username;}
 
-    public Integer getStock_tx_id() {return stock_tx_id;}
+    public Long getStock_tx_id() {return stock_tx_id;}
 
-    public Integer getParent_stock_tx_id() {return parent_stock_tx_id;}
+    public Long getParent_stock_tx_id() {return parent_stock_tx_id;}
 
-    public int getStockId() {
+    public Long getStockId() {
         return stock_id;
     }
 
@@ -147,7 +144,7 @@ public class StockOrder {
 
     public void setTrueRemainingQuantity(Integer trueRemainingQuantity) {this.trueRemainingQuantity = trueRemainingQuantity;}
 
-    public void setParent_stock_tx_id(Integer parent_stock_tx_id) {this.parent_stock_tx_id = parent_stock_tx_id;}
+    public void setParent_stock_tx_id(Long parent_stock_tx_id) {this.parent_stock_tx_id = parent_stock_tx_id;}
 
     public void setOrderType(OrderType orderType) {
         this.orderType = orderType;
@@ -169,7 +166,7 @@ public class StockOrder {
         this.orderStatus = orderStatus;
     }
 
-    public void setWalletTXid(Integer walletTXid) {
+    public void setWalletTXid(Long walletTXid) {
         this.walletTXid = walletTXid;
     }
 

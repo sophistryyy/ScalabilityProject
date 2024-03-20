@@ -43,7 +43,7 @@ public class MatchingEngineService {
         if(verifier.getMessage() != null){return verifier.getMessage();}
         order.setWalletTXid(verifier.getWalletTXid());
 
-        int req_stock_id = order.getStockId();
+        Long req_stock_id = order.getStockId();
         //at least 1 element in it and no completed transactions
         LinkedList<StockOrder> lstOfSellStocks = matchingEngineOrdersRepository.getAllSellByStock_id(req_stock_id);
         LinkedList<StockOrder> lstOfBuyStocks = matchingEngineOrdersRepository.getAllBuyByStock_id(req_stock_id);
@@ -98,8 +98,8 @@ public class MatchingEngineService {
         Boolean isSellOrderMarketOne = matchingEngineUtil.isOrderMarketOne(sellOrder);
         StockOrder.OrderStatus buyOrderStatus = buyOrder.getOrderStatus();
         StockOrder.OrderStatus sellOrderStatus = sellOrder.getOrderStatus();
-        Integer buyOrderStockTXid = buyOrder.getStock_tx_id();
-        Integer sellOrderStockTXid = sellOrder.getStock_tx_id();
+        Long buyOrderStockTXid = buyOrder.getStock_tx_id();
+        Long sellOrderStockTXid = sellOrder.getStock_tx_id();
 
         Wallet buyerWallet = walletRepository.findByUsername(buyOrder.getUsername());
         Wallet sellerWallet = walletRepository.findByUsername(sellOrder.getUsername());
@@ -160,7 +160,7 @@ public class MatchingEngineService {
             walletTXRepository.saveNewWalletTX(sellerWalletTX);
             if(sellOrderStatus == StockOrder.OrderStatus.PARTIAL_FULFILLED) {
                 //create a child transaction since with how much was purchased, since sell is PARTIAL then it must have child transactions already
-                Integer newStockTxId = matchingEngineUtil.createStockTransaction(sellOrder, sellingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), sellOrder.getOrderType());//create stock transaction
+                Long newStockTxId = matchingEngineUtil.createStockTransaction(sellOrder, sellingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), sellOrder.getOrderType());//create stock transaction
                 sellerWalletTX.setStockTXId(newStockTxId);//assign actual stock transaction to a new wallet transaction
             }else//in progress MARKET/LIMIT order, no walletTX was assigned
             {
@@ -180,7 +180,7 @@ public class MatchingEngineService {
             WalletTX buyerWalletTX = new WalletTX(buyOrder.getUsername(),buyOrderStockTXid, true, sellingPrice*sellingStocks);
             walletTXRepository.saveNewWalletTX(buyerWalletTX);
             //undefined behaviour for buy market that get partially fulfilled mostly the wallet TXs
-            Integer newStockTxId = matchingEngineUtil.createStockTransaction(buyOrder, sellingStocks, sellingPrice, buyerWalletTX.getWalletTXId(), buyOrder.getOrderType());// create a transaction with price bought for;//create stock transaction
+            Long newStockTxId = matchingEngineUtil.createStockTransaction(buyOrder, sellingStocks, sellingPrice, buyerWalletTX.getWalletTXId(), buyOrder.getOrderType());// create a transaction with price bought for;//create stock transaction
             buyerWalletTX.setStockTXId(newStockTxId);//assign actual stock transaction to a new wallet transaction
             //update status
             buyOrder.setOrderStatus(StockOrder.OrderStatus.PARTIAL_FULFILLED);
@@ -203,7 +203,7 @@ public class MatchingEngineService {
             walletTXRepository.saveNewWalletTX(sellerWalletTX);
             //update status
             sellOrder.setOrderStatus(StockOrder.OrderStatus.PARTIAL_FULFILLED);
-            Integer newStockTxId = matchingEngineUtil.createStockTransaction(sellOrder, buyingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), sellOrder.getOrderType());//create stock transaction
+            Long newStockTxId = matchingEngineUtil.createStockTransaction(sellOrder, buyingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), sellOrder.getOrderType());//create stock transaction
             System.err.println(buyOrder.getOrderType());
             System.err.println(sellOrder.getOrderType());
             sellerWalletTX.setStockTXId(newStockTxId);//set walletTX to a new child stock transaction
@@ -214,7 +214,7 @@ public class MatchingEngineService {
             WalletTX buyerWalletTX = new WalletTX(buyOrder.getUsername(),buyOrderStockTXid, true, sellingPrice*buyingStocks);
             if(buyOrderStatus == StockOrder.OrderStatus.PARTIAL_FULFILLED) { // any partial completed
                 walletTXRepository.saveNewWalletTX(buyerWalletTX);
-                Integer newChildStockTxId = matchingEngineUtil.createStockTransaction(buyOrder, buyingStocks, sellingPrice, buyerWalletTX.getWalletTXId(), buyOrder.getOrderType());
+                Long newChildStockTxId = matchingEngineUtil.createStockTransaction(buyOrder, buyingStocks, sellingPrice, buyerWalletTX.getWalletTXId(), buyOrder.getOrderType());
                 buyerWalletTX.setStockTXId(newChildStockTxId);//assign actual stock transaction to a new wallet transaction
 
             }
@@ -239,7 +239,7 @@ public class MatchingEngineService {
             //update status
             if(sellOrder.getOrderStatus() == StockOrder.OrderStatus.PARTIAL_FULFILLED)
             {
-                Integer newStockTxId = matchingEngineUtil.createStockTransaction(sellOrder, sellingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), sellOrder.getOrderType());//create stock transaction
+                Long newStockTxId = matchingEngineUtil.createStockTransaction(sellOrder, sellingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), sellOrder.getOrderType());//create stock transaction
                 sellerWalletTX.setStockTXId(newStockTxId);//set walletTX to a new child stock transaction
             }else{// IN_PROGRESS
                 sellOrder.setWalletTXid(sellerWalletTX.getWalletTXId());

@@ -11,10 +11,10 @@ public interface WalletTXRepository extends JpaRepository<WalletTX, Long> {
 
     public List<WalletTX> findAllByUsername(String username);
 
-    WalletTX findByWalletTXId(Integer walletTXId);
-    void deleteByWalletTXId(Integer walletTXId);
+    WalletTX findByWalletTXId(Long walletTXId);
+    void deleteByWalletTXId(Long walletTXId);
 
-    void deleteByStockTXId(Integer stockTXId);
+    void deleteByStockTXId(Long stockTXId);
 
 
     @Override

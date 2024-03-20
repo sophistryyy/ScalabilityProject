@@ -16,9 +16,9 @@ public class WalletTX {
             strategy = GenerationType.SEQUENCE,
             generator = "walletTX_sequence"
     )
-    private Integer walletTXId;
+    private Long walletTXId;
     private String username;
-    private Integer stockTXId;
+    private Long stockTXId;
 
     private boolean isDebit;
     private int amount;
@@ -26,7 +26,7 @@ public class WalletTX {
 
 
 
-    public WalletTX(String username, Integer stockTXId, boolean isDebit, int amount) {
+    public WalletTX(String username, Long stockTXId, boolean isDebit, int amount) {
         this.username = username;
         this.stockTXId = stockTXId;
         this.isDebit = isDebit;
@@ -34,7 +34,7 @@ public class WalletTX {
         this.timestamp = LocalDateTime.now();
     }
 
-    public WalletTX(Integer walletTXId, String username, Integer stockTXId, boolean isDebit, int amount) {
+    public WalletTX(Long walletTXId, String username, Long stockTXId, boolean isDebit, int amount) {
         this.walletTXId = walletTXId;
         this.username = username;
         this.stockTXId = stockTXId;
@@ -47,12 +47,12 @@ public class WalletTX {
 
     }
 
-    public Integer getWalletTXId() {
+    public Long getWalletTXId() {
         return this.walletTXId;
     }
 
 
-    public Integer getStockTXId() {
+    public Long getStockTXId() {
         return this.stockTXId;
     }
 
@@ -72,7 +72,7 @@ public class WalletTX {
         return this.timestamp;
     }
 
-    public void setStockTXId(Integer stockTXId) {
+    public void setStockTXId(Long stockTXId) {
         this.stockTXId = stockTXId;
     }
 }

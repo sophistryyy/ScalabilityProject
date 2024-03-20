@@ -8,7 +8,7 @@ import jakarta.persistence.Table;
 @Table(name = "`Portfolios`")
 public class PortfolioEntry {
     @Id
-    private int stockId;
+    private Long stockId;
     // username of owner of stock
     private String stockName;
     private String username;
@@ -16,14 +16,14 @@ public class PortfolioEntry {
     
     public PortfolioEntry() {}
 
-    public PortfolioEntry(int stockId, String stockName, String username, int quantity) {
+    public PortfolioEntry(Long stockId, String stockName, String username, int quantity) {
         this.stockId = stockId;
         this.stockName = stockName;
         this.username = username;
         this.quantity = quantity;
     }
 
-    public int getStockId() {
+    public Long getStockId() {
         return this.stockId;
     } 
 

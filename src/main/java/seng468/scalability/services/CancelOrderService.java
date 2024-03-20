@@ -30,7 +30,7 @@ public class CancelOrderService {
     @Transactional
     public String try_cancelling(CancelOrderRequest req, String username) throws Exception
     {
-        Integer stock_tx_id = req.getTransactionId();
+        Long stock_tx_id = req.getTransactionId();
 
         StockOrder foundOrder = matchingEngineOrdersRepository.findByUsernameAndStockTxId(stock_tx_id, username);
         if (foundOrder == null) {

@@ -3,15 +3,15 @@ package seng468.scalability.models.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AddStockToUserRequest {
-    private int stockId;
+    private Long stockId;
     private int quantity;
 
-    public AddStockToUserRequest(@JsonProperty("stock_id") int stockId, int quantity) {
+    public AddStockToUserRequest(@JsonProperty("stock_id") Long stockId, int quantity) {
         this.stockId = stockId;
         this.quantity = quantity;
     }
 
-    public int getStockId() {
+    public Long getStockId() {
         return this.stockId;
     }
 

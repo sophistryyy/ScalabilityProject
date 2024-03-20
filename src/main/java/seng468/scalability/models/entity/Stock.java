@@ -16,7 +16,7 @@ public class Stock {
             strategy = GenerationType.SEQUENCE,
             generator = "stocks_sequence"
     )
-    private Integer id;
+    private long id;
     private String name;
 
     public Stock() {}
@@ -25,13 +25,13 @@ public class Stock {
         this.name = name;
     }
 
-    public Stock(Integer id, String name)
+    public Stock(Long id, String name)
     {
         this.id = id;
         this.name = name;
     }
 
-    public int getId() {
+    public long getId() {
         return this.id;
     }
 
