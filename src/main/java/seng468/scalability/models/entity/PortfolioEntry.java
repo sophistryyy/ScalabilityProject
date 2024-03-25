@@ -1,13 +1,26 @@
 package seng468.scalability.models.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "`Portfolios`")
 public class PortfolioEntry {
     @Id
+    @SequenceGenerator(
+            name = "portfolios_sequence",
+            sequenceName = "portfolios_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "portfolios_sequence"
+    )
+    private Long portfolioEntryId;
     private Long stockId;
     // username of owner of stock
     private String stockName;
@@ -21,6 +34,10 @@ public class PortfolioEntry {
         this.stockName = stockName;
         this.username = username;
         this.quantity = quantity;
+    }
+
+    public Long getPortfolioEntryId() {
+        return this.portfolioEntryId;
     }
 
     public Long getStockId() {

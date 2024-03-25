@@ -26,7 +26,6 @@ public class GetStockPortfolioController {
         List<PortfolioEntry> entries = portfolioRepository.findAllByUsername(username);
 
         List<Map<String, Object>> data = fromatData(entries);
-
         return Response.ok(data);
     }
 

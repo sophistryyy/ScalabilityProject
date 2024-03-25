@@ -10,6 +10,7 @@ import seng468.scalability.matchingEngine.MatchingEngineService;
 import seng468.scalability.models.entity.StockPrices;
 import seng468.scalability.models.response.Response;
 import seng468.scalability.models.request.PlaceStockOrderRequest;
+import seng468.scalability.repositories.PortfolioRepository;
 import seng468.scalability.repositories.StockRepository;
 
 import java.util.LinkedHashMap;
@@ -22,6 +23,9 @@ import java.util.Map;
 public class PlaceStockOrderController {
     private final MatchingEngineService matchingEngineService;
     private final StockRepository stockRepository;
+    
+    @Autowired
+    PortfolioRepository portfolioRepository;
 
     @Autowired
     public PlaceStockOrderController(MatchingEngineService matchingEngineService, StockRepository stockRepository) {
@@ -39,6 +43,7 @@ public class PlaceStockOrderController {
             {
                 return Response.error(message);
             }
+            
             return Response.ok(null);
         } catch (Exception e) {
             return Response.error(e.getMessage());

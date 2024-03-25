@@ -76,8 +76,6 @@ public class PlaceStockOrderTests {
     @BeforeAll
     void setupBeforeAll() throws Exception {
     
-        System.out.println(stockRepository.findAll());
-        System.out.println("HOW MANNYY");
         stock1 = new Stock("Google");
         stockRepository.saveNewStock(stock1);
 

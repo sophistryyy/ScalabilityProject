@@ -8,8 +8,8 @@ import seng468.scalability.models.entity.PortfolioEntry;
 
 
 public interface PortfolioRepository extends JpaRepository<PortfolioEntry, Long> {
-    public PortfolioEntry findEntryByStockIdAndUsername(Long id, String username);
+    public PortfolioEntry findEntryByStockIdAndUsername(Long stockId, String username);
     public List<PortfolioEntry> findAllByUsername(String username);
 
-    public void deleteByStockId(Long stock_id);
+    public void deleteByStockId(Long stockId);
 }

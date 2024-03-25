@@ -50,7 +50,6 @@ public class GetStockPricesController {
             entryMap.put("current_price", entry.getPrice());
             data.add(entryMap);
         }
-
         return data;
     }
 }

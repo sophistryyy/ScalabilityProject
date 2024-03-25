@@ -204,8 +204,6 @@ public class MatchingEngineService {
             //update status
             sellOrder.setOrderStatus(StockOrder.OrderStatus.PARTIAL_FULFILLED);
             Long newStockTxId = matchingEngineUtil.createStockTransaction(sellOrder, buyingStocks, sellingPrice, sellerWalletTX.getWalletTXId(), sellOrder.getOrderType());//create stock transaction
-            System.err.println(buyOrder.getOrderType());
-            System.err.println(sellOrder.getOrderType());
             sellerWalletTX.setStockTXId(newStockTxId);//set walletTX to a new child stock transaction
             sellOrder.setTrueRemainingQuantity(sellingStocks - buyingStocks);//still more to go
             sellerWallet.incrementBalance(sellingPrice * buyingStocks);//add money to seller based on trueRemaining quantity
