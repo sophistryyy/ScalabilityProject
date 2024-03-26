@@ -3,9 +3,15 @@ package com.user.models.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "`Portfolios`")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class PortfolioEntry {
     @Id
     private Long stockId;
@@ -14,30 +20,6 @@ public class PortfolioEntry {
     private String username;
     private Long quantity;
 
-    public PortfolioEntry() {}
-
-    public PortfolioEntry(Long stockId, String stockName, String username, Long quantity) {
-        this.stockId = stockId;
-        this.stockName = stockName;
-        this.username = username;
-        this.quantity = quantity;
-    }
-
-    public Long getStockId() {
-        return this.stockId;
-    }
-
-    public String getStockName() {
-        return this.stockName;
-    }
-
-    public String getUsername() {
-        return this.username;
-    }
-
-    public Long getQuantity() {
-        return this.quantity;
-    }
 
     public void addQuantity(Long quantityToAdd) {
         quantity += quantityToAdd;

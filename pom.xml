@@ -15,6 +15,7 @@
   <modules>
     <module>Wallet</module>
     <module>User</module>
+    <module>Stock</module>
   </modules>
 
   <properties>
