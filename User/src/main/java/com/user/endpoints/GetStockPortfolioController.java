@@ -1,5 +1,6 @@
 package com.user.endpoints;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,10 +15,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 public class GetStockPortfolioController {
 
-    @Autowired
-    PortfolioRepository portfolioRepository;    
+    private final PortfolioRepository portfolioRepository;
 
     @GetMapping("/getStockPortfolio")
     public Response getStockPortfolio() {
