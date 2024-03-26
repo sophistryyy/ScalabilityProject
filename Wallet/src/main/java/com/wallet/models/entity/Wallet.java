@@ -2,6 +2,10 @@ package com.wallet.models.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import lombok.Builder;
+
+
+@Builder
 
 @Entity
 public class Wallet {
