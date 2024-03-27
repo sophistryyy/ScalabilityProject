@@ -1,4 +1,4 @@
-package seng468.scalability.com.stock.models.request;
+package seng468scalability.com.stock.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

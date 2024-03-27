@@ -1,4 +1,4 @@
-package seng468.scalability.com.stock_transactions;
+package seng468scalability.com.stock_transactions;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -6,11 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import seng468.scalability.com.stock.models.entity.enums;
+import seng468scalability.com.stock.entity.enums;
 
 import java.time.LocalDateTime;
-import static seng468.scalability.com.stock.models.entity.enums.OrderType;
-import static seng468.scalability.com.stock.models.entity.enums.OrderStatus;
+import static seng468scalability.com.stock.entity.enums.OrderType;
+import static seng468scalability.com.stock.entity.enums.OrderStatus;
 
 @Data
 @NoArgsConstructor

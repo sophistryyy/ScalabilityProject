@@ -1,4 +1,4 @@
-package seng468.scalability.com.stock.models.entity;
+package seng468scalability.com.stock.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
