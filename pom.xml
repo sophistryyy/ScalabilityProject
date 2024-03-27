@@ -16,6 +16,7 @@
     <module>Wallet</module>
     <module>User</module>
     <module>Stock</module>
+    <module>DiscoveryServer</module>
   </modules>
 
   <properties>
@@ -25,6 +26,7 @@
     <spring.boot.maven.plugin.version>2.5.7</spring.boot.maven.plugin.version>
     <spring.boot.dependencies.version>3.2.4</spring.boot.dependencies.version> <!-- Defined property -->
     <io.jsonwebtoken.version>0.12.5</io.jsonwebtoken.version>
+    <spring-cloud.version>2023.0.0</spring-cloud.version>
   </properties>
 
   <dependencyManagement>
@@ -33,6 +35,13 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
         <version>${spring.boot.dependencies.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
