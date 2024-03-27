@@ -1,8 +1,8 @@
-package seng468.scalability.com.stock.repositories;
+package seng468scalability.com.stock.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import seng468.scalability.com.stock.models.entity.Stock;
+import seng468scalability.com.stock.entity.Stock;
 
 
 public interface StockRepository extends JpaRepository<Stock, Long> {

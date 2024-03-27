@@ -14,6 +14,8 @@ import com.user.models.entity.User;
 import com.user.models.request.RegisterRequest;
 import com.user.models.response.Response;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 //import com.user.repositories.WalletRepository;
 
 @RestController
@@ -22,7 +24,7 @@ import org.springframework.web.client.RestTemplate;
 public class RegisterController {
     private final UserService userService;
 
-    private final RestTemplate restTemplate;
+    private final WebClient webClient;
 
     @PostMapping(value = "/register", consumes = {"application/json"})
     public Response registerUser(@RequestBody RegisterRequest req) {
@@ -30,14 +32,20 @@ public class RegisterController {
             User user = new User(req.getUser_name(), req.getPassword(), req.getName());
             userService.saveUser(user);
             NewWalletRequest newWalletRequest = new NewWalletRequest(req.getUser_name());
-            // Use postForObject to send a POST request to the saveNewWallet endpoint, should change this to webClient
-            Response walletResponse = restTemplate.postForObject(
-                    "http://localhost:8082/saveNewWallet", newWalletRequest, Response.class
-            );
-            if(!walletResponse.success()){
-                ;//retry?
-                System.out.println(walletResponse.data());
-            }
+
+            //post request to save new wallet
+            Mono<Response> walletResponseMono = webClient.post().uri("http://localhost:8082/saveNewWallet")
+                    .bodyValue(new NewWalletRequest(req.getUser_name())).retrieve().bodyToMono(Response.class);
+            walletResponseMono.subscribe(walletResponse -> {
+                if (walletResponse == null || !walletResponse.success()) {
+                    // Retry logic or handle the error
+                    log.info("Error creating a new wallet (1). " + walletResponse.data());
+                    System.out.println(walletResponse.data());
+                }else{
+                    log.info("New wallet is created succesfully for " + req.getUser_name());
+                }
+            }, error ->  log.info("Error creating a new wallet (2). " + error));
+
             log.info("User {} created", req.getUser_name());
             return Response.ok(null);
         } catch (Exception e) {

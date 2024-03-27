@@ -1,23 +1,23 @@
-package seng468.scalability.com.stock.endpoints;
+package seng468scalability.com.stock.endpoints;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import seng468.scalability.com.stock.models.entity.Stock;
+import seng468scalability.com.stock.entity.Stock;
 
-import seng468.scalability.com.stock.models.request.CreateStockRequest;
-import seng468.scalability.com.response.Response;
-import seng468.scalability.com.stock.repositories.StockRepository;
+import seng468scalability.com.stock.request.CreateStockRequest;
+import seng468scalability.com.response.Response;
+import seng468scalability.com.stock.repositories.StockRepository;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 public class CreateStockController {
 
-    @Autowired
-    private StockRepository stockRepository;
+    private final StockRepository stockRepository;
 
 
     @PostMapping("/createStock")
