@@ -24,7 +24,7 @@ import reactor.core.publisher.Mono;
 public class RegisterController {
     private final UserService userService;
 
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
 
     @PostMapping(value = "/register", consumes = {"application/json"})
     public Response registerUser(@RequestBody RegisterRequest req) {
@@ -34,7 +34,7 @@ public class RegisterController {
             NewWalletRequest newWalletRequest = new NewWalletRequest(req.getUser_name());
 
             //post request to save new wallet
-            Mono<Response> walletResponseMono = webClient.post().uri("http://localhost:8082/saveNewWallet")
+            Mono<Response> walletResponseMono = webClientBuilder.build().post().uri("http://Wallet/saveNewWallet")
                     .bodyValue(new NewWalletRequest(req.getUser_name())).retrieve().bodyToMono(Response.class);
             walletResponseMono.subscribe(walletResponse -> {
                 if (walletResponse == null || !walletResponse.success()) {
