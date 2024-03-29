@@ -34,7 +34,7 @@ public class RegisterController {
             NewWalletRequest newWalletRequest = new NewWalletRequest(req.getUser_name());
 
             //post request to save new wallet
-            Mono<Response> walletResponseMono = webClientBuilder.build().post().uri("http://Wallet/saveNewWallet")
+            Mono<Response> walletResponseMono = webClientBuilder.build().post().uri("http://wallet-service/saveNewWallet")
                     .bodyValue(new NewWalletRequest(req.getUser_name())).retrieve().bodyToMono(Response.class);
             walletResponseMono.subscribe(walletResponse -> {
                 if (walletResponse == null || !walletResponse.success()) {

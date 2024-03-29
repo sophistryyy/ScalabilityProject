@@ -8,7 +8,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <groupId>com.seng468project</groupId>
-    <artifactId>Wallet</artifactId>
+    <artifactId>wallet-service</artifactId>
     <name>Wallet</name>
     <description>Wallet</description>
 

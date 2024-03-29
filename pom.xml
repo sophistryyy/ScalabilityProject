@@ -13,10 +13,11 @@
   <!-- FIXME change it to the project's website -->
   <url>http://localhost</url>
   <modules>
-    <module>Wallet</module>
-    <module>User</module>
-    <module>Stock</module>
-    <module>DiscoveryServer</module>
+    <module>wallet-service</module>
+    <module>user-service</module>
+    <module>stock-service</module>
+    <module>discovery-server</module>
+    <module>api-gateway</module>
   </modules>
 
   <properties>
