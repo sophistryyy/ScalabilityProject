@@ -1,7 +1,7 @@
 package com.user.endpoints;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -11,14 +11,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import authentication.JwtUtil;
-import com.user.models.request.LoginRequest;
-import com.user.models.response.Response;
+import com.user.request.LoginRequest;
+import com.user.response.Response;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class LoginController {
 
 
@@ -34,7 +35,6 @@ public class LoginController {
                     userReq.getUsername(), userReq.getPassword() 
                 )
             );
-
             UserDetails user = (UserDetails)authenticate.getPrincipal();
             String token = jwtUtil.generateToken(user.getUsername());
 

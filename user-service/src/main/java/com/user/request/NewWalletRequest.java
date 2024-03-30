@@ -1,4 +1,4 @@
-package com.user.models.request;
+package com.user.request;
 
 public class NewWalletRequest {
     private String username;

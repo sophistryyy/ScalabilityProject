@@ -1,12 +1,11 @@
 package com.user.endpoints;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.user.models.entity.PortfolioEntry;
-import com.user.models.response.Response;
+import com.user.entity.PortfolioEntry;
+import com.user.response.Response;
 import com.user.repositories.PortfolioRepository;
 
 import java.util.LinkedHashMap;

@@ -1,20 +1,20 @@
 package authentication;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.user.models.entity.User;
-import com.user.models.exceptions.UsernameExistsException;
+import com.user.entity.User;
+import com.user.exceptions.UsernameExistsException;
 import com.user.repositories.UserRepository;
 
 import java.util.ArrayList;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRespository;
+    private final UserRepository userRespository;
 
     // Used by UserDetailsService to compare JWT user and a possible DB Repository user
     @Override
