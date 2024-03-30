@@ -1,4 +1,4 @@
-package com.user.models.entity;
+package com.user.entity;
 
 
 import lombok.Getter;
