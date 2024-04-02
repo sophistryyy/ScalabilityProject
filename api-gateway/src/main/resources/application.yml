@@ -27,7 +27,7 @@ spring:
         - id: wallet-service-get-balance-route
           uri: lb://wallet-service
           predicates:
-            - Path=/getWalletBalance/
+            - Path=/getWalletBalance/**
           filters:
             - AuthenticationFilter
 

@@ -1,13 +1,12 @@
 package com.user.endpoints;
 
+import com.user.entity.PortfolioEntry;
+import com.user.repositories.PortfolioRepository;
+import com.user.response.Response;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
-import com.user.entity.PortfolioEntry;
-import com.user.response.Response;
-import com.user.repositories.PortfolioRepository;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -22,6 +21,10 @@ public class GetStockPortfolioController {
 
     @GetMapping("/getStockPortfolio")
     public Response getStockPortfolio(@RequestHeader("X-username") String username) {
+
+        if(username == null || username.isEmpty()){
+            return Response.error("Username not found.");
+        }
         List<PortfolioEntry> entries = portfolioRepository.findAllByUsername(username);
 
         List<Map<String, Object>> data = formatData(entries);

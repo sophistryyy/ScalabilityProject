@@ -1,18 +1,16 @@
 package com.user.endpoints;
 
+import authentication.UserService;
+import com.user.entity.User;
 import com.user.request.NewWalletRequest;
+import com.user.request.RegisterRequest;
+import com.user.response.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import authentication.UserService;
-import com.user.entity.User;
-//import com.user.models.entity.Wallet;
-import com.user.request.RegisterRequest;
-import com.user.response.Response;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 //import com.user.repositories.WalletRepository;
 
 @RestController

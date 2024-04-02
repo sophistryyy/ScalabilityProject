@@ -1,12 +1,8 @@
 package com.apigateway.filter;
 
-import com.apigateway.config.WebClientConfig;
 import com.apigateway.request.AuthRequest;
 import com.apigateway.request.Response;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpStatus;
