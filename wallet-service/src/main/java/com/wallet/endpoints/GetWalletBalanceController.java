@@ -2,8 +2,8 @@ package com.wallet.endpoints;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import com.wallet.models.entity.Wallet;
 import com.wallet.models.response.Response;
@@ -19,10 +19,11 @@ public class GetWalletBalanceController {
     private final WalletRepository walletRepository;
 
     @GetMapping("/getWalletBalance")
-    public Response getWalletBalance() {
+    public Response getWalletBalance(@RequestHeader("X-username") String username) {
         try {
-            String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-
+            if(username == null || username.isEmpty()){
+                return Response.error("Username not found.");
+            }
             Wallet wallet = walletRepository.findByUsername(username);
             Map<String, Object> data =  new HashMap<String, Object>();
             data.put("balance", wallet.getBalance());

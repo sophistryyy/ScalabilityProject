@@ -36,17 +36,6 @@ public class SecurityConfig {
         // Update with protected paths only. The rest are permitted to be caught by auth or error controllers
         http
             .authorizeHttpRequests((authorize) -> authorize
-                .requestMatchers("/greeting").authenticated()
-                .requestMatchers("/createStock").authenticated()
-                .requestMatchers("/addStockToUser").authenticated()
-                .requestMatchers("/placeStockOrder").authenticated()
-                .requestMatchers("/getStockTransactions").authenticated()
-                .requestMatchers("/cancelStockTransaction").authenticated()
-                .requestMatchers("/getStockPortfolio").authenticated()
-                .requestMatchers("/addMoneyToWallet").authenticated()
-                .requestMatchers("/getStockPrices").authenticated()
-                .requestMatchers("/getWalletBalance").authenticated()
-                .requestMatchers("/getWalletTransactions").authenticated()
                 .anyRequest().permitAll()
         )
         .exceptionHandling(exception -> 

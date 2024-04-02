@@ -1,28 +1,32 @@
 package com.wallet.endpoints;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.web.bind.annotation.*;
 import com.wallet.models.entity.Wallet;
 import com.wallet.models.request.AddMoneyToWalletRequest;
 import com.wallet.models.response.Response;
 import com.wallet.repositories.WalletRepository;
 
+import java.net.http.HttpHeaders;
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class AddMoneyToWalletController {
 
   private final WalletRepository walletRepository;
 
   @PostMapping("/addMoneyToWallet")
-  public Response addMoneyToWallet(@RequestBody AddMoneyToWalletRequest req) {
-     
+  public Response addMoneyToWallet(@RequestBody AddMoneyToWalletRequest req, @RequestHeader("X-username") String username) {
     try {
-      String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+
+      if(username == null || username.isEmpty()){
+        return Response.error("Username not found.");
+      }
       Wallet wallet = walletRepository.findByUsername(username);
       wallet.incrementBalance(req.getAmount());
       walletRepository.save(wallet);
