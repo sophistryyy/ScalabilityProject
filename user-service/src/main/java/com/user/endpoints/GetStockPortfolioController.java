@@ -3,6 +3,7 @@ package com.user.endpoints;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import com.user.entity.PortfolioEntry;
 import com.user.response.Response;
@@ -20,8 +21,7 @@ public class GetStockPortfolioController {
     private final PortfolioRepository portfolioRepository;
 
     @GetMapping("/getStockPortfolio")
-    public Response getStockPortfolio() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    public Response getStockPortfolio(@RequestHeader("X-username") String username) {
         List<PortfolioEntry> entries = portfolioRepository.findAllByUsername(username);
 
         List<Map<String, Object>> data = formatData(entries);

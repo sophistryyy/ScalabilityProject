@@ -1,7 +1,9 @@
 package com.wallet.models.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.ToString;
 
+@ToString
 public class AddMoneyToWalletRequest {
     Long amount;
 
