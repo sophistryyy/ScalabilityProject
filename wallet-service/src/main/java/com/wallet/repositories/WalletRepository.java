@@ -1,7 +1,7 @@
 package com.wallet.repositories;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import com.wallet.models.entity.Wallet;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface WalletRepository extends JpaRepository<Wallet, String> {
     public Wallet findByUsername(String username);

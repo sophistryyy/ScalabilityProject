@@ -1,5 +1,8 @@
 package com.user.endpoints;
 
+import authentication.JwtUtil;
+import com.user.request.LoginRequest;
+import com.user.response.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,10 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import authentication.JwtUtil;
-import com.user.request.LoginRequest;
-import com.user.response.Response;
 
 import java.util.HashMap;
 import java.util.Map;

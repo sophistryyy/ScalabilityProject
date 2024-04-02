@@ -1,7 +1,6 @@
 package authentication;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,7 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
 
-    private final JwtFilter jwtFilter;
 
     @Bean 
     public SecurityFilterChain securityFilerChain(HttpSecurity http) throws Exception {
@@ -38,9 +36,8 @@ public class SecurityConfig {
             .authorizeHttpRequests((authorize) -> authorize
                 .anyRequest().permitAll()
         )
-        .exceptionHandling(exception -> 
-            exception.authenticationEntryPoint((request, response, authException) -> response.sendError(401)))
-        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        .exceptionHandling(exception ->
+            exception.authenticationEntryPoint((request, response, authException) -> response.sendError(401)));
 
         return http.build();
     }

@@ -1,17 +1,15 @@
 package com.wallet.endpoints;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.web.bind.annotation.*;
 import com.wallet.models.entity.Wallet;
 import com.wallet.models.request.AddMoneyToWalletRequest;
 import com.wallet.models.response.Response;
 import com.wallet.repositories.WalletRepository;
-
-import java.net.http.HttpHeaders;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor

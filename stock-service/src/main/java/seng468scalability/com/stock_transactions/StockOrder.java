@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 import seng468scalability.com.stock.entity.enums;
 
 import java.time.LocalDateTime;
-import static seng468scalability.com.stock.entity.enums.OrderType;
+
 import static seng468scalability.com.stock.entity.enums.OrderStatus;
+import static seng468scalability.com.stock.entity.enums.OrderType;
 
 @Data
 @NoArgsConstructor

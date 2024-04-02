@@ -22,7 +22,7 @@ public class saveNewWalletController {
         try {
             walletRepository.saveNewWallet(new Wallet(username));
         }catch (Exception e){
-            return Response.error("asda".concat(e.getMessage()));
+            return Response.error("Couldn't create a new wallet " + e.getMessage());
         }
         return Response.ok(null);
     }

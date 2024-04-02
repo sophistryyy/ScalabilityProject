@@ -1,12 +1,12 @@
 package authentication;
 
+import com.user.entity.User;
+import com.user.exceptions.UsernameExistsException;
+import com.user.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.user.entity.User;
-import com.user.exceptions.UsernameExistsException;
-import com.user.repositories.UserRepository;
 
 import java.util.ArrayList;
 
