@@ -1,0 +1,39 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: user-service-register-route
+          uri: lb://user-service
+          predicates:
+            - Path=/register/**
+
+        - id: user-service-login-route
+          uri: lb://user-service
+          predicates:
+            - Path=/login/**
+
+        - id: user-service-validate-route
+          uri: lb://user-service
+          predicates:
+            - Path=/validate/**
+
+        - id: wallet-service-add-money-route
+          uri: lb://wallet-service
+          predicates:
+            - Path=/addMoneyToWallet/**
+          filters:
+            - AuthenticationFilter
+
+        - id: wallet-service-get-balance-route
+          uri: lb://wallet-service
+          predicates:
+            - Path=/getWalletBalance/
+          filters:
+            - AuthenticationFilter
+
+        - id: user-service-getStockPortfolio-route
+          uri: lb://user-service
+          predicates:
+            - Path=/getStockPortfolio/**
+          filters:
+            - AuthenticationFilter
