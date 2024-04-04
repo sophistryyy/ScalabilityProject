@@ -60,4 +60,5 @@ public class RegisterController {
             return Response.error(e.getMessage());
         }
     }
+
 }
