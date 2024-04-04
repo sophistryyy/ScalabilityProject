@@ -25,6 +25,8 @@ http://localhost:8761
 
 8761 - discovery/eureka server
 
+9411 - zipkin
+
 random - the rest
 
 **Docker**:

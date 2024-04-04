@@ -18,6 +18,7 @@
     <module>stock-service</module>
     <module>discovery-server</module>
     <module>api-gateway</module>
+    <module>matching-engine-service</module>
   </modules>
 
   <properties>

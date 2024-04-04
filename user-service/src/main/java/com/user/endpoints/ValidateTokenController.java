@@ -1,8 +1,8 @@
 package com.user.endpoints;
 
 import authentication.JwtUtil;
-import com.user.request.ValidateRequest;
-import com.user.response.Response;
+import com.user.models.request.ValidateRequest;
+import com.user.models.response.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;

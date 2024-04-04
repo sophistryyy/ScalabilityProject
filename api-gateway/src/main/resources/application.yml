@@ -37,3 +37,18 @@ spring:
             - Path=/getStockPortfolio/**
           filters:
             - AuthenticationFilter
+
+
+        - id: user-service-addStockToUser-route
+          uri: lb://user-service
+          predicates:
+            - Path=/addStockToUser/**
+          filters:
+            - AuthenticationFilter
+
+
+        - id: stock-service-createStock-route
+          uri: lb://stock-service
+          predicates:
+            - Path=/createStock/**
+
