@@ -8,5 +8,4 @@ import lombok.Getter;
 public class StockPrices {
     Stock stock;
     Long price;
-
 }
