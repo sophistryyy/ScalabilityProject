@@ -24,7 +24,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
-    <spring.boot.maven.plugin.version>2.5.7</spring.boot.maven.plugin.version>
+    <spring.boot.maven.plugin.version>3.2.4</spring.boot.maven.plugin.version>
     <spring.boot.dependencies.version>3.2.4</spring.boot.dependencies.version> <!-- Defined property -->
     <io.jsonwebtoken.version>0.12.5</io.jsonwebtoken.version>
     <spring-cloud.version>2023.0.0</spring-cloud.version>
