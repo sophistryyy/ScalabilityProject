@@ -1,11 +1,28 @@
-# ScalabilityProject
-seng468 project
+**Zipkin**:
 
-## Dev Setup
+Run 
+```
+docker run -d -p 9411:9411 openzipkin/zipkin
+```
+To check: 
+```
+http://localhost:9411
+```
 
-- Install Java 21.0.2.
-- Install Maven (4.0.0?).
 
-## Run with Docker
-- docker build --tag myimage .
-- docker run -p 8080:8080 myimage
+
+**Eureka server** :
+
+To check instances: 
+```
+http://localhost:8761
+```
+
+
+**Ports**:
+
+8080 - api gateway
+
+8761 - discovery/eureka server
+
+random - the rest
