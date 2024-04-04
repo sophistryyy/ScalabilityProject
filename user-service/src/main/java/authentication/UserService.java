@@ -1,6 +1,6 @@
 package authentication;
 
-import com.user.entity.User;
+import com.user.models.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

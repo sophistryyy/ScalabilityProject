@@ -15,4 +15,4 @@
 log/
 target/
 
-api-gateway
+.vscode

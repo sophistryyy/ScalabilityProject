@@ -1,8 +1,8 @@
 package com.user.endpoints;
 
-import com.user.entity.PortfolioEntry;
+import com.user.models.entity.PortfolioEntry;
 import com.user.repositories.PortfolioRepository;
-import com.user.response.Response;
+import com.user.models.response.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;

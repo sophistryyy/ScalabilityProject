@@ -1,7 +1,7 @@
 package com.user.repositories;
 
 
-import com.user.entity.PortfolioEntry;
+import com.user.models.entity.PortfolioEntry;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

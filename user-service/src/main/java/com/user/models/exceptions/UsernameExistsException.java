@@ -1,4 +1,4 @@
-package com.user.exceptions;
+package com.user.models.exceptions;
 
 
 public class UsernameExistsException extends RuntimeException {
