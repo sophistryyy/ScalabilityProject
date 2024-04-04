@@ -9,5 +9,4 @@ COPY ../parent-pom.xml .
 WORKDIR /usr/src/app/project
 COPY ../wallet-service .
 
-EXPOSE 8080
 CMD ["mvn", "spring-boot:run"]

@@ -7,7 +7,6 @@ WORKDIR /usr/src/app
 COPY ../parent-pom.xml .
 
 WORKDIR /usr/src/app/project
-COPY ../api-gateway .
+COPY ../discovery-server .
 
-EXPOSE 8080
 CMD ["mvn", "spring-boot:run"]

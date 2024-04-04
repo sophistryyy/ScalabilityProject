@@ -1,10 +1,10 @@
 **Zipkin**:
 
-Run 
+Run
 ```
 docker run -d -p 9411:9411 openzipkin/zipkin
 ```
-To check: 
+To check:
 ```
 http://localhost:9411
 ```
@@ -13,7 +13,7 @@ http://localhost:9411
 
 **Eureka server** :
 
-To check instances: 
+To check instances:
 ```
 http://localhost:8761
 ```
@@ -26,3 +26,6 @@ http://localhost:8761
 8761 - discovery/eureka server
 
 random - the rest
+
+**Docker**:
+docker-compose up

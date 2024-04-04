@@ -1,0 +1,37 @@
+
+version: "1.0"
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    ports:
+      - '8080:8080'
+    environment:
+      - "eureka_client_serviceurl_defaultzone=http://discovery-server:8761/eureka"
+  discovery-server:
+    build:
+      context: .
+      dockerfile: ./discovery-server/Dockerfile
+    ports:
+      - '8761:8761'
+    environment:
+      - "eureka_client_serviceurl_defaultzone=http://discovery-server:8761/eureka"
+  stock-service:
+    build:
+      context: .
+      dockerfile: ./stock-service/Dockerfile
+    environment:
+      - "eureka_client_serviceurl_defaultzone=http://discovery-server:8761/eureka"
+  user-services:
+    build:
+      context: .
+      dockerfile: ./user-service/Dockerfile
+    environment:
+      - "eureka_client_serviceurl_defaultzone=http://discovery-server:8761/eureka"
+  wallet-services:
+    build:
+      context: .
+      dockerfile: ./wallet-service/Dockerfile
+    environment:
+      - "eureka_client_serviceurl_defaultzone=http://discovery-server:8761/eureka"
