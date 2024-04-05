@@ -1,4 +1,4 @@
-package seng468scalability.com.stock_transactions;
+package seng468scalability.com.stock_transactions.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -19,7 +19,7 @@ import static seng468scalability.com.stock.entity.StockEnum.OrderType;
 @Builder
 @Entity
 @Table(name = "stock_orders")
-public class StockOrder {
+public class StockTransaction {
     @Id
     @SequenceGenerator(
             name = "stocksOrder_sequence",
@@ -53,7 +53,7 @@ public class StockOrder {
 
 
 
-    public StockOrder(Long stock_id, boolean is_buy, OrderType orderType, Long quantity, Long price, String username) {
+    public StockTransaction(Long stock_id, boolean is_buy, OrderType orderType, Long quantity, Long price, String username) {
         this.parent_stock_tx_id = null;
         this.walletTXid = null;
         this.stock_id = stock_id;
@@ -69,8 +69,8 @@ public class StockOrder {
     }
 
 
-    public StockOrder createCopy(Long newQuantity, OrderStatus newOrderStatus) {
-        StockOrder copy = StockOrder.builder().stock_id(this.stock_id).is_buy(this.is_buy).orderType(this.orderType).quantity(newQuantity)
+    public StockTransaction createCopy(Long newQuantity, OrderStatus newOrderStatus) {
+        StockTransaction copy = StockTransaction.builder().stock_id(this.stock_id).is_buy(this.is_buy).orderType(this.orderType).quantity(newQuantity)
                 .price(this.price).timestamp(LocalDateTime.now()).orderStatus(newOrderStatus).username(this.username).walletTXid(null)
                 .expired(false).trueRemainingQuantity(0L).build();
         copy.parent_stock_tx_id = this.parent_stock_tx_id == null ? this.stock_tx_id
