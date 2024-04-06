@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  postgres-wallet:
+    container_name: postgres-wallet
+    image: postgres
+    environment:
+      POSTGRES_DB: wallet-service
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    volumes:
+      - ./db-wallet/postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+
+  mongodb-wallet:
+    container_name: mongodb-wallet
+    image: mongo
+    environment:
+      MONGO_INITDB_DATABASE: wallet-service
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./db-wallet/mongo:/data/db
+    ports:
+      - "27017:27017"
