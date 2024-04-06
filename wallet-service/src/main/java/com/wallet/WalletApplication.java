@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @EnableMongoRepositories(basePackages = "com.wallet.mongo.repository") // Specify the base package for mONGO repositoy
 @EnableJpaRepositories(basePackages = "com.wallet.jpa.repository") // Specify the base package for jpa repository
 public class WalletApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(WalletApplication.class, args);
     }

@@ -1,17 +1,16 @@
 package com.user.models.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@Entity
-@Table(name = "`user`")
+
 @NoArgsConstructor
 @Getter
+@Document(collection = "user")
 public class User {
     @Id
     private String username;

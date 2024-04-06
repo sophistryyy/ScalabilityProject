@@ -49,7 +49,7 @@ public class RegisterController {
             Response walletResponse = webClientBuilder.build().post().uri("http://wallet-service/saveNewWallet")
                     .bodyValue(new NewWalletRequest(req.getUser_name())).retrieve().bodyToMono(Response.class).block();
             if (walletResponse == null || !walletResponse.success()) {
-                // Retry logic or handle the error
+                // Retry logic or handle the error | add a circuit breaker
                 log.info("Error creating a new wallet (1). " + walletResponse.data());
                 return Response.error(walletResponse.data().toString());
             }

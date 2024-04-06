@@ -1,10 +1,8 @@
 package com.user.endpoints;
 
-import com.user.models.request.NewWalletRequest;
 import com.user.models.request.stockInfoRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -16,7 +14,6 @@ import com.user.repositories.PortfolioRepository;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.LinkedHashMap;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @RestController
@@ -52,4 +49,6 @@ public class AddStockToUserController {
 
         return Response.ok(null);
     }
+
+
 }
