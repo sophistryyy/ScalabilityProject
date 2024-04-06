@@ -2,7 +2,7 @@ package com.wallet.endpoints;
 
 import com.wallet.models.entity.Wallet;
 import com.wallet.models.response.Response;
-import com.wallet.repositories.WalletRepository;
+import com.wallet.jpa.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
