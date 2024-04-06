@@ -56,7 +56,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                         return chain.filter(exchange.mutate().request(modifiedRequest).build());
 
                     }catch(Exception e){
-                        return errorResponse(exchange, HttpStatus.BAD_REQUEST, "Error with request to token validation (1)." + e.getMessage());
+                        return errorResponse(exchange, HttpStatus.BAD_REQUEST, "Error with request to token validation (1). " + e.getMessage());
                     }
                 }else{
                     return errorResponse(exchange, HttpStatus.BAD_REQUEST, "Error with request to token validation or no token was provided(2).");
