@@ -18,4 +18,4 @@ target/
 .vscode
 
 # DBs
-db-wallet
+db-data
