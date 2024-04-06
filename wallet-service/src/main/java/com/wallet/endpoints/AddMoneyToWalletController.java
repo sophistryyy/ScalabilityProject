@@ -3,7 +3,7 @@ package com.wallet.endpoints;
 import com.wallet.models.entity.Wallet;
 import com.wallet.models.request.AddMoneyToWalletRequest;
 import com.wallet.models.response.Response;
-import com.wallet.repositories.WalletRepository;
+import com.wallet.jpa.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
