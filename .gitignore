@@ -16,3 +16,6 @@ log/
 target/
 
 .vscode
+
+# DBs
+db-wallet
