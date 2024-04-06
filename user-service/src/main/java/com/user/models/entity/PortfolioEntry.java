@@ -1,18 +1,17 @@
 package com.user.models.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "`Portfolios`")
+
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
+@Data
+@Document(collection = "portfolio")
 public class PortfolioEntry {
+
     @Id
     private Long stockId;
     // username of owner of stock
@@ -24,6 +23,7 @@ public class PortfolioEntry {
     public void addQuantity(Long quantityToAdd) {
         quantity += quantityToAdd;
     }
+
 
     public void removeQuantity(Long quantityToRemove) throws Exception {
         if(quantityToRemove > this.quantity)

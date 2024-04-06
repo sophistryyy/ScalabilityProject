@@ -20,7 +20,7 @@ public class GetWalletTransactionsController {
 
     private final WalletTXRepository walletTXRepository;
 
-    @GetMapping("getWalletTransactions")
+    @GetMapping("/getWalletTransactions")
     public Response getWalletTransactions(@RequestHeader("X-username") String username) {
         if(username == null || username.isEmpty()){
             return Response.error("Username not found.");

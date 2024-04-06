@@ -7,16 +7,15 @@ import com.wallet.jpa.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "saveNewWallet")
+
 @RequiredArgsConstructor
-public class saveNewWalletInnerController {
+public class CreateNewWalletInnerController {
     private final WalletRepository walletRepository;
 
-    @PostMapping
+    @PostMapping("/saveNewWallet")
     public Response saveNewWallet(@RequestBody NewWalletRequest req){
         String username = req.getUsername();
         try {

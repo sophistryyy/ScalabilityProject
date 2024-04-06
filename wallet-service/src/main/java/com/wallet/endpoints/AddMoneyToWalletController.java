@@ -26,6 +26,9 @@ public class AddMoneyToWalletController {
         return Response.error("Username not found.");
       }
       Wallet wallet = walletRepository.findByUsername(username);
+      if(wallet == null){//create new wallet for no errors
+        walletRepository.saveNewWallet(new Wallet(username));
+      }
       wallet.incrementBalance(req.getAmount());
       walletRepository.save(wallet);
 
