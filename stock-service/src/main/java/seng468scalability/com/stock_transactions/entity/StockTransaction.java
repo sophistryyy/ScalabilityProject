@@ -6,12 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import seng468scalability.com.stock.entity.StockEnum;
+import seng468scalability.com.stock_transactions.entity.enums.OrderStatus;
+import seng468scalability.com.stock_transactions.entity.enums.OrderType;
 
 import java.time.LocalDateTime;
 
-import static seng468scalability.com.stock.entity.StockEnum.OrderStatus;
-import static seng468scalability.com.stock.entity.StockEnum.OrderType;
 
 @Data
 @NoArgsConstructor
@@ -62,7 +61,7 @@ public class StockTransaction {
         this.quantity = quantity;
         this.price = price;
         this.timestamp = LocalDateTime.now();
-        this.orderStatus = StockEnum.OrderStatus.IN_PROGRESS;
+        this.orderStatus = OrderStatus.IN_PROGRESS;
         this.username = username;
         this.trueRemainingQuantity = quantity;
         this.expired = false;
