@@ -17,20 +17,6 @@ spring:
           predicates:
             - Path=/validate/**
 
-        - id: wallet-service-add-money-route
-          uri: lb://wallet-service
-          predicates:
-            - Path=/addMoneyToWallet/**
-          filters:
-            - AuthenticationFilter
-
-        - id: wallet-service-get-balance-route
-          uri: lb://wallet-service
-          predicates:
-            - Path=/getWalletBalance/**
-          filters:
-            - AuthenticationFilter
-
         - id: user-service-getStockPortfolio-route
           uri: lb://user-service
           predicates:
@@ -47,8 +33,33 @@ spring:
             - AuthenticationFilter
 
 
+
+        - id: wallet-service-add-money-route
+          uri: lb://wallet-service
+          predicates:
+            - Path=/addMoneyToWallet/**
+          filters:
+            - AuthenticationFilter
+
+        - id: wallet-service-get-balance-route
+          uri: lb://wallet-service
+          predicates:
+            - Path=/getWalletBalance/**
+          filters:
+            - AuthenticationFilter
+
+        - id: wallet-service-getWalletTxs-route
+          uri: lb://wallet-service
+          predicates:
+            - Path=/getWalletTransactions/**
+          filters:
+            - AuthenticationFilter
+
+
         - id: stock-service-createStock-route
           uri: lb://stock-service
           predicates:
             - Path=/createStock/**
+
+
 

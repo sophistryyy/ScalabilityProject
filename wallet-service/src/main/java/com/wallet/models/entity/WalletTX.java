@@ -4,23 +4,16 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Getter
 @Entity
-@Table(name = "`Wallet Transactions`")
+@Document(collection = "walletTX")
 public class WalletTX {
     @Id
-    @SequenceGenerator(
-            name = "walletTX_sequence",
-            sequenceName = "walletTX_sequence"
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "walletTX_sequence"
-    )
     private Long walletTXId;
     private String username;
     @Setter
