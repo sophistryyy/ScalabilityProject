@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "saveNewWallet")
 @RequiredArgsConstructor
-public class saveNewWalletController {
+public class saveNewWalletInnerController {
     private final WalletRepository walletRepository;
 
     @PostMapping

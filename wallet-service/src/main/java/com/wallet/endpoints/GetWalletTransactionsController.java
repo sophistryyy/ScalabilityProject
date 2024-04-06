@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-public class GetWalletTransactions {
+public class GetWalletTransactionsController {
 
     private final WalletTXRepository walletTXRepository;
 
