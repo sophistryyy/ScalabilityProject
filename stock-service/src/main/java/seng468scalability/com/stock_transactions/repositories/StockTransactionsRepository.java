@@ -5,11 +5,11 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import seng468scalability.com.stock_transactions.entity.StockTransaction;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Repository
-public interface MatchingEngineOrdersRepository extends MongoRepository<StockTransaction, Integer> {
+public interface StockTransactionsRepository extends MongoRepository<StockTransaction, Integer> {
+    List<StockTransaction> findAllByUsername(String username);
 
     /*
     @Modifying
