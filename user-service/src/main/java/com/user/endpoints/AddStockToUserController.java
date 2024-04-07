@@ -27,7 +27,7 @@ public class AddStockToUserController {
     @PostMapping("/addStockToUser")
     public Response addStockToUser(@RequestBody AddStockToUserRequest req, @RequestHeader("X-username") String username) {
 
-        Response stockResponse = webClientBuilder.build().post().uri("http://stock-service/getStockInfo")
+        Response stockResponse = webClientBuilder.build().post().uri("http://stock-service/internal/getStockInfo")
                 .bodyValue(new stockInfoRequest(req.stockId())).retrieve().bodyToMono(Response.class).block();//synchronous request
 
         if (stockResponse == null || !stockResponse.success() || !(stockResponse.data() instanceof LinkedHashMap<?, ?>)) {

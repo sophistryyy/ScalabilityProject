@@ -46,7 +46,7 @@ public class RegisterController {
             */
 
             //waiting for response because if error happened then can't send Response.ok so it's slower, so should look into this.
-            Response walletResponse = webClientBuilder.build().post().uri("http://wallet-service/saveNewWallet")
+            Response walletResponse = webClientBuilder.build().post().uri("http://wallet-service/internal/saveNewWallet")
                     .bodyValue(new NewWalletRequest(req.getUser_name())).retrieve().bodyToMono(Response.class).block();
             if (walletResponse == null || !walletResponse.success()) {
                 // Retry logic or handle the error | add a circuit breaker

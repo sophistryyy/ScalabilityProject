@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CreateNewWalletInnerController {
     private final WalletRepository walletRepository;
 
-    @PostMapping("/saveNewWallet")
+    @PostMapping("/internal/saveNewWallet")
     public Response saveNewWallet(@RequestBody NewWalletRequest req){
         String username = req.getUsername();
         try {

@@ -25,7 +25,7 @@ public class CreateWalletTransactionInnerController {
     private final WalletTXRepository walletTXRepository;
     private final MongoOperations mongoOperations;
 
-    @PostMapping( "/createWalletTransaction")
+    @PostMapping( "/internal/createWalletTransaction")
     public Response createWalletTransaction(@RequestBody NewWalletTransactionRequest req){
         try{
 
