@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import seng468scalability.com.stock_transactions.request.PlaceStockOrderRequest;
 import seng468scalability.com.response.Response;
+import seng468scalability.com.stock_transactions.util.StockOrderUtil;
 
 
 @RequiredArgsConstructor
@@ -11,15 +12,18 @@ import seng468scalability.com.response.Response;
 @RequestMapping(path = "placeStockOrder")
 public class PlaceStockOrderController {
 
-
+    private final StockOrderUtil util;
 
     @PostMapping
     public Response placeStockOrder(@RequestBody PlaceStockOrderRequest req, @RequestHeader("X-Username") String username) {
         try {
-            String message = null; //matchingEngineService.placeOrder(req, username);
-            if(message != null)
+            if(username == null || username.isEmpty()){
+                return Response.error("Invalid username.");
+            }
+            String errorMessage = util.basicVerifier(req); //matchingEngineService.placeOrder(req, username);
+            if(errorMessage != null)
             {
-                return Response.error(message);
+                return Response.error(errorMessage);
             }
             
             return Response.ok(null);
