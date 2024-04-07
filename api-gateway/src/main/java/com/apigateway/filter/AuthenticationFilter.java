@@ -32,13 +32,19 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     @Override
     public GatewayFilter apply(Config config) {
         return (((exchange, chain) -> {
-            if(validator.isSecured.test(exchange.getRequest())){
+            ServerHttpRequest request = exchange.getRequest();
+            if(validator.isSecured.test(request)){
+                if (validator.restrictedEndpoints.stream().anyMatch(request.getURI().getPath()::contains)) {
+                    // Endpoint is restricted
+                    return errorResponse(exchange, HttpStatus.FORBIDDEN, "Access to this endpoint is forbidden");
+                }
                 //header contains token or not
-                if(!exchange.getRequest().getHeaders().containsKey("token")){
+
+                if(!request.getHeaders().containsKey("token")){
                     return errorResponse(exchange, HttpStatus.BAD_REQUEST, "Missing token header");
                 }
 
-                String authHeader = exchange.getRequest().getHeaders().get("token").get(0);
+                String authHeader = request.getHeaders().get("token").get(0);
                 if(authHeader != null){
                     try{//Rest Call to /validate
                         Response authResponse = webClientBuilder.build().post().uri("http://user-service/validate")
