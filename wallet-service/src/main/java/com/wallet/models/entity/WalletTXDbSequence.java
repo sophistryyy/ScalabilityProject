@@ -1,7 +1,8 @@
 package com.wallet.models.entity;
 
-import jakarta.persistence.Id;
+
 import lombok.*;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @NoArgsConstructor
