@@ -1,11 +1,13 @@
 package seng468scalability.com.stock_transactions.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
+import com.fasterxml.jackson.databind.annotation.EnumNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import seng468scalability.com.stock_transactions.entity.enums.OrderStatus;
 import seng468scalability.com.stock_transactions.entity.enums.OrderType;
 
@@ -16,43 +18,33 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name = "stock_orders")
+@Document(collection = "stock_transactions")
 public class StockTransaction {
+
+    public static final String SEQUENCE_NAME = "stock_tx_id_sequence";
     @Id
-    @SequenceGenerator(
-            name = "stocksOrder_sequence",
-            sequenceName = "stocksOrder_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "stocksOrder_sequence"
-    )
-    @Column(name = "stock_tx_id")
-    @JsonProperty("stock_tx_id")
     private Long stock_tx_id;
+
     @JsonProperty("stock_id")
     private Long stock_id;
+    private boolean is_buy;
     @JsonProperty("order_type")
-    @Enumerated(EnumType.STRING)
     private OrderType orderType;
-    @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus;
+    private Long quantity;
+    private Long price;
 
     private String username;
     private Long parent_stock_tx_id;
-    private boolean is_buy;
-    private Long quantity;
-    private Long price;
-    private LocalDateTime timestamp;
     private Long walletTXid;
+    private OrderStatus orderStatus;
+    private LocalDateTime timestamp;
     private Long trueRemainingQuantity;
     private boolean expired;
 
 
 
-    public StockTransaction(Long stock_id, boolean is_buy, OrderType orderType, Long quantity, Long price, String username) {
+    public StockTransaction(Long stock_tx_id, Long stock_id, boolean is_buy, OrderType orderType, Long quantity, Long price, String username) {
+        this.stock_tx_id = stock_tx_id;
         this.parent_stock_tx_id = null;
         this.walletTXid = null;
         this.stock_id = stock_id;

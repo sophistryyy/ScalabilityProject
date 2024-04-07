@@ -8,6 +8,7 @@ import seng468scalability.com.response.Response;
 import seng468scalability.com.stock.entity.Stock;
 import seng468scalability.com.stock.repositories.StockRepository;
 import seng468scalability.com.stock.request.CreateStockRequest;
+import seng468scalability.com.stock.util.StockIdSequenceGenerator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,12 +18,13 @@ import java.util.Map;
 public class CreateStockController {
 
     private final StockRepository stockRepository;
-
-
+    private final StockIdSequenceGenerator generator;
     @PostMapping("/createStock")
     public Response createStock(@RequestBody CreateStockRequest req) {
         try {
-            Stock newStock = new Stock(req.getStockName());
+            Stock newStock = new Stock(generator.getSequenceNumber(Stock.SEQUENCE_NAME),
+                                        req.getStockName());
+
             stockRepository.saveNewStock(newStock);
 
             Map<String, Object> data =  new HashMap<String, Object>();
