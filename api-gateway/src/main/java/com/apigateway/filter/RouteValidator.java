@@ -15,6 +15,10 @@ public class RouteValidator {
             "/eureka"
     );
 
+    public final List<String> restrictedEndpoints = List.of(
+            "/internal"
+    );
+
     public Predicate<ServerHttpRequest> isSecured =
             request -> openApiEndpoints.stream()
                     .noneMatch(uri -> request.getURI().getPath().contains(uri));
