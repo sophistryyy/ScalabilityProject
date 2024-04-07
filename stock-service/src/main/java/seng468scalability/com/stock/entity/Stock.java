@@ -1,25 +1,22 @@
 package seng468scalability.com.stock.entity;
 
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 //general stocks available
 @Getter
 @NoArgsConstructor
-@Entity
-@Table(name = "`stocks`")
+@AllArgsConstructor
+@Document(collection = "stock")
 public class Stock {
+    @Transient
+    public static final String SEQUENCE_NAME= "stock_id_sequence";
+
     @Id
-    @SequenceGenerator(
-            name = "stocks_sequence",
-            sequenceName = "stocks_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "stocks_sequence"
-    )
     private long id;
     private String name;
 

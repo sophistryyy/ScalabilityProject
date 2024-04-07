@@ -1,10 +1,7 @@
 package seng468scalability.com.stock_transactions.repositories;
 
-import jakarta.transaction.Transactional;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import seng468scalability.com.stock_transactions.entity.StockTransaction;
 
@@ -12,9 +9,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Repository
-public interface MatchingEngineOrdersRepository extends JpaRepository<StockTransaction, Integer> {
+public interface MatchingEngineOrdersRepository extends MongoRepository<StockTransaction, Integer> {
 
-
+    /*
     @Modifying
     @Transactional
     @Query("DELETE FROM StockTransaction so WHERE so.stock_tx_id = ?1")
@@ -52,4 +49,6 @@ public interface MatchingEngineOrdersRepository extends JpaRepository<StockTrans
 
     @Query("SELECT so from StockTransaction so WHERE so.parent_stock_tx_id = ?1")
     LinkedList<StockTransaction> findAllParentChildTransactions(Long parentStockTxId);
+
+     */
 }
