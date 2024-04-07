@@ -26,7 +26,6 @@ public class GetStockPortfolioController {
             return Response.error("Username not found.");
         }
         List<PortfolioEntry> entries = portfolioRepository.findAllByUsername(username);
-
         List<Map<String, Object>> data = formatData(entries);
 
         return Response.ok(data);
