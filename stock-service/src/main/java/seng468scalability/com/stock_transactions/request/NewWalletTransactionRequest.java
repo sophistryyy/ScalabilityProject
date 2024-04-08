@@ -1,10 +1,8 @@
-package com.wallet.models.request;
+package seng468scalability.com.stock_transactions.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor

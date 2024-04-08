@@ -1,6 +1,6 @@
 package com.user.endpoints;
 
-import com.user.models.request.stockInfoRequest;
+import com.user.models.request.StockInfoRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,8 +27,11 @@ public class AddStockToUserController {
     @PostMapping("/addStockToUser")
     public Response addStockToUser(@RequestBody AddStockToUserRequest req, @RequestHeader("X-username") String username) {
 
+        if(req.stockId() == null || req.stockId() <= 0 || req.quantity() == null || req.quantity() <= 0){
+            return Response.error("Invalid parameter. Either null, 0 or negative number");
+        }
         Response stockResponse = webClientBuilder.build().post().uri("http://stock-service/internal/getStockInfo")
-                .bodyValue(new stockInfoRequest(req.stockId())).retrieve().bodyToMono(Response.class).block();//synchronous request
+                .bodyValue(new StockInfoRequest(req.stockId())).retrieve().bodyToMono(Response.class).block();//synchronous request
 
         if (stockResponse == null || !stockResponse.success() || !(stockResponse.data() instanceof LinkedHashMap<?, ?>)) {
             // Retry logic or handle the error
@@ -45,6 +48,7 @@ public class AddStockToUserController {
         } else {
             entry.addQuantity(req.quantity());
         }
+
         portfolioRepository.save(entry);
 
         return Response.ok(null);

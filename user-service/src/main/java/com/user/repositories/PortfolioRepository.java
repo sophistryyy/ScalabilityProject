@@ -8,7 +8,7 @@ import java.util.List;
 
 
 public interface PortfolioRepository extends MongoRepository<PortfolioEntry, Long> {
-    public PortfolioEntry findEntryByStockIdAndUsername(Long id, String username);
-    public List<PortfolioEntry> findAllByUsername(String username);
-    public void deleteByStockId(Long stock_id);
+    PortfolioEntry findEntryByStockIdAndUsername(Long id, String username);
+    List<PortfolioEntry> findAllByUsername(String username);
+    void deleteByStockId(Long stock_id);
 }
