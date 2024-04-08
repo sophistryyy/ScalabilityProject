@@ -24,15 +24,12 @@ spring:
           filters:
             - AuthenticationFilter
 
-
         - id: user-service-addStockToUser-route
           uri: lb://user-service
           predicates:
             - Path=/addStockToUser/**
           filters:
             - AuthenticationFilter
-
-
 
         - id: wallet-service-add-money-route
           uri: lb://wallet-service
@@ -61,5 +58,18 @@ spring:
           predicates:
             - Path=/createStock/**
 
+        - id: stock-service-placeStockOrder-route
+          uri: lb://stock-service
+          predicates:
+            - Path=/placeStockOrder/**
+          filters:
+            - AuthenticationFilter
+
+        - id: stock-service-getStockTxs-route
+          uri: lb://stock-service
+          predicates:
+            - Path=/getStockTransactions/**
+          filters:
+            - AuthenticationFilter
 
 

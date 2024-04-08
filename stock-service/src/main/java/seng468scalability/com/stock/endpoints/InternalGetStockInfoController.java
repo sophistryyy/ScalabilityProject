@@ -9,11 +9,9 @@ import seng468scalability.com.stock.entity.Stock;
 import seng468scalability.com.stock.repositories.StockRepository;
 import seng468scalability.com.stock.request.StockInfoRequest;
 
-import java.util.*;
-
 @RequiredArgsConstructor
 @RestController
-public class GetStockInfoController {
+public class InternalGetStockInfoController {
 
     private final StockRepository stockRepository;
 

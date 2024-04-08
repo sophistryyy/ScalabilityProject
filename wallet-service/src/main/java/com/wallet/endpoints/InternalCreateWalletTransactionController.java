@@ -20,7 +20,7 @@ import static org.springframework.data.mongodb.core.FindAndModifyOptions.options
 
 @RestController
 @RequiredArgsConstructor
-public class CreateWalletTransactionInnerController {
+public class InternalCreateWalletTransactionController {
 
     private final WalletTXRepository walletTXRepository;
     private final MongoOperations mongoOperations;
@@ -32,10 +32,10 @@ public class CreateWalletTransactionInnerController {
             WalletTX walletTx = new WalletTX(getSequenceNumber(WalletTX.SEQUENCE_NAME),
                     req.getUsername(), req.getStockTXId(), req.isDebit(), req.getAmount());
             walletTXRepository.save(walletTx);
+            return Response.ok(walletTx.getWalletTXId());
         }catch(Exception e){
             return Response.error(e.getMessage());
         }
-        return Response.ok(null);
     }
 
 
