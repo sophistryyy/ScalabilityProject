@@ -17,21 +17,67 @@ services:
       - '8080:8080'
     environment:
       - "eureka_client_serviceurl_defaultzone=http://discovery-server:8761/eureka"
+    depends_on:
+      - discovery-server
+
   stock-service:
     build:
       context: .
       dockerfile: ./stock-service/Dockerfile
     environment:
       - "eureka_client_serviceurl_defaultzone=http://discovery-server:8761/eureka"
-  user-services:
+      - "spring_data_mongodb_host=mongodb-docker"
+      - "eureka_instance_hostname=stock-service"
+    depends_on:
+      - discovery-server
+      - mongodb-docker
+      - postgres-docker
+  user-service:
     build:
       context: .
       dockerfile: ./user-service/Dockerfile
     environment:
       - "eureka_client_serviceurl_defaultzone=http://discovery-server:8761/eureka"
-  wallet-services:
+      - "spring_data_mongodb_host=mongodb-docker"
+      - "eureka_instance_hostname=user-service"
+    depends_on:
+      - discovery-server
+      - mongodb-docker
+  wallet-service:
     build:
       context: .
       dockerfile: ./wallet-service/Dockerfile
     environment:
       - "eureka_client_serviceurl_defaultzone=http://discovery-server:8761/eureka"
+      - "spring_data_mongodb_host=mongodb-docker"
+      - "spring_datasource_url=jdbc:postgresql://postgres-docker:5432/postgres_db"
+      - "eureka_instance_hostname=wallet-service"
+    depends_on:
+      - discovery-server
+      - mongodb-docker
+
+  postgres-docker:
+    container_name: postgres-docker
+    image: postgres
+    environment:
+      POSTGRES_DB: postgres_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    volumes:
+      - ./db-data/postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+  mongodb-docker:
+    container_name: mongodb-docker
+    image: mongo
+    environment:
+      MONGO_INITDB_DATABASE: mongo_db
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./db-data/mongo:/data/db
+    ports:
+      - "27017:27017"
+    restart: always
