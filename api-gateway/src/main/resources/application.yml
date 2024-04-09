@@ -17,20 +17,6 @@ spring:
           predicates:
             - Path=/validate/**
 
-        - id: user-service-getStockPortfolio-route
-          uri: lb://user-service
-          predicates:
-            - Path=/getStockPortfolio/**
-          filters:
-            - AuthenticationFilter
-
-        - id: user-service-addStockToUser-route
-          uri: lb://user-service
-          predicates:
-            - Path=/addStockToUser/**
-          filters:
-            - AuthenticationFilter
-
         - id: wallet-service-add-money-route
           uri: lb://wallet-service
           predicates:
@@ -69,6 +55,20 @@ spring:
           uri: lb://stock-service
           predicates:
             - Path=/getStockTransactions/**
+          filters:
+            - AuthenticationFilter
+
+        - id: stock-service-getStockPortfolio-route
+          uri: lb://stock-service
+          predicates:
+            - Path=/getStockPortfolio/**
+          filters:
+            - AuthenticationFilter
+
+        - id: stock-service-addStockToUser-route
+          uri: lb://stock-service
+          predicates:
+            - Path=/addStockToUser/**
           filters:
             - AuthenticationFilter
 
