@@ -7,6 +7,7 @@ import com.user.models.request.RegisterRequest;
 import com.user.models.response.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,7 +55,6 @@ public class RegisterController {
                 return Response.error(walletResponse.data().toString());
             }
 
-            log.info("User {} created", req.getUser_name());
             return Response.ok(null);
         } catch (Exception e) {
             return Response.error(e.getMessage());
