@@ -4,7 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import seng468scalability.com.portfolio.entity.PortfolioEntry;
+import seng468scalability.com.portfolio.entity.PortfolioEntryId;
+import seng468scalability.com.portfolio.repository.PortfolioRepository;
 import seng468scalability.com.response.Response;
+import seng468scalability.com.stock.entity.Stock;
 import seng468scalability.com.stock.repositories.StockRepository;
 import seng468scalability.com.stock_transactions.configs.WebClientConfig;
 import seng468scalability.com.stock_transactions.entity.StockTransaction;
@@ -21,7 +25,7 @@ public class StockOrderUtil {
     private final StockTxIdSequenceGenerator generator;
     private final StockRepository stockRepository;
     private final WebClient.Builder webClientBuilder;
-
+    private final PortfolioRepository portfolioRepository;
     public StockTransaction createNewStockTx(Long stock_id, boolean is_buy, OrderType orderType, Long quantity, Long price, String username){
         Long stockTxId = generator.getSequenceNumber(StockTransaction.SEQUENCE_NAME);
        return new StockTransaction(stockTxId, stock_id, is_buy, orderType, quantity, price, username);
@@ -95,15 +99,30 @@ public class StockOrderUtil {
         else if(!order.is_buy())
         {
 
-            String portfolioResponse = webClientBuilder.build().post().uri("http://user-service/internal/removeStockFromUser")
-                    .bodyValue(new RemoveStockRequest(username, order.getStock_id(), order.getQuantity())).retrieve().bodyToMono(String.class).block();
-            if (portfolioResponse != null) {
-                return portfolioResponse;
-            }
+            return removeStockFromPortfolio(username, order.getStock_id(), order.getQuantity()); //might return error
 
         }
 
         return null;
+    }
+
+    public String removeStockFromPortfolio(String username, Long stockId, Long quantity ){
+        try {
+            PortfolioEntry entry = portfolioRepository.findByPortfolioEntryId(new PortfolioEntryId(stockId, username));
+            if(entry == null){
+                return "User does not have enough of available stock";
+            }
+            entry.removeQuantity(quantity); //throws exception
+
+            if(entry.getQuantity() == 0){
+                portfolioRepository.deleteByPortfolioEntryId_StockId(stockId);
+            }else{
+                portfolioRepository.save(entry);
+            }
+            return null;
+        }catch(Exception e){
+            return e.getMessage();
+        }
     }
 
 }
