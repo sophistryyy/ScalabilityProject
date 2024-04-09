@@ -12,4 +12,7 @@ public interface PortfolioRepository extends MongoRepository<PortfolioEntry, Por
     PortfolioEntry findByPortfolioEntryId(PortfolioEntryId id);
     List<PortfolioEntry> findAllByPortfolioEntryId_Username(String username);
     void deleteByPortfolioEntryId_StockId(Long stock_id);
+
+
+
 }
