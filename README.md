@@ -30,8 +30,9 @@ http://localhost:8761
 docker-compose -f docker-compose-dbs.yml up
 ```
 
-***Endpoints***:
+# Docker Compose:
 
 ```
+docker-compose build
 docker-compose up
 ```
