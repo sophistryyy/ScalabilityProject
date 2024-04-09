@@ -19,3 +19,6 @@ target/
 
 # DBs
 db-data
+
+#Rabbit mq
+rabbitmq

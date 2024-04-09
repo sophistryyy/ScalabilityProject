@@ -12,10 +12,6 @@ public interface StockRepository extends MongoRepository<Stock, Long> {
 
     public boolean existsById(Long id);
 
-    public String findStockNameById(Long id);
-
-    @Override
-    public <S extends Stock> S save(S entity);
 
     default void saveNewStock(Stock stock) throws Exception {
         if (existsByName(stock.getName())) {

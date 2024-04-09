@@ -1,4 +1,4 @@
-package com.user.models.entity;
+package seng468scalability.com.portfolio.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -13,10 +13,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class PortfolioEntry {
 
     @Id
-    private Long stockId;
-    // username of owner of stock
+    private PortfolioEntryId portfolioEntryId;
     private String stockName;
-    private String username;
     private Long quantity;
 
 
