@@ -9,6 +9,7 @@ services:
       - '8761:8761'
     environment:
       - "eureka_client_serviceurl_defaultzone=http://discovery-server:8761/eureka"
+
   api-gateway:
     build:
       context: .
@@ -81,3 +82,20 @@ services:
     ports:
       - "27017:27017"
     restart: always
+
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./rabbitmq/data/:/var/lib/rabbitmq/
+      - ./rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - rabbitmq_net
+
+networks:
+  rabbitmq_net:
+    driver: bridge
