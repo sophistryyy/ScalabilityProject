@@ -25,6 +25,7 @@ public class GetStockTransactionsController {
         try{
             List<StockTransaction> transLst = stockTransactionsRepository.findAllByUsername(username);
             List<Map<String, Object>> data = formatData(transLst);
+            System.out.println(data);
             return Response.ok(data);
         }catch(Exception e)
         {
