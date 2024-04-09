@@ -36,3 +36,10 @@ docker-compose -f docker-compose-dbs.yml up
 docker-compose build
 docker-compose up
 ```
+Scale using:
+
+```
+docker-compose up --scale stock-service=5
+```
+
+Add --scale service=instances for each server to scale
