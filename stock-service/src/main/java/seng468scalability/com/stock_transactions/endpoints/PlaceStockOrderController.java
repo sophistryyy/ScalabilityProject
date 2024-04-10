@@ -7,6 +7,7 @@ import seng468scalability.com.stock_transactions.entity.enums.OrderType;
 import seng468scalability.com.stock_transactions.repositories.StockTransactionsRepository;
 import seng468scalability.com.stock_transactions.request.PlaceStockOrderRequest;
 import seng468scalability.com.response.Response;
+import seng468scalability.com.stock_transactions.util.RabbitMQProducer;
 import seng468scalability.com.stock_transactions.util.StockOrderUtil;
 
 
@@ -17,6 +18,7 @@ public class PlaceStockOrderController {
 
     private final StockOrderUtil stockUtil;
     private final StockTransactionsRepository stockTransactionsRepository;
+    private final RabbitMQProducer producer;
     @PostMapping
     public Response placeStockOrder(@RequestBody PlaceStockOrderRequest req, @RequestHeader("X-Username") String username) {
         try {
@@ -43,6 +45,7 @@ public class PlaceStockOrderController {
                 }
             }
             stockTransactionsRepository.save(order);
+            producer.sendMessage(order);
             return Response.ok(null);
         } catch (Exception e) {
             return Response.error(e.getMessage());

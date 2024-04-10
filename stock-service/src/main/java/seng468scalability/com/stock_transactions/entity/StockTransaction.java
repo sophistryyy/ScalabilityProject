@@ -27,6 +27,7 @@ public class StockTransaction {
 
     @JsonProperty("stock_id")
     private Long stock_id;
+    @JsonProperty("is_buy")
     private boolean is_buy;
     @JsonProperty("order_type")
     private OrderType orderType;
@@ -39,6 +40,7 @@ public class StockTransaction {
     private OrderStatus orderStatus;
     private LocalDateTime timestamp;
     private Long trueRemainingQuantity;
+    @JsonProperty("expired")
     private boolean expired;
 
 
