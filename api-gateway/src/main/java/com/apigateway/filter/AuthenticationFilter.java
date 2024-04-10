@@ -50,7 +50,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                         Response authResponse = webClientBuilder.build().post().uri("http://user-service/validate")
                                 .bodyValue(new AuthRequest(authHeader)).retrieve().bodyToMono(Response.class).block();
                         if(!authResponse.success()){
-                            return errorResponse(exchange, HttpStatus.UNAUTHORIZED, "Token is not correct.");
+                            return errorResponse(exchange, HttpStatus.UNAUTHORIZED, "Token is not correct or has expired.");
                         }
 
                         //success
