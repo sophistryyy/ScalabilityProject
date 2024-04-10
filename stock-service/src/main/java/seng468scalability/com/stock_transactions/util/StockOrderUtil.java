@@ -1,31 +1,28 @@
 package seng468scalability.com.stock_transactions.util;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 import seng468scalability.com.portfolio.entity.PortfolioEntry;
 import seng468scalability.com.portfolio.entity.PortfolioEntryId;
 import seng468scalability.com.portfolio.repository.PortfolioRepository;
 import seng468scalability.com.response.Response;
-import seng468scalability.com.stock.entity.Stock;
 import seng468scalability.com.stock.repositories.StockRepository;
-import seng468scalability.com.stock_transactions.configs.WebClientConfig;
 import seng468scalability.com.stock_transactions.entity.StockTransaction;
 import seng468scalability.com.stock_transactions.entity.enums.OrderType;
 import seng468scalability.com.stock_transactions.request.NewWalletTransactionRequest;
 import seng468scalability.com.stock_transactions.request.PlaceStockOrderRequest;
-import seng468scalability.com.stock_transactions.request.RemoveStockRequest;
 import seng468scalability.com.stock_transactions.request.SubtractMoneyRequest;
 
 @RequiredArgsConstructor
-@Component
+@Service
 public class StockOrderUtil {
 
     private final StockTxIdSequenceGenerator generator;
     private final StockRepository stockRepository;
     private final WebClient.Builder webClientBuilder;
     private final PortfolioRepository portfolioRepository;
+
     public StockTransaction createNewStockTx(Long stock_id, boolean is_buy, OrderType orderType, Long quantity, Long price, String username){
         Long stockTxId = generator.getSequenceNumber(StockTransaction.SEQUENCE_NAME);
        return new StockTransaction(stockTxId, stock_id, is_buy, orderType, quantity, price, username);
