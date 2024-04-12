@@ -19,6 +19,7 @@
     <module>discovery-server</module>
     <module>api-gateway</module>
     <module>matching-engine-service</module>
+    <module>execution-service</module>
   </modules>
 
   <properties>
