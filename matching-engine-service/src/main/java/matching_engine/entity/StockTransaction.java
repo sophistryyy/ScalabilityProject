@@ -1,6 +1,9 @@
 package matching_engine.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +18,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
 public class StockTransaction implements Serializable{
+    @Id
     @JsonProperty("stock_tx_id")
     private Long stock_tx_id;
 

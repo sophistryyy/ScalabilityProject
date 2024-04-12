@@ -24,4 +24,9 @@ public class RabbitMQConfig {
         rabbitTemplate.setMessageConverter(messageConverter());
         return rabbitTemplate;
     }
+
+    @Bean
+    public Queue createUserRegistrationQueue() {
+        return new Queue("stock-service-queue");
+    }
 }
