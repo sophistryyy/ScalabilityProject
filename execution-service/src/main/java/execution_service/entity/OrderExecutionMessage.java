@@ -1,14 +1,20 @@
 package execution_service.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import execution_service.requests.NewStockTransactionRequest;
+import execution_service.requests.NewWalletTransactionRequest;
+import lombok.*;
+
+import java.io.Serializable;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderExecutionMessage {
-    private StockTransaction buyStockTransaction;
-    private StockTransaction sellStockTransaction;
-    private boolean expired;
+@Data
+@ToString
+public class OrderExecutionMessage implements Serializable {
+    @JsonProperty("stock_tx_request")
+    private NewStockTransactionRequest newStockTransaction;
+    @JsonProperty("wallet_tx_request")
+    private NewWalletTransactionRequest newWalletTransaction;
 }

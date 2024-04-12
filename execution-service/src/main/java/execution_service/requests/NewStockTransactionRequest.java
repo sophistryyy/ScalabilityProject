@@ -1,9 +1,9 @@
-package matching_engine.requests;
+package execution_service.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import execution_service.entity.enums.OrderStatus;
+import execution_service.entity.enums.OrderType;
 import lombok.*;
-import matching_engine.entity.enums.OrderStatus;
-import matching_engine.entity.enums.OrderType;
 
 import java.io.Serializable;
 
