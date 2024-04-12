@@ -12,6 +12,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NewStockTransactionRequest implements Serializable  {
+    @JsonProperty("stock_tx_id")
+    private Long stock_tx_id;
     @JsonProperty("stock_id")
     private Long stockId; 
     @JsonProperty("is_buy")
