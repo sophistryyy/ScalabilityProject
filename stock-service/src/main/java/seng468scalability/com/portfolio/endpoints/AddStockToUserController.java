@@ -27,7 +27,6 @@ public class AddStockToUserController {
 
     @PostMapping("/addStockToUser")
     public Response addStockToUser(@RequestBody AddStockToUserRequest req, @RequestHeader("X-username") String username) {
-
         if(req.stockId() == null || req.stockId() <= 0 || req.quantity() == null || req.quantity() <= 0){
             return Response.error("Invalid parameter. Either null, 0 or negative number");
         }
@@ -52,3 +51,4 @@ public class AddStockToUserController {
 
 
 }
+
