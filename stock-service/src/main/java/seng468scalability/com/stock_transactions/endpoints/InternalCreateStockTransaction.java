@@ -1,5 +1,9 @@
 package seng468scalability.com.stock_transactions.endpoints;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +34,9 @@ public class InternalCreateStockTransaction {
                                                      req.getQuantity(), req.getPrice(), req.getUsername());
             stockTransactionsRepository.save(stockTransaction);
 
-            return Response.ok(stockTransaction.getStock_tx_id());
+            Map<String, Object> data = new HashMap<String, Object>();
+            data.put("stock_id", stockTransaction.getStock_id());
+            return Response.ok(data);
         } catch (Exception e) {
         return Response.error(e.getMessage());
         }
