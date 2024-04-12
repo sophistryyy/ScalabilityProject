@@ -5,6 +5,7 @@
         <groupId>com.seng468project</groupId>
         <artifactId>scalibilityservices</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../parent-pom.xml</relativePath>
     </parent>
 
     <groupId>matching_engine</groupId>
@@ -25,6 +26,14 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
