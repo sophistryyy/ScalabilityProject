@@ -28,4 +28,6 @@ public class NewStockTransactionRequest implements Serializable  {
     private String username;
     @JsonProperty("parent_stock_tx_id")
     private Long parent_stock_tx_id;
+    @JsonProperty("walletTXid")
+    private Long walletTXid;
 }
