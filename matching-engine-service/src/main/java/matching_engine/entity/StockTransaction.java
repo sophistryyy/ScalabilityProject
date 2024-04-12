@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
+@Entity(name = "matching_engine_stock_txs")
 public class StockTransaction implements Serializable{
     @Id
     @JsonProperty("stock_tx_id")
@@ -59,5 +59,14 @@ public class StockTransaction implements Serializable{
 
     @JsonProperty("expired")
     private boolean expired;
+
+    public StockTransaction createCopy(Long newQuantity, OrderStatus newOrderStatus) {
+        StockTransaction copy = StockTransaction.builder().stock_id(this.stock_id).is_buy(this.is_buy).orderType(this.orderType).quantity(newQuantity)
+                .price(this.price).timestamp(LocalDateTime.now()).orderStatus(newOrderStatus).username(this.username).walletTXid(null)
+                .expired(false).trueRemainingQuantity(0L).build();
+        copy.parent_stock_tx_id = this.parent_stock_tx_id == null ? this.stock_tx_id
+                : this.parent_stock_tx_id; //reference true parent
+        return copy;
+    }
 
 }
