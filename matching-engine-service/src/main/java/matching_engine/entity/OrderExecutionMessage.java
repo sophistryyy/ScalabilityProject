@@ -8,4 +8,5 @@ import lombok.Getter;
 public class OrderExecutionMessage {
     private StockTransaction buyStockTransaction;
     private StockTransaction sellStockTransaction;
+    private boolean expired;
 }

@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class OrderExecutionMessage {
     private StockTransaction buyStockTransaction;
     private StockTransaction sellStockTransaction;
+    private boolean expired;
 }

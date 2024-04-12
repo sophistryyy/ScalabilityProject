@@ -2,7 +2,6 @@ package matching_engine.util;
 
 import lombok.RequiredArgsConstructor;
 import matching_engine.entity.OrderExecutionMessage;
-import matching_engine.entity.StockTransaction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
