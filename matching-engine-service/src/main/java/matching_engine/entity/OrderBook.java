@@ -67,19 +67,30 @@ public class OrderBook {
     public void addStockTransaction(StockTransaction newOrder){
         Long stockId = newOrder.getStock_id();
         Boolean isBuy = newOrder.getIs_buy();
-        LinkedList<StockTransaction> modifiedStockTransactions = isBuy ? this.buy_orders.get(stockId) : this.sell_orders.get(stockId);
+        LinkedList<StockTransaction> modifiedStockTransactions;
+
+        if(isBuy && newOrder.getOrderType() == OrderType.MARKET){
+            modifiedStockTransactions = this.buy_market_orders.get(stockId);
+        }else if(isBuy && newOrder.getOrderType() == OrderType.LIMIT){
+            modifiedStockTransactions = this.buy_orders.get(stockId);
+        }else{
+            modifiedStockTransactions = this.sell_orders.get(stockId);
+        }
 
         if(modifiedStockTransactions  == null) {
             modifiedStockTransactions = new LinkedList<>();
             modifiedStockTransactions.add(newOrder);
             if(isBuy && newOrder.getOrderType() == OrderType.MARKET){
                 this.buy_market_orders.put(stockId, modifiedStockTransactions);
+                this.buy_orders.put(stockId, new LinkedList<>());
                 this.sell_orders.put(stockId, new LinkedList<>());
             }
-            if(isBuy){
+            if(isBuy && newOrder.getOrderType() == OrderType.LIMIT){
+                this.buy_market_orders.put(stockId, new LinkedList<>());
                 this.buy_orders.put(stockId, modifiedStockTransactions);
                 this.sell_orders.put(stockId, new LinkedList<>());
             }else{
+                this.buy_market_orders.put(stockId, new LinkedList<>());
                 this.buy_orders.put(stockId, new LinkedList<>());
                 this.sell_orders.put(stockId,modifiedStockTransactions);
             }
