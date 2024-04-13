@@ -13,6 +13,6 @@ public class RabbitMQConsumer {
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQConsumer.class);
     @RabbitListener(queues = {"${rabbitmq.queue_listener.name}"})
     public void consumeMessage(OrderExecutionMessage orderExecutionMessage){
-        LOGGER.info(String.format("Received message -> %s", orderExecutionMessage.toString()));
+        LOGGER.info(String.format("Received message -> %s \n", orderExecutionMessage.toString()));
     }
 }
