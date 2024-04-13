@@ -51,16 +51,14 @@ public class OrderBook {
 
         if(buyOrder == null || sellOrder == null){return false;}// one the lists are empty, so can't match
 
-        if(buyOrder.getOrderType() == OrderType.LIMIT ) //error handling, don't want to match null price
-        {
-            if(sellOrder.getOrderType() == OrderType.MARKET)
-            {
-                return true; //seller doesn't care what price it's sold
-            }
 
-            return buyOrder.getPrice() >= sellOrder.getPrice(); //can buy at least 1 stock
+        if(sellOrder.getOrderType() == OrderType.MARKET)
+        {
+            return true; //seller doesn't care what price it's sold
         }
-        return false; //just in case
+
+        return buyOrder.getPrice() >= sellOrder.getPrice(); //can buy at least 1 stock
+
     }
 
     public void addStockTransaction(StockTransaction newOrder){
@@ -81,6 +79,7 @@ public class OrderBook {
             queuedStockRepository.save(new StockEntry(stockId));
         }else{
             int index = getRightIndex(modifiedStockTransactions, newOrder);
+
             modifiedStockTransactions.add(index, newOrder);
         }
         queuedStockTransactionsRepository.save(newOrder);
@@ -92,6 +91,13 @@ public class OrderBook {
         // Find the right index without sorting
         int index = 0;
         for (StockTransaction existingOrder : modifiedStockTransactions) {
+            if(newOrder.getOrderType() == OrderType.MARKET){
+                if(existingOrder.getOrderType() == OrderType.LIMIT) {//insert before LIMIT but after existing MARKET orders
+                    return index;
+                }else{
+                    continue;
+                }
+            }
             if ((isBuy && newOrder.getPrice() > existingOrder.getPrice()) ||
                     (!isBuy && newOrder.getPrice() < existingOrder.getPrice())) {
                 return index;
@@ -99,6 +105,14 @@ public class OrderBook {
             index++;
         }
         return index;
+    }
+
+
+    public LinkedList<StockTransaction> getBuyOrdersByStockId(Long stockId){
+        return this.buy_orders.get(stockId);
+    }
+    public LinkedList<StockTransaction> getSellOrdersByStockId(Long stockId){
+        return this.sell_orders.get(stockId);
     }
 
     public StockTransaction getBuyHead(Long stock_id)
@@ -141,7 +155,7 @@ public class OrderBook {
                 stringBuilder.append(transaction).append("\n");
             }
         }
-        stringBuilder.append("-----------------" +
+        stringBuilder.append("-----------------\n" +
                 "Sell Orders:\n");
         for (Map.Entry<Long, LinkedList<StockTransaction>> entry : sell_orders.entrySet()) {
             stringBuilder.append("Stock ID: ").append(entry.getKey()).append("\n");

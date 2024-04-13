@@ -7,7 +7,7 @@ import matching_engine.entity.enums.OrderType;
 
 import java.io.Serializable;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

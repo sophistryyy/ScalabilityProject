@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
+import matching_engine.requests.AddStockToUserRequest;
 import matching_engine.requests.NewStockTransactionRequest;
 import matching_engine.requests.NewWalletTransactionRequest;
 
@@ -17,4 +18,6 @@ public class OrderExecutionMessage implements Serializable {
     private NewStockTransactionRequest newStockTransaction;
     @JsonProperty("wallet_tx_request")
     private NewWalletTransactionRequest newWalletTransaction;
+    @JsonProperty("add_stock_to_user_request")
+    private AddStockToUserRequest addStockToUserRequest;
 }
