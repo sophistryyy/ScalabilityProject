@@ -3,6 +3,8 @@ package matching_engine.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +32,7 @@ public class StockTransaction implements Serializable{
     @JsonProperty("is_buy")
     private Boolean is_buy;
 
+    @Enumerated(EnumType.STRING)
     @JsonProperty("order_type")
     private OrderType orderType;
 
@@ -48,6 +51,7 @@ public class StockTransaction implements Serializable{
     @JsonProperty("walletTXid")
     private Long walletTXid;
 
+    @Enumerated(EnumType.STRING)
     @JsonProperty("orderStatus")
     private OrderStatus orderStatus;
 
@@ -60,13 +64,5 @@ public class StockTransaction implements Serializable{
     @JsonProperty("expired")
     private boolean expired;
 
-    public StockTransaction createCopy(Long newQuantity, OrderStatus newOrderStatus) {
-        StockTransaction copy = StockTransaction.builder().stock_id(this.stock_id).is_buy(this.is_buy).orderType(this.orderType).quantity(newQuantity)
-                .price(this.price).timestamp(LocalDateTime.now()).orderStatus(newOrderStatus).username(this.username).walletTXid(null)
-                .expired(false).trueRemainingQuantity(0L).build();
-        copy.parent_stock_tx_id = this.parent_stock_tx_id == null ? this.stock_tx_id
-                : this.parent_stock_tx_id; //reference true parent
-        return copy;
-    }
 
 }

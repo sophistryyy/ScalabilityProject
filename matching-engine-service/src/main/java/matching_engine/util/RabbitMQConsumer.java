@@ -18,7 +18,7 @@ public class RabbitMQConsumer {
     @RabbitListener(queues = {"${rabbitmq.queue_listener.name}"})
     public void consumeMessage(StockTransaction order){
         LOGGER.info(String.format("Received message -> %s", order.toString()));
-        matchingEngineUtil.insertNewElement(order);
+        matchingEngineUtil.receiveNewElement(order);
     }
 
 

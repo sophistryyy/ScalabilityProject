@@ -1,11 +1,11 @@
-package matching_engine.requests;
+package execution_service.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.io.Serializable;
 
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
