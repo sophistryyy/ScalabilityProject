@@ -94,7 +94,7 @@ public class MatchingEngineUtil {
 
             }else{
                 //set wallet TX to this origin seller
-                stockTransactionRequest = createNewChildStockTx(sellOrder, sellOrder.getOrderType(),sellingStocks,sellOrderStatus,sellingPrice);
+                stockTransactionRequest = createNewChildStockTx(sellOrder, sellOrder.getOrderType(),sellingStocks,OrderStatus.COMPLETED,sellingPrice);
                 stockTransactionRequest.setStock_tx_id(sellOrder.getStock_tx_id());
                 stockTransactionRequest.setParent_stock_tx_id(null);
             }
@@ -154,7 +154,7 @@ public class MatchingEngineUtil {
 
             }else{
                 //set wallet TX to this origin seller
-                stockTransactionRequest = createNewChildStockTx(sellOrder, sellOrder.getOrderType(),sellingStocks,sellOrderStatus,sellingPrice);
+                stockTransactionRequest = createNewChildStockTx(sellOrder, sellOrder.getOrderType(),sellingStocks,OrderStatus.COMPLETED,sellingPrice);
                 stockTransactionRequest.setStock_tx_id(sellOrder.getStock_tx_id());
                 stockTransactionRequest.setParent_stock_tx_id(null);
             }
@@ -187,6 +187,7 @@ public class MatchingEngineUtil {
             orderBook.popBuyOrder(stockId);
             producer.sendMessage(new OrderExecutionMessage(stockTransactionRequest, walletTransactionRequest, null));
         }
+        System.out.println("\n" + orderBook.toString() + "\n");
     }
 
     private AddStockToUserRequest createNewAddStockToUserRequest(String username, Long stockId, Long quantity) {
