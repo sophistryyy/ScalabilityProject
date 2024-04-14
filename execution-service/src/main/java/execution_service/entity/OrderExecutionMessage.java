@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class OrderExecutionMessage implements Serializable {
     @JsonProperty("stock_tx_request")
