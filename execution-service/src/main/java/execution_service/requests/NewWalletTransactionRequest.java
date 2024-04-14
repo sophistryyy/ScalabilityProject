@@ -10,7 +10,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 @ToString
-public class NewWalletTransactionRequest {
+public class NewWalletTransactionRequest implements Serializable{
     @JsonProperty("wallet_tx_id")
     private Long walletTXId;
     @JsonProperty("username")
