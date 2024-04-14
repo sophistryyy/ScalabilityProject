@@ -17,5 +17,6 @@ public class RabbitMQConsumer {
     @RabbitListener(queues = {"${rabbitmq.queue_listener.name}"})
     public void consumeMessage(OrderExecutionMessage orderExecutionMessage){
         LOGGER.info(String.format("Received message -> %s \n", orderExecutionMessage.toString()));
+        orderExecutionService.execute(orderExecutionMessage);
     }
 }
