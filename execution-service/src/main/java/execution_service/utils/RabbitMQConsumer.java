@@ -16,12 +16,6 @@ public class RabbitMQConsumer {
     private final OrderExecutionService orderExecutionService;
     @RabbitListener(queues = {"${rabbitmq.queue_listener.name}"})
     public void consumeMessage(OrderExecutionMessage orderExecutionMessage){
-        try {
-            System.out.println(orderExecutionMessage.getNewStockTransaction().getOrderStatus());
-            LOGGER.info(String.format("Received message -> %s", orderExecutionMessage.toString()));
-            orderExecutionService.execute(orderExecutionMessage);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        LOGGER.info(String.format("Received message -> %s \n", orderExecutionMessage.toString()));
     }
 }

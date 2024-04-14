@@ -3,6 +3,7 @@ package seng468scalability.com.stock_transactions.endpoints;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import seng468scalability.com.stock_transactions.entity.StockTransaction;
+import seng468scalability.com.stock_transactions.entity.enums.OrderStatus;
 import seng468scalability.com.stock_transactions.entity.enums.OrderType;
 import seng468scalability.com.stock_transactions.repositories.StockTransactionsRepository;
 import seng468scalability.com.stock_transactions.request.PlaceStockOrderRequest;
@@ -30,8 +31,8 @@ public class PlaceStockOrderController {
             {
                 return Response.error(errorMessage);
             }
-            StockTransaction order = stockUtil.createNewStockTx(req.stock_id(),req.is_buy(),
-                    OrderType.valueOf(req.orderType()), req.quantity(), req.price(), username);
+            StockTransaction order = stockUtil.createStockTX(null, req.stock_id(), null, null, req.is_buy(),
+                    OrderType.valueOf(req.orderType()), req.quantity(), req.price(), OrderStatus.IN_PROGRESS, username);
 
             String message = stockUtil.verifyIfEnough(order, username);
             if(message != null)
@@ -44,6 +45,7 @@ public class PlaceStockOrderController {
                     return Response.error(message);
                 }
             }
+            System.out.println(order.getStock_tx_id());
             stockTransactionsRepository.save(order);
             producer.sendMessage(order);
             return Response.ok(null);

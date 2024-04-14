@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewWalletTransactionRequest {
+public class CreateWalletTransactionRequest {
     private String username;
     private Long stockTXId;
     private boolean isDebit;

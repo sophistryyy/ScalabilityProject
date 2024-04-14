@@ -10,7 +10,7 @@ import seng468scalability.com.stock_transactions.entity.enums.OrderType;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewStockTransactionRequest {
+public class CreateStockTransactionRequest {
     @JsonProperty("stock_id")
     private Long stockId; 
     @JsonProperty("is_buy")

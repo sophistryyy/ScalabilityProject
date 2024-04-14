@@ -36,7 +36,12 @@ public class StockTransaction {
 
     private String username;
     private Long parent_stock_tx_id;
+
+
+    @JsonProperty("wallet_tx_id")
     private Long walletTXid;
+
+    @JsonProperty("order_status")
     private OrderStatus orderStatus;
     private LocalDateTime timestamp;
     private Long trueRemainingQuantity;
@@ -45,17 +50,17 @@ public class StockTransaction {
 
 
 
-    public StockTransaction(Long stock_tx_id, Long stock_id, boolean is_buy, OrderType orderType, Long quantity, Long price, String username) {
+    public StockTransaction(Long stock_tx_id, Long parentStockTXId, Long walletTXId, Long stock_id, boolean is_buy, OrderType orderType, Long quantity, Long price, OrderStatus orderStatus, String username) {
         this.stock_tx_id = stock_tx_id;
-        this.parent_stock_tx_id = null;
-        this.walletTXid = null;
+        this.parent_stock_tx_id = parentStockTXId;
+        this.walletTXid = walletTXId;
         this.stock_id = stock_id;
         this.is_buy = is_buy;
         this.orderType = orderType;
         this.quantity = quantity;
         this.price = price;
         this.timestamp = LocalDateTime.now();
-        this.orderStatus = OrderStatus.IN_PROGRESS;
+        this.orderStatus = orderStatus;
         this.username = username;
         this.trueRemainingQuantity = quantity;
         this.expired = false;

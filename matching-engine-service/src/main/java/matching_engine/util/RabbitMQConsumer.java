@@ -1,7 +1,13 @@
 package matching_engine.util;
 
 import lombok.RequiredArgsConstructor;
+import matching_engine.entity.OrderExecutionMessage;
 import matching_engine.entity.StockTransaction;
+import matching_engine.entity.enums.OrderStatus;
+import matching_engine.entity.enums.OrderType;
+import matching_engine.requests.NewStockTransactionRequest;
+import matching_engine.requests.NewWalletTransactionRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

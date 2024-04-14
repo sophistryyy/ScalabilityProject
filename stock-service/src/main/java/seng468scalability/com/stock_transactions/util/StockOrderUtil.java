@@ -8,9 +8,10 @@ import seng468scalability.com.portfolio.entity.PortfolioEntryId;
 import seng468scalability.com.portfolio.repository.PortfolioRepository;
 import seng468scalability.com.response.Response;
 import seng468scalability.com.stock.repositories.StockRepository;
+import seng468scalability.com.stock_transactions.entity.NewWalletTransactionRequest;
 import seng468scalability.com.stock_transactions.entity.StockTransaction;
+import seng468scalability.com.stock_transactions.entity.enums.OrderStatus;
 import seng468scalability.com.stock_transactions.entity.enums.OrderType;
-import seng468scalability.com.stock_transactions.request.NewWalletTransactionRequest;
 import seng468scalability.com.stock_transactions.request.PlaceStockOrderRequest;
 import seng468scalability.com.stock_transactions.request.SubtractMoneyRequest;
 
@@ -23,11 +24,13 @@ public class StockOrderUtil {
     private final WebClient.Builder webClientBuilder;
     private final PortfolioRepository portfolioRepository;
 
-    public StockTransaction createNewStockTx(Long stock_id, boolean is_buy, OrderType orderType, Long quantity, Long price, String username){
-        Long stockTxId = generator.getSequenceNumber(StockTransaction.SEQUENCE_NAME);
-       return new StockTransaction(stockTxId, stock_id, is_buy, orderType, quantity, price, username);
-
+    public StockTransaction createStockTX(Long stockTXId, Long stockId, Long parentStockTXId, Long walletTXId, boolean isBuy, OrderType orderType, Long quantity, Long price, OrderStatus orderStatus, String username){
+        if (stockTXId == null) {
+            stockTXId = generator.getSequenceNumber(StockTransaction.SEQUENCE_NAME);
+        }
+        return new StockTransaction(stockTXId, parentStockTXId, walletTXId, stockId, isBuy, orderType, quantity, price, orderStatus, username);
     }
+
 
     public String basicVerifier(PlaceStockOrderRequest req)
     {
@@ -81,7 +84,7 @@ public class StockOrderUtil {
             Response walletTXResponse = webClientBuilder.build()
                     .post()
                     .uri("http://wallet-service/internal/createWalletTransaction")
-                    .bodyValue(new NewWalletTransactionRequest(username, order.getStock_tx_id(), true, toDeduct))
+                    .bodyValue(new NewWalletTransactionRequest(null, username, order.getStock_tx_id(), true, toDeduct))
                     .retrieve()
                     .bodyToMono(Response.class).block();
 

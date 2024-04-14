@@ -1,16 +1,15 @@
-package com.wallet.models.request;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
+package seng468scalability.com.stock_transactions.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
+
+import java.io.Serializable;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@ToString
 public class NewWalletTransactionRequest {
     @JsonProperty("wallet_tx_id")
     private Long walletTXId;
@@ -22,4 +21,12 @@ public class NewWalletTransactionRequest {
     private boolean isDebit;
     @JsonProperty("amount")
     private Long amount;
+
+    public void setWalletTXId(Long walletTXId) {
+        this.walletTXId = walletTXId;
+    }
+
+    public void setStockTXId(Long stockTXId) {
+        this.stockTXId = stockTXId;
+    }
 }

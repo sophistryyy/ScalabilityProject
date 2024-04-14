@@ -1,9 +1,9 @@
-package matching_engine.requests;
+package seng468scalability.com.stock_transactions.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import matching_engine.entity.enums.OrderStatus;
-import matching_engine.entity.enums.OrderType;
+import seng468scalability.com.stock_transactions.entity.enums.OrderStatus;
+import seng468scalability.com.stock_transactions.entity.enums.OrderType;
 
 import java.io.Serializable;
 
@@ -14,7 +14,7 @@ import java.io.Serializable;
 @ToString
 public class NewStockTransactionRequest implements Serializable  {
     @JsonProperty("stock_tx_id")
-    private Long stock_tx_id;
+    private Long stockTXId;
     @JsonProperty("stock_id")
     private Long stockId; 
     @JsonProperty("is_buy")
@@ -30,7 +30,7 @@ public class NewStockTransactionRequest implements Serializable  {
     @JsonProperty("username")
     private String username;
     @JsonProperty("parent_stock_tx_id")
-    private Long parent_stock_tx_id;
+    private Long parentStockTXId;
     @JsonProperty("wallet_tx_id")
     private Long walletTXid;
 }

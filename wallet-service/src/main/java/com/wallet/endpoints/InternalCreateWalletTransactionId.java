@@ -14,24 +14,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Objects;
-
 import static org.springframework.data.mongodb.core.FindAndModifyOptions.options;
 
-@RestController
-@RequiredArgsConstructor
-public class InternalCreateWalletTransactionController {
+import java.util.Objects;
 
-    private final WalletTXRepository walletTXRepository;
+@RequiredArgsConstructor
+@RestController
+public class InternalCreateWalletTransactionId {
     private final MongoOperations mongoOperations;
 
-    @PostMapping( "/internal/createWalletTransaction")
-    public Response createWalletTransaction(@RequestBody NewWalletTransactionRequest req){
+    @PostMapping( "/internal/createWalletTransactionId")
+    public Response createWalletTransactionId() {
         try{
-            Long walletTXId = req.getWalletTXId() != null ? req.getWalletTXId() : getSequenceNumber(WalletTX.SEQUENCE_NAME);
-            WalletTX walletTx = new WalletTX(walletTXId, req.getUsername(), req.getStockTXId(), req.isDebit(), req.getAmount());
-            walletTXRepository.save(walletTx);
-            return Response.ok(walletTx.getWalletTXId());
+            Long walletTXID = getSequenceNumber(WalletTX.SEQUENCE_NAME);
+            return Response.ok(walletTXID.toString());
         }catch(Exception e){
             return Response.error(e.getMessage());
         }
