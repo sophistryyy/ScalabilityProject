@@ -13,6 +13,7 @@ import matching_engine.entity.OrderExecutionMessage;
 import matching_engine.entity.StockTransaction;
 import matching_engine.entity.enums.OrderStatus;
 import matching_engine.repositories.QueuedStockTransactionsRepository;
+import matching_engine.requests.InternalUpdateUserStockRequest;
 import matching_engine.requests.NewStockTransactionRequest;
 import matching_engine.requests.NewWalletTransactionRequest;
 
@@ -32,8 +33,6 @@ public class ExpirationService {
     //         LocalDateTime timeNow = LocalDateTime.now();
     //         LocalDateTime timestampExpireTime = order.getTimestamp().plusMinutes(MINUTES_TO_EXPIRE);
 
-    //         boolean partialFulfilled = order.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED;
-
     //         if (timeNow.isAfter(timestampExpireTime)) {
     //             order.setExpired(true);
     //             if (order.getIs_buy()) {
@@ -44,12 +43,13 @@ public class ExpirationService {
     //                 producer.sendMessage(orderExecutionMessage);
     //             } else {
     //                 NewStockTransactionRequest newStockTransactionRequest = createNewStockTx(order);
-    //             }
-    //             if (!partialFulfilled) {
-    //                 // Remove transaction
+    //                 InternalUpdateUserStockRequest updateUserStockRequest = createUpdateUserStockRequest(order.getUsername(), order.getStock_id(), order.getQuantity(), true);
+    //                 OrderExecutionMessage orderExecutionMessage = new OrderExecutionMessage(newStockTransactionRequest, null, updateUserStockRequest, true);
+    //                 producer.sendMessage(orderExecutionMessage);
     //             }
     //             queuedStockTransactionsRepository.delete(order);
     //         }
+
     //     }
     // }
 
@@ -64,6 +64,10 @@ public class ExpirationService {
     //             .parent_stock_tx_id(order.getParent_stock_tx_id())
     //             .walletTXid(order.getWalletTXid())
     //             .stock_tx_id(order.getStock_tx_id()).build();
+    // }
+
+    // private InternalUpdateUserStockRequest createUpdateUserStockRequest(String username, Long stockId, Long quantity, boolean add) {
+    //     return new InternalUpdateUserStockRequest(stockId, quantity, username, add);
     // }
 
     // public NewWalletTransactionRequest createNewWalletTx(String username, boolean isDebit, Long amount){

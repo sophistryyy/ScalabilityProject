@@ -1,7 +1,7 @@
 package execution_service.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import execution_service.requests.AddStockToUserRequest;
+import execution_service.requests.InternalUpdateUserStockRequest;
 import execution_service.requests.NewStockTransactionRequest;
 import execution_service.requests.NewWalletTransactionRequest;
 import lombok.*;
@@ -18,7 +18,7 @@ public class OrderExecutionMessage implements Serializable {
     @JsonProperty("wallet_tx_request")
     private NewWalletTransactionRequest newWalletTransaction;
     @JsonProperty("add_stock_to_user_request")
-    private AddStockToUserRequest addStockToUserRequest;    
+    private InternalUpdateUserStockRequest updateUserStockRequest;    
     @JsonProperty("expired")
     private boolean expired;
 }
