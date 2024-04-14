@@ -12,12 +12,10 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AddStockToUserRequest implements Serializable {
-    @JsonProperty("username")
-    private String username;
     @JsonProperty("stock_id")
     private Long stockId;
     @JsonProperty("quantity")
     private Long quantity;
-
-
+    @JsonProperty("username")
+    private String username;
 }
