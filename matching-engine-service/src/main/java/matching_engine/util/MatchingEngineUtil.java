@@ -70,22 +70,23 @@ public class MatchingEngineUtil {
                     Long sellingStocks = sellOrder.getTrueRemainingQuantity();
 
                     MarketOrderHandlerResponse userHasEnough = marketOrderChecker.checkIfMarketOrderHasEnough
-                            (marketBuyOrder.getUsername(), sellingPrice,sellingStocks);
+                            (marketBuyOrder.getUsername(), sellingPrice,sellingStocks, marketBuyOrder.getTrueRemainingQuantity());
                     if(!userHasEnough.success()){//transaction can't happen, so skip
                         break;
                     }
                     //user paid for stocks
                     Long buyingStocks = userHasEnough.buyingStocks();//this how much user can afford to buy
                     OrderStatus buyOrderStatus = marketBuyOrder.getOrderStatus();
-                    OrderStatus sellOrderStatus = sellOrder.getOrderStatus();
 
-                    NewStockTransactionRequest stockTransactionRequest;
-                    NewWalletTransactionRequest walletTransactionRequest;
-                    AddStockToUserRequest addStockToUserRequest;
+
                     OrderExecutionMessage orderMessage;
 
                     if(buyingStocks > sellingStocks) // user wants to buy more than top seller has
                     {
+                        if(sellOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){
+                            orderMessage = handleOriginalOrdersFromPartialToCompleted(sellOrder);
+                            producer.sendMessage(orderMessage);
+                        }
                         orderMessage = handleOrdersCompleted(sellOrder, sellingStocks, sellingPrice, false);
                         //set seller to be completed
                         //set true remaining q to 0
@@ -95,56 +96,96 @@ public class MatchingEngineUtil {
                         //remove from db
                         producer.sendMessage(orderMessage);
 
+
                         //remember this is a market buy order
+                        if(marketBuyOrder.getOrderStatus() == OrderStatus.IN_PROGRESS) {
+                            orderMessage = handleOriginalOrdersFromInProgressToPartial(marketBuyOrder);
+                            producer.sendMessage(orderMessage);//update from inprogress to partial
+                        }
                         marketBuyOrder.setOrderStatus(OrderStatus.PARTIAL_FULFILLED);
                         marketBuyOrder.setTrueRemainingQuantity(marketBuyOrder.getTrueRemainingQuantity() - sellingStocks);//still more to go
                         orderMessage = handleOrdersPartiallyFulfilled(marketBuyOrder,sellingStocks, sellingPrice, true);
                         producer.sendMessage(orderMessage);
+
                     }else if(buyingStocks < sellingStocks){ //user either can't afford all of the stocks or just doesn't want to buy that many
                         //SELL is partially completed
+                        if(sellOrder.getOrderStatus() == OrderStatus.IN_PROGRESS) {
+                            orderMessage = handleOriginalOrdersFromInProgressToPartial(sellOrder);
+                            producer.sendMessage(orderMessage);//update from inprogress to partial
+                        }
+
                         sellOrder.setOrderStatus(OrderStatus.PARTIAL_FULFILLED);
                         sellOrder.setTrueRemainingQuantity(sellingStocks - buyingStocks);//still more to go
                         orderMessage = handleOrdersPartiallyFulfilled(sellOrder,buyingStocks, sellingPrice, false);
                         producer.sendMessage(orderMessage);
 
+
                         //Buy might be completed or doesn't have enough
                         if(marketBuyOrder.getTrueRemainingQuantity().equals(buyingStocks)){//completed
+                            if(marketBuyOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){
+                                orderMessage = handleOriginalOrdersFromPartialToCompleted(sellOrder);
+                                producer.sendMessage(orderMessage);
+                            }
+
                             orderMessage = handleOrdersCompleted(marketBuyOrder, buyingStocks, sellingPrice, true);
                             marketBuyOrder.setOrderStatus(OrderStatus.COMPLETED);
                             marketBuyOrder.setTrueRemainingQuantity(0L);
                             orderBook.popBuyMarketOrder(stockId);
                             producer.sendMessage(orderMessage);
+
                             //remove from db
                         }//partially fulfilled but user doesn't have enought to pay
                         else{
+                            if(marketBuyOrder.getOrderStatus() == OrderStatus.IN_PROGRESS) {
+                                orderMessage = handleOriginalOrdersFromInProgressToPartial(sellOrder);
+                                producer.sendMessage(orderMessage);//update from inprogress to partial
+                            }
                             marketBuyOrder.setOrderStatus(OrderStatus.PARTIAL_FULFILLED);
                             marketBuyOrder.setTrueRemainingQuantity(sellingStocks - marketBuyOrder.getTrueRemainingQuantity());//still more to go
                             orderMessage = handleOrdersPartiallyFulfilled(marketBuyOrder,buyingStocks, sellingPrice, true);
                             producer.sendMessage(orderMessage);
-                            break;
 
-                        }
+                            break;
+                            }
                     }else{//sell is completed, buy can be either completed or user doesn't have neough
+                        if(sellOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){
+                            orderMessage = handleOriginalOrdersFromPartialToCompleted(sellOrder);
+                            producer.sendMessage(orderMessage);
+                        }
                         orderMessage = handleOrdersCompleted(sellOrder, sellingStocks, sellingPrice, false);
+                        //set seller to be completed
+                        //set true remaining q to 0
                         sellOrder.setOrderStatus(OrderStatus.COMPLETED);
                         sellOrder.setTrueRemainingQuantity(0L);
                         orderBook.popSellOrder(stockId);
                         //remove from db
                         producer.sendMessage(orderMessage);
 
+                        //Buy might be completed or doesn't have enough
                         if(marketBuyOrder.getTrueRemainingQuantity().equals(buyingStocks)){//completed
+                            if(marketBuyOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){
+                                orderMessage = handleOriginalOrdersFromPartialToCompleted(sellOrder);
+                                producer.sendMessage(orderMessage);
+                            }
+
                             orderMessage = handleOrdersCompleted(marketBuyOrder, buyingStocks, sellingPrice, true);
                             marketBuyOrder.setOrderStatus(OrderStatus.COMPLETED);
                             marketBuyOrder.setTrueRemainingQuantity(0L);
                             orderBook.popBuyMarketOrder(stockId);
-                            //remove from db
                             producer.sendMessage(orderMessage);
+
+                            //remove from db
                         }//partially fulfilled but user doesn't have enought to pay
                         else{
+                            if(marketBuyOrder.getOrderStatus() == OrderStatus.IN_PROGRESS) {
+                                orderMessage = handleOriginalOrdersFromInProgressToPartial(sellOrder);
+                                producer.sendMessage(orderMessage);//update from inprogress to partial
+                            }
                             marketBuyOrder.setOrderStatus(OrderStatus.PARTIAL_FULFILLED);
                             marketBuyOrder.setTrueRemainingQuantity(sellingStocks - marketBuyOrder.getTrueRemainingQuantity());//still more to go
                             orderMessage = handleOrdersPartiallyFulfilled(marketBuyOrder,buyingStocks, sellingPrice, true);
                             producer.sendMessage(orderMessage);
+
                             break;
                         }
                     }
@@ -176,51 +217,77 @@ public class MatchingEngineUtil {
             /*
                 SELL is completed now, buyer is getting sellingStocks quantity with price of sellingPrice
              */
-                OrderStatus prevOrderStatus = sellOrder.getOrderStatus();
+
+                if(sellOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){ //if from partial to complete
+                    orderMessage = handleOriginalOrdersFromPartialToCompleted(sellOrder);
+                    producer.sendMessage(orderMessage);
+                }
                 orderMessage = handleOrdersCompleted(sellOrder, sellingStocks, sellingPrice, false);
+                sellOrder.setOrderStatus(OrderStatus.COMPLETED);
+                sellOrder.setTrueRemainingQuantity(0L);
+
                 orderBook.popSellOrder(stockId);
                 //remove from db
                 deleteFromDb(stockId);
                 producer.sendMessage(orderMessage);
 
-                //set seller to be completed
-                //set true remaining q to 0
-                sellOrder.setOrderStatus(OrderStatus.COMPLETED);
-                sellOrder.setTrueRemainingQuantity(0L);
-                if(prevOrderStatus == OrderStatus.PARTIAL_FULFILLED){
-                    orderMessage = handleOriginalOrdersFromPartialToCompleted(sellOrder);
-                    producer.sendMessage(orderMessage);
-                }
+
 
                 //BUY ORDER
+                if(buyOrder.getOrderStatus() == OrderStatus.IN_PROGRESS) {
+                    orderMessage = handleOriginalOrdersFromInProgressToPartial(buyOrder);
+                    producer.sendMessage(orderMessage);//update from inprogress to partial
+                }
                 buyOrder.setOrderStatus(OrderStatus.PARTIAL_FULFILLED);
                 buyOrder.setTrueRemainingQuantity(buyingStocks - sellingStocks);//still more to go
                 orderMessage = handleOrdersPartiallyFulfilled(buyOrder,sellingStocks, sellingPrice, true);
                 producer.sendMessage(orderMessage);
+
+
             }else if(buyingStocks < sellingStocks){
                 //SELL is partially completed
+                if(sellOrder.getOrderStatus() == OrderStatus.IN_PROGRESS) {
+                    orderMessage = handleOriginalOrdersFromInProgressToPartial(sellOrder);
+                    producer.sendMessage(orderMessage);//update from inprogress to partial
+                }
                 sellOrder.setOrderStatus(OrderStatus.PARTIAL_FULFILLED);
                 sellOrder.setTrueRemainingQuantity(sellingStocks - buyingStocks);//still more to go
                 orderMessage = handleOrdersPartiallyFulfilled(sellOrder,buyingStocks, sellingPrice, false);
                 producer.sendMessage(orderMessage);
 
 
+
                 //Buy is completed
+                if(buyOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){
+                    orderMessage = handleOriginalOrdersFromPartialToCompleted(sellOrder);
+                    producer.sendMessage(orderMessage);
+                }
                 orderMessage = handleOrdersCompleted(buyOrder, buyingStocks, sellingPrice, true);
                 buyOrder.setOrderStatus(OrderStatus.COMPLETED);
                 buyOrder.setTrueRemainingQuantity(0L);
                 orderBook.popBuyOrder(stockId);
                 deleteFromDb(stockId);
                 producer.sendMessage(orderMessage);
+
             }else{
+                if(sellOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){ //if from partial to complete
+                    orderMessage = handleOriginalOrdersFromPartialToCompleted(sellOrder);
+                    producer.sendMessage(orderMessage);
+                }
                 orderMessage = handleOrdersCompleted(sellOrder, sellingStocks, sellingPrice, false);
                 sellOrder.setOrderStatus(OrderStatus.COMPLETED);
                 sellOrder.setTrueRemainingQuantity(0L);
+
                 orderBook.popSellOrder(stockId);
+                //remove from db
                 deleteFromDb(stockId);
                 producer.sendMessage(orderMessage);
 
                 //Buy is completed
+                if(buyOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){
+                    orderMessage = handleOriginalOrdersFromPartialToCompleted(sellOrder);
+                    producer.sendMessage(orderMessage);
+                }
                 orderMessage = handleOrdersCompleted(buyOrder, buyingStocks, sellingPrice, true);
                 buyOrder.setOrderStatus(OrderStatus.COMPLETED);
                 buyOrder.setTrueRemainingQuantity(0L);
@@ -233,35 +300,83 @@ public class MatchingEngineUtil {
         }
 
     }
-    /*
-    so i just went through logic and the requests i send you are:
-    case 1 Creating child stock tx (original got partially fulfilled):
-          if Buy:
-            NewStockTx:
-                stock_tx_id is null
-                wallet_tx_id is null
-            NewStockTX, NewWallet Requests and AddStockToUser are not null.
-          if Sell:
-            same thing, but AddStockToUser is null
-          Don't subtract money from Buyer, but Add money to Seller and add portoflio stock to Buyer
-    case 2 Updating original stock tx
-        if Buy:
-            NewStockTx:
-                stock_tx_id is not null
-                wallet_tx_id is either null or n
-                ot null
 
-            if wallet_tx_id is null:
+   /*
+    From IN Progress to Completed:
+        if Buy :
+            If Limit:
+                stockTx already exist, don't update
+                walletTx already exist, don't update
 
+            If Market:
+                stockTx already exist, don't update
+                walletTx doesn't exist, so use NewWalletTx and set it stock TX and update
 
-            NewWallet Requests is null if limit. NewWallet Requests is not null if market order
-            AddStockToUser and  NewStock are not null. x
-        If Sell:
-            stock_tx_id is not null
-            wallet_tx_id is null
-            NewStock, NewWallet Requests are not null. AddStockToUser is  null.
-        Don't subtract money from Buyer, but Add money to Seller and add portoflio stock to Buyer
+            Add stock to user
+        if Sell :
+            stockTx already exist, don't update
+            Add money to user
+            Create wallet tx according to NewWalletTx
+        Make order Completed
+
+     From IN Progress to Partial Fulfilled:
+        If Buy:
+            create child stock tx (no stock_tx_id, and walletTx id)
+            create wallet tx from NewWalletTx
+            money was already deducted
+            set child to Completed
+            If Limit:
+                set original to partially fulfilled
+                stockTx already exist, don't update
+                walletTx already exist, don't update
+            If Market:
+                set original to partially fulfilled
+                stockTx already exist, don't update
+                walletTx is null, don't update
+            Add stock to user
+         If sell:
+            create child stock tx (no stock_tx_id, and walletTx id)
+            create wallet tx from NewWalletTx
+            set child to Completed
+            If Limit:
+                set original to partially fulfilled
+                stockTx already exist, don't update
+                walletTx is null, don't update
+            If Market:
+                set original to partially fulfilled
+                stockTx already exist, don't update
+                walletTx is null, don't update
+
+       From Partial to Completed:
+            If buy:
+                create child stock tx (no stock_tx_id, and walletTx id)
+                create wallet tx from NewWalletTx
+                money was already deducted
+                set child to Completed
+                If Limit:
+                    set original to completed
+                    stockTx already exist, don't update
+                    walletTx already exist, don't update (Have to delete this in the future)
+                If Market:
+                    set original to completed
+                    stockTx already exist, don't update
+                    walletTx is null, don't update
+            If sell:
+                create child stock tx (no stock_tx_id, and walletTx id)
+                create wallet tx from NewWalletTx
+                set child to Completed
+                If Limit:
+                    set original to completed
+                    stockTx already exist, don't update
+                    walletTx is null, don't update
+                If Market:
+                    set original to completed
+                    stockTx already exist, don't update
+                    walletTx is null, don't update
      */
+
+
+
     private AddStockToUserRequest createNewAddStockToUserRequest(String username, Long stockId, Long quantity) {
         return new AddStockToUserRequest(username, stockId, quantity);
     }
@@ -329,7 +444,15 @@ public class MatchingEngineUtil {
     public OrderExecutionMessage handleOriginalOrdersFromPartialToCompleted(StockTransaction order){
         NewStockTransactionRequest stockTransactionRequest = NewStockTransactionRequest.builder().stock_tx_id(order.getStock_tx_id())
                 .stockId(order.getStock_id()).parent_stock_tx_id(null).orderStatus(OrderStatus.COMPLETED).isBuy(order.getIs_buy())
-                .price(order.getPrice()).quantity(order.getQuantity()).walletTXid(null).username(order.getUsername()).build();
+                .price(order.getPrice()).quantity(order.getQuantity()).walletTXid(order.getWalletTXid()).username(order.getUsername()).build();
+
+        return new OrderExecutionMessage(stockTransactionRequest, null, null );
+    }
+
+    public OrderExecutionMessage handleOriginalOrdersFromInProgressToPartial(StockTransaction order){
+        NewStockTransactionRequest stockTransactionRequest = NewStockTransactionRequest.builder().stock_tx_id(order.getStock_tx_id())
+                .stockId(order.getStock_id()).parent_stock_tx_id(null).orderStatus(OrderStatus.PARTIAL_FULFILLED).isBuy(order.getIs_buy())
+                .price(order.getPrice()).quantity(order.getQuantity()).walletTXid(order.getWalletTXid()).username(order.getUsername()).build();
 
         return new OrderExecutionMessage(stockTransactionRequest, null, null );
     }

@@ -29,6 +29,7 @@ public class InternalUpdateWalletBalanceController {
             } else {
                 wallet.incrementBalance(req.getAmount());
             }
+            System.out.println("TEST: " + wallet.getBalance());
             //no error, so user has enough
             walletRepository.save(wallet);
             return Response.ok(null);
