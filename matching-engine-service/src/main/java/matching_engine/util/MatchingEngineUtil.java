@@ -8,10 +8,10 @@ import matching_engine.entity.StockTransaction;
 import matching_engine.entity.enums.OrderStatus;
 import matching_engine.entity.enums.OrderType;
 import matching_engine.repositories.QueuedStockRepository;
-import matching_engine.requests.AddStockToUserRequest;
 import matching_engine.requests.MarketOrderHandlerResponse;
 import matching_engine.requests.NewStockTransactionRequest;
 import matching_engine.requests.NewWalletTransactionRequest;
+import matching_engine.requests.UpdateUserStockRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -43,6 +43,79 @@ public class MatchingEngineUtil {
 
 
     }
+    /*
+ From IN Progress to Completed:
+     if Buy :
+         If Limit:
+             stockTx already exist, don't update
+             walletTx already exist, don't update
+
+         If Market:
+             stockTx already exist, don't update
+             walletTx doesn't exist, so use NewWalletTx and set it stock TX and update
+
+         Add stock to user
+     if Sell :
+         stockTx already exist, don't update
+         Add money to user
+         Create wallet tx according to NewWalletTx
+     Make order Completed
+
+  From IN Progress to Partial Fulfilled:
+     If Buy:
+         create child stock tx (no stock_tx_id, and walletTx id)
+         create wallet tx from NewWalletTx
+         money was already deducted
+         set child to Completed
+         If Limit:
+             set original to partially fulfilled
+             stockTx already exist, don't update
+             walletTx already exist, don't update
+         If Market:
+             set original to partially fulfilled
+             stockTx already exist, don't update
+             walletTx is null, don't update
+         Add stock to user
+      If sell:
+         create child stock tx (no stock_tx_id, and walletTx id)
+         create wallet tx from NewWalletTx
+         set child to Completed
+         If Limit:
+             set original to partially fulfilled
+             stockTx already exist, don't update
+             walletTx is null, don't update
+         If Market:
+             set original to partially fulfilled
+             stockTx already exist, don't update
+             walletTx is null, don't update
+
+    From Partial to Completed:
+         If buy:
+             create child stock tx (no stock_tx_id, and walletTx id)
+             create wallet tx from NewWalletTx
+             money was already deducted
+             set child to Completed
+             If Limit:
+                 set original to completed
+                 stockTx already exist, don't update
+                 walletTx already exist, don't update (Have to delete this in the future)
+             If Market:
+                 set original to completed
+                 stockTx already exist, don't update
+                 walletTx is null, don't update
+         If sell:
+             create child stock tx (no stock_tx_id, and walletTx id)
+             create wallet tx from NewWalletTx
+             set child to Completed
+             If Limit:
+                 set original to completed
+                 stockTx already exist, don't update
+                 walletTx is null, don't update
+             If Market:
+                 set original to completed
+                 stockTx already exist, don't update
+                 walletTx is null, don't update
+  */
 
     public void match(Long stockId) {
         //to do :               1 remove from db once completed 2. refactor code, currently calls match again (too many operations)
@@ -146,7 +219,7 @@ public class MatchingEngineUtil {
                             producer.sendMessage(orderMessage);
 
                             break;
-                            }
+                        }
                     }else{//sell is completed, buy can be either completed or user doesn't have neough
                         if(sellOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){
                             orderMessage = handleOriginalOrdersFromPartialToCompleted(sellOrder);
@@ -214,86 +287,91 @@ public class MatchingEngineUtil {
             OrderExecutionMessage orderMessage;
             if(buyingStocks > sellingStocks) // user wants to buy more than top seller has
             {
-            /*
-                SELL is completed now, buyer is getting sellingStocks quantity with price of sellingPrice
-             */
+                //SELL is completed now, buyer is getting sellingStocks quantity with price of sellingPrice
 
                 if(sellOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){ //if from partial to complete
+                    orderMessage = createChildStockTx(sellOrder,sellingStocks,sellingPrice,false);
+                    producer.sendMessage(orderMessage);
                     orderMessage = handleOriginalOrdersFromPartialToCompleted(sellOrder);
                     producer.sendMessage(orderMessage);
+                }else{//In progres sto Completed
+                    orderMessage = handleOriginalOrdersFromInProgressToCompleted(sellOrder,sellingStocks,sellingPrice,false);
+                    producer.sendMessage(orderMessage);
                 }
-                orderMessage = handleOrdersCompleted(sellOrder, sellingStocks, sellingPrice, false);
+                //setting to completed just in case
                 sellOrder.setOrderStatus(OrderStatus.COMPLETED);
                 sellOrder.setTrueRemainingQuantity(0L);
-
+                deleteFromDb(sellOrder.getStock_tx_id()); //remove from db
                 orderBook.popSellOrder(stockId);
-                //remove from db
-                deleteFromDb(stockId);
-                producer.sendMessage(orderMessage);
 
 
-
-                //BUY ORDER
-                if(buyOrder.getOrderStatus() == OrderStatus.IN_PROGRESS) {
+                //BUY ORDER is partial fulfilled
+                if(buyOrder.getOrderStatus() == OrderStatus.IN_PROGRESS) {//in progress to partial
                     orderMessage = handleOriginalOrdersFromInProgressToPartial(buyOrder);
                     producer.sendMessage(orderMessage);//update from inprogress to partial
-                }
+                }//if from partial to partial no updates
                 buyOrder.setOrderStatus(OrderStatus.PARTIAL_FULFILLED);
                 buyOrder.setTrueRemainingQuantity(buyingStocks - sellingStocks);//still more to go
-                orderMessage = handleOrdersPartiallyFulfilled(buyOrder,sellingStocks, sellingPrice, true);
+                orderMessage = createChildStockTx(buyOrder,sellingStocks, sellingPrice, true);
                 producer.sendMessage(orderMessage);
 
-
-            }else if(buyingStocks < sellingStocks){
+            }else if(buyingStocks < sellingStocks){ //seller has more than buyer
                 //SELL is partially completed
-                if(sellOrder.getOrderStatus() == OrderStatus.IN_PROGRESS) {
+                if(sellOrder.getOrderStatus() == OrderStatus.IN_PROGRESS) {//in progress to partial
                     orderMessage = handleOriginalOrdersFromInProgressToPartial(sellOrder);
-                    producer.sendMessage(orderMessage);//update from inprogress to partial
+                    producer.sendMessage(orderMessage);//update from in progress to partial
                 }
                 sellOrder.setOrderStatus(OrderStatus.PARTIAL_FULFILLED);
                 sellOrder.setTrueRemainingQuantity(sellingStocks - buyingStocks);//still more to go
-                orderMessage = handleOrdersPartiallyFulfilled(sellOrder,buyingStocks, sellingPrice, false);
+                orderMessage = createChildStockTx(sellOrder, buyingStocks, sellingPrice, false);
                 producer.sendMessage(orderMessage);
-
 
 
                 //Buy is completed
                 if(buyOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){
-                    orderMessage = handleOriginalOrdersFromPartialToCompleted(sellOrder);
+                    orderMessage = createChildStockTx(buyOrder,buyingStocks,sellingPrice,true);
+                    producer.sendMessage(orderMessage);
+                    orderMessage = handleOriginalOrdersFromPartialToCompleted(buyOrder);
+                    producer.sendMessage(orderMessage);
+                }else{//from in progress to partial
+                    orderMessage = handleOriginalOrdersFromInProgressToCompleted(buyOrder,buyingStocks,sellingPrice,true);
                     producer.sendMessage(orderMessage);
                 }
-                orderMessage = handleOrdersCompleted(buyOrder, buyingStocks, sellingPrice, true);
                 buyOrder.setOrderStatus(OrderStatus.COMPLETED);
                 buyOrder.setTrueRemainingQuantity(0L);
                 orderBook.popBuyOrder(stockId);
-                deleteFromDb(stockId);
-                producer.sendMessage(orderMessage);
+                deleteFromDb(buyOrder.getStock_tx_id());
 
             }else{
                 if(sellOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){ //if from partial to complete
+                    orderMessage = createChildStockTx(sellOrder,sellingStocks,sellingPrice,false);
+                    producer.sendMessage(orderMessage);
                     orderMessage = handleOriginalOrdersFromPartialToCompleted(sellOrder);
                     producer.sendMessage(orderMessage);
+                }else{//In progres sto Completed
+                    orderMessage = handleOriginalOrdersFromInProgressToCompleted(sellOrder,sellingStocks,sellingPrice,false);
+                    producer.sendMessage(orderMessage);
                 }
-                orderMessage = handleOrdersCompleted(sellOrder, sellingStocks, sellingPrice, false);
+                //setting to completed just in case
                 sellOrder.setOrderStatus(OrderStatus.COMPLETED);
                 sellOrder.setTrueRemainingQuantity(0L);
-
+                deleteFromDb(sellOrder.getStock_tx_id()); //remove from db
                 orderBook.popSellOrder(stockId);
-                //remove from db
-                deleteFromDb(stockId);
-                producer.sendMessage(orderMessage);
 
                 //Buy is completed
                 if(buyOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){
-                    orderMessage = handleOriginalOrdersFromPartialToCompleted(sellOrder);
+                    orderMessage = createChildStockTx(buyOrder,buyingStocks,sellingPrice,true);
+                    producer.sendMessage(orderMessage);
+                    orderMessage = handleOriginalOrdersFromPartialToCompleted(buyOrder);
+                    producer.sendMessage(orderMessage);
+                }else{//from in progress to partial
+                    orderMessage = handleOriginalOrdersFromInProgressToCompleted(buyOrder,buyingStocks,sellingPrice,true);
                     producer.sendMessage(orderMessage);
                 }
-                orderMessage = handleOrdersCompleted(buyOrder, buyingStocks, sellingPrice, true);
                 buyOrder.setOrderStatus(OrderStatus.COMPLETED);
                 buyOrder.setTrueRemainingQuantity(0L);
                 orderBook.popBuyOrder(stockId);
-                deleteFromDb(stockId);
-                producer.sendMessage(orderMessage);
+                deleteFromDb(buyOrder.getStock_tx_id());
             }
             match(stockId);
             System.out.println("\n" + orderBook.toString() + "\n");
@@ -301,84 +379,67 @@ public class MatchingEngineUtil {
 
     }
 
-   /*
-    From IN Progress to Completed:
-        if Buy :
-            If Limit:
-                stockTx already exist, don't update
-                walletTx already exist, don't update
-
-            If Market:
-                stockTx already exist, don't update
-                walletTx doesn't exist, so use NewWalletTx and set it stock TX and update
-
-            Add stock to user
-        if Sell :
-            stockTx already exist, don't update
-            Add money to user
-            Create wallet tx according to NewWalletTx
-        Make order Completed
-
-     From IN Progress to Partial Fulfilled:
-        If Buy:
-            create child stock tx (no stock_tx_id, and walletTx id)
-            create wallet tx from NewWalletTx
-            money was already deducted
-            set child to Completed
-            If Limit:
-                set original to partially fulfilled
-                stockTx already exist, don't update
-                walletTx already exist, don't update
-            If Market:
-                set original to partially fulfilled
-                stockTx already exist, don't update
-                walletTx is null, don't update
-            Add stock to user
-         If sell:
-            create child stock tx (no stock_tx_id, and walletTx id)
-            create wallet tx from NewWalletTx
-            set child to Completed
-            If Limit:
-                set original to partially fulfilled
-                stockTx already exist, don't update
-                walletTx is null, don't update
-            If Market:
-                set original to partially fulfilled
-                stockTx already exist, don't update
-                walletTx is null, don't update
-
-       From Partial to Completed:
-            If buy:
-                create child stock tx (no stock_tx_id, and walletTx id)
-                create wallet tx from NewWalletTx
-                money was already deducted
-                set child to Completed
-                If Limit:
-                    set original to completed
-                    stockTx already exist, don't update
-                    walletTx already exist, don't update (Have to delete this in the future)
-                If Market:
-                    set original to completed
-                    stockTx already exist, don't update
-                    walletTx is null, don't update
-            If sell:
-                create child stock tx (no stock_tx_id, and walletTx id)
-                create wallet tx from NewWalletTx
-                set child to Completed
-                If Limit:
-                    set original to completed
-                    stockTx already exist, don't update
-                    walletTx is null, don't update
-                If Market:
-                    set original to completed
-                    stockTx already exist, don't update
-                    walletTx is null, don't update
-     */
 
 
 
-    private AddStockToUserRequest createNewAddStockToUserRequest(String username, Long stockId, Long quantity) {
-        return new AddStockToUserRequest(username, stockId, quantity);
+
+    public OrderExecutionMessage handleOriginalOrdersFromInProgressToCompleted(StockTransaction order, Long quantity, Long price, Boolean isDebit ) {
+        NewStockTransactionRequest stockTransactionRequest;
+        NewWalletTransactionRequest walletTransactionRequest = null;
+        UpdateUserStockRequest addStockToUserRequest = null;
+
+        stockTransactionRequest = NewStockTransactionRequest.builder().stock_tx_id(order.getStock_tx_id())
+                .stockId(order.getStock_id()).parent_stock_tx_id(null).orderStatus(OrderStatus.COMPLETED).isBuy(order.getIs_buy())
+                .price(price).quantity(quantity).walletTXid(order.getWalletTXid()).username(order.getUsername()).build();
+
+
+        if(order.getOrderType() == OrderType.MARKET) {
+            walletTransactionRequest = createNewWalletTx(order.getUsername(), isDebit, price * quantity);
+        }
+
+        if(order.getIs_buy()) {
+            addStockToUserRequest = createNewAddStockToUserRequest(order.getUsername(), order.getStock_id(), quantity);
+        }
+
+        return new OrderExecutionMessage(stockTransactionRequest, walletTransactionRequest, addStockToUserRequest, false );
+    }
+
+    public OrderExecutionMessage handleOriginalOrdersFromInProgressToPartial(StockTransaction order){
+        NewStockTransactionRequest stockTransactionRequest = NewStockTransactionRequest.builder().stock_tx_id(order.getStock_tx_id())
+                .stockId(order.getStock_id()).parent_stock_tx_id(null).orderStatus(OrderStatus.PARTIAL_FULFILLED).isBuy(order.getIs_buy())
+                .price(order.getPrice()).quantity(order.getQuantity()).walletTXid(order.getWalletTXid()).username(order.getUsername()).build();
+
+        return new OrderExecutionMessage(stockTransactionRequest, null, null, false);
+    }
+
+    public OrderExecutionMessage createChildStockTx(StockTransaction order, Long quantity, Long price, Boolean isDebit) {
+        //use with Partially fulfilled
+        NewStockTransactionRequest stockTransactionRequest;
+        NewWalletTransactionRequest walletTransactionRequest;
+        UpdateUserStockRequest addStockToUserRequest = null;
+
+        //create child stock tx
+        stockTransactionRequest = createNewChildStockTx(order, quantity, OrderStatus.COMPLETED,price);//stock_tx_id is null!
+        walletTransactionRequest = createNewWalletTx(order.getUsername(), isDebit, price*quantity);
+
+        if(order.getIs_buy()){
+            addStockToUserRequest = createNewAddStockToUserRequest(order.getUsername(), order.getStock_id(), quantity);
+        }
+
+        return new OrderExecutionMessage(stockTransactionRequest, walletTransactionRequest, addStockToUserRequest, false);
+    }
+
+    public OrderExecutionMessage handleOriginalOrdersFromPartialToCompleted(StockTransaction order){
+        NewStockTransactionRequest stockTransactionRequest = NewStockTransactionRequest.builder().stock_tx_id(order.getStock_tx_id())
+                .stockId(order.getStock_id()).parent_stock_tx_id(null).orderStatus(OrderStatus.COMPLETED).isBuy(order.getIs_buy())
+                .price(order.getPrice()).quantity(order.getQuantity()).walletTXid(order.getWalletTXid()).username(order.getUsername()).build();
+
+        return new OrderExecutionMessage(stockTransactionRequest, null, null, false );
+    }
+
+    //-------------------------------------------------------------------------------------------------------------//
+    private UpdateUserStockRequest createNewAddStockToUserRequest(String username, Long stockId, Long quantity) {
+        return new UpdateUserStockRequest(stockId, quantity,username, true);
     }
 
     public NewStockTransactionRequest createNewChildStockTx(StockTransaction order, Long newQuantity, OrderStatus newOrderStatus, Long newPrice){
@@ -399,64 +460,7 @@ public class MatchingEngineUtil {
         return NewWalletTransactionRequest.builder().username(username).isDebit(isDebit).amount(amount).build();
     }
 
-    public OrderExecutionMessage handleOrdersCompleted(StockTransaction order, Long quantity, Long price, Boolean isDebit) {
-        NewStockTransactionRequest stockTransactionRequest;
-        NewWalletTransactionRequest walletTransactionRequest = null;
-        AddStockToUserRequest addStockToUserRequest = null;
-
-        if(order.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED) {
-            //create child stock tx
-            stockTransactionRequest = createNewChildStockTx(order, quantity, OrderStatus.COMPLETED,price);//stock_tx_id is null!
-        }else{
-            //set wallet TX to this origin seller
-            stockTransactionRequest = createNewChildStockTx(order, quantity,OrderStatus.COMPLETED,price);
-            stockTransactionRequest.setStock_tx_id(order.getStock_tx_id());
-            stockTransactionRequest.setParent_stock_tx_id(null);
-        }
-        if(!order.getIs_buy()) {
-            walletTransactionRequest = createNewWalletTx(order.getUsername(), isDebit, price*quantity);
-        }else{
-            addStockToUserRequest = createNewAddStockToUserRequest(order.getUsername(), order.getStock_id(), quantity);
-        }
-
-        if(order.getOrderType() == OrderType.MARKET && order.getIs_buy()){
-            walletTransactionRequest = createNewWalletTx(order.getUsername(), isDebit, price*quantity);
-        }
-
-        return new OrderExecutionMessage(stockTransactionRequest, walletTransactionRequest, addStockToUserRequest );
-    }
-
-    public OrderExecutionMessage handleOrdersPartiallyFulfilled(StockTransaction order, Long quantity, Long price, Boolean isDebit ) {
-        NewStockTransactionRequest stockTransactionRequest;
-        NewWalletTransactionRequest walletTransactionRequest;
-        AddStockToUserRequest addStockToUserRequest = null;
-
-        stockTransactionRequest = createNewChildStockTx(order, quantity,  OrderStatus.COMPLETED, price);//stock_tx_id is null!
-        walletTransactionRequest = createNewWalletTx(order.getUsername(), isDebit, price*quantity);
-
-        if(order.getIs_buy()) {
-            addStockToUserRequest = createNewAddStockToUserRequest(order.getUsername(), order.getStock_id(), quantity);
-        }
-
-        return new OrderExecutionMessage(stockTransactionRequest, walletTransactionRequest, addStockToUserRequest );
-    }
-
-    public OrderExecutionMessage handleOriginalOrdersFromPartialToCompleted(StockTransaction order){
-        NewStockTransactionRequest stockTransactionRequest = NewStockTransactionRequest.builder().stock_tx_id(order.getStock_tx_id())
-                .stockId(order.getStock_id()).parent_stock_tx_id(null).orderStatus(OrderStatus.COMPLETED).isBuy(order.getIs_buy())
-                .price(order.getPrice()).quantity(order.getQuantity()).walletTXid(order.getWalletTXid()).username(order.getUsername()).build();
-
-        return new OrderExecutionMessage(stockTransactionRequest, null, null );
-    }
-
-    public OrderExecutionMessage handleOriginalOrdersFromInProgressToPartial(StockTransaction order){
-        NewStockTransactionRequest stockTransactionRequest = NewStockTransactionRequest.builder().stock_tx_id(order.getStock_tx_id())
-                .stockId(order.getStock_id()).parent_stock_tx_id(null).orderStatus(OrderStatus.PARTIAL_FULFILLED).isBuy(order.getIs_buy())
-                .price(order.getPrice()).quantity(order.getQuantity()).walletTXid(order.getWalletTXid()).username(order.getUsername()).build();
-
-        return new OrderExecutionMessage(stockTransactionRequest, null, null );
-    }
-    public void deleteFromDb(Long stockId){
-        stockRepository.deleteById(stockId);
+    public void deleteFromDb(Long stockTxId){
+        stockRepository.deleteById(stockTxId);
     }
 }
