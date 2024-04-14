@@ -10,9 +10,9 @@ import execution_service.entity.OrderExecutionMessage;
 import execution_service.entity.StockTransaction;
 import execution_service.entity.enums.OrderStatus;
 import execution_service.entity.enums.OrderType;
-import execution_service.requests.AddStockToUserRequest;
 import execution_service.requests.InternalDeleteStockTXRequest;
 import execution_service.requests.InternalDeleteWalletTXRequest;
+import execution_service.requests.InternalUpdateUserStockRequest;
 import execution_service.requests.NewStockTransactionRequest;
 import execution_service.requests.NewWalletTransactionRequest;
 import execution_service.requests.UpdateWalletBalance;
@@ -24,34 +24,13 @@ import lombok.RequiredArgsConstructor;
 public class OrderExecutionService {
     private final WebClient.Builder webClientBuilder;
     public void execute(OrderExecutionMessage orderExecutionMessage) {
-        NewWalletTransactionRequest walletTXR = orderExecutionMessage.getNewWalletTransaction();
-        NewStockTransactionRequest stockTXR = orderExecutionMessage.getNewStockTransaction();
-        AddStockToUserRequest addStockR = orderExecutionMessage.getAddStockToUserRequest();
         try {
             if (orderExecutionMessage.isExpired()) {
-                // Check if stocktx inprogress. Delete if so.
-                if (stockTXR.getOrderStatus() == OrderStatus.IN_PROGRESS) {
-                    Response res = webClientBuilder.build()
-                                    .post().uri("http://stock-service/internal/deleteStockTransaction")
-                                    .bodyValue(new InternalDeleteStockTXRequest(stockTXR.getStock_tx_id().intValue())).retrieve()
-                                    .bodyToMono(Response.class).block();
-                }
-
-
-                if (walletTXR != null) {
-                    Response updateWalletBalanceRes = updateWalletBalanceRequest(walletTXR);
-
-                    Response deleteWalletTransactionRes = webClientBuilder.build()
-                                    .post().uri("http://wallet-service/internal/deleteWalletTransaction")
-                                    .bodyValue(new InternalDeleteWalletTXRequest(walletTXR.getWalletTXId())).retrieve()
-                                    .bodyToMono(Response.class).block();
-                }  
-
-                if (addStockR != null) {
-                    Response addStockToUserRes = addStockToUserRequest(addStockR);
-                }
+                handleExpiredTransactions(orderExecutionMessage);
             }
-
+            NewWalletTransactionRequest walletTXR = orderExecutionMessage.getNewWalletTransaction();
+            NewStockTransactionRequest stockTXR = orderExecutionMessage.getNewStockTransaction();
+            InternalUpdateUserStockRequest updateUserStockRequest = orderExecutionMessage.getUpdateUserStockRequest();
 
             // Stock tx and wallet tx must have matching stock and wallet tx ids.
             // Because they are separate requests, we must obtain one of the two ids before creating the transactions.
@@ -75,13 +54,40 @@ public class OrderExecutionService {
                 }
             }
 
-            if (addStockR != null) {
+            if (updateUserStockRequest != null) {
                 if (!(stockTXR.getOrderType() == OrderType.MARKET && stockTXR.isBuy() == false)) {
-                    Response addStockToUserRes = addStockToUserRequest(addStockR);
+                    Response addStockToUserRes = updateUserStockRequest(updateUserStockRequest);
                 }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    private void handleExpiredTransactions(OrderExecutionMessage orderExecutionMessage) {
+        NewWalletTransactionRequest walletTXR = orderExecutionMessage.getNewWalletTransaction();
+        NewStockTransactionRequest stockTXR = orderExecutionMessage.getNewStockTransaction();
+        InternalUpdateUserStockRequest updateUserStockRequest = orderExecutionMessage.getUpdateUserStockRequest();
+        // Check if stocktx inprogress. Delete if so.
+        if (stockTXR.getOrderStatus() == OrderStatus.IN_PROGRESS) {
+            Response res = webClientBuilder.build()
+                            .post().uri("http://stock-service/internal/deleteStockTransaction")
+                            .bodyValue(new InternalDeleteStockTXRequest(stockTXR.getStock_tx_id().intValue())).retrieve()
+                            .bodyToMono(Response.class).block();
+        }
+
+
+        if (walletTXR != null) {
+            Response updateWalletBalanceRes = updateWalletBalanceRequest(walletTXR);
+
+            Response deleteWalletTransactionRes = webClientBuilder.build()
+                            .post().uri("http://wallet-service/internal/deleteWalletTransaction")
+                            .bodyValue(new InternalDeleteWalletTXRequest(walletTXR.getWalletTXId())).retrieve()
+                            .bodyToMono(Response.class).block();
+        }  
+
+        if (updateUserStockRequest != null) {
+            Response addStockToUserRes = updateUserStockRequest(updateUserStockRequest);
         }
     }
 
@@ -98,10 +104,10 @@ public class OrderExecutionService {
         return res;
     }
 
-    private Response addStockToUserRequest(AddStockToUserRequest addStockR) {
+    private Response updateUserStockRequest(InternalUpdateUserStockRequest updateUserStockRequest) {
         Response res = webClientBuilder.build()
-                .post().uri("http://stock-service/internal/addStockToUser")
-                .bodyValue(addStockR).retrieve()
+                .post().uri("http://stock-service/internal/updateUserStock")
+                .bodyValue(updateUserStockRequest).retrieve()
                 .bodyToMono(Response.class).block();
         
         return res;
@@ -122,5 +128,4 @@ public class OrderExecutionService {
                 .bodyToMono(Response.class).block(); 
         return res;
     }
-
 }
