@@ -19,7 +19,7 @@ public class NewStockTransactionRequest implements Serializable  {
     private Long stockId; 
     @JsonProperty("is_buy")
     private boolean isBuy;
-    @JsonProperty("orderStatus")
+    @JsonProperty("order_status")
     private OrderStatus orderStatus;
     @JsonProperty("order_type")
     private OrderType orderType;
@@ -31,6 +31,14 @@ public class NewStockTransactionRequest implements Serializable  {
     private String username;
     @JsonProperty("parent_stock_tx_id")
     private Long parent_stock_tx_id;
-    @JsonProperty("walletTXid")
-    private Long walletTXid;
+    @JsonProperty("wallet_tx_id")
+    private Long walletTXId;
+
+    public void setWalletTxId(Long walletTXId) {
+        this.walletTXId = walletTXId;
+    }
+
+    public void setStockTXId(Long stockTXId) {
+        this.stock_tx_id = stockTXId;
+    }
 }
