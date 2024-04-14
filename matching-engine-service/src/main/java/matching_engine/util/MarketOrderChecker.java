@@ -10,13 +10,15 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Map;
 
+import static java.lang.Math.min;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class MarketOrderChecker {
     private final WebClient.Builder webClientBuilder;
 
-    public MarketOrderHandlerResponse checkIfMarketOrderHasEnough(String username, Long sellingPrice, Long sellingQuantity) {
+    public MarketOrderHandlerResponse checkIfMarketOrderHasEnough(String username, Long sellingPrice, Long sellingQuantity, Long buyingQuantity) {
         try {
             Response walletResponse = webClientBuilder.build().get().uri("http://wallet-service/getWalletBalance")
                     .header("X-Username", username)
@@ -35,7 +37,7 @@ public class MarketOrderChecker {
             Long buyingStocks = 0L;
             if (buyerCanAffordQuantity < sellingQuantity)//buyer can afford less than asked
             {
-                buyingStocks = buyerCanAffordQuantity;
+                buyingStocks = min(buyerCanAffordQuantity,buyingQuantity);
             }//otherwise buyer can afford all
             else {
                 buyingStocks = sellingQuantity;
