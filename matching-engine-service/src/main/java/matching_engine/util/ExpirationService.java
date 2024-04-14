@@ -13,9 +13,9 @@ import matching_engine.entity.OrderExecutionMessage;
 import matching_engine.entity.StockTransaction;
 import matching_engine.entity.enums.OrderStatus;
 import matching_engine.repositories.QueuedStockTransactionsRepository;
-import matching_engine.requests.InternalUpdateUserStockRequest;
 import matching_engine.requests.NewStockTransactionRequest;
 import matching_engine.requests.NewWalletTransactionRequest;
+import matching_engine.requests.UpdateUserStockRequest;
 
 @AllArgsConstructor
 public class ExpirationService {
@@ -43,13 +43,13 @@ public class ExpirationService {
     //                 producer.sendMessage(orderExecutionMessage);
     //             } else {
     //                 NewStockTransactionRequest newStockTransactionRequest = createNewStockTx(order);
-    //                 InternalUpdateUserStockRequest updateUserStockRequest = createUpdateUserStockRequest(order.getUsername(), order.getStock_id(), order.getQuantity(), true);
+    //                 UpdateUserStockRequest updateUserStockRequest = createUpdateUserStockRequest(order.getUsername(), order.getStock_id(), order.getQuantity(), true);
     //                 OrderExecutionMessage orderExecutionMessage = new OrderExecutionMessage(newStockTransactionRequest, null, updateUserStockRequest, true);
     //                 producer.sendMessage(orderExecutionMessage);
     //             }
     //             queuedStockTransactionsRepository.delete(order);
     //         }
-
+            
     //     }
     // }
 
@@ -66,8 +66,8 @@ public class ExpirationService {
     //             .stock_tx_id(order.getStock_tx_id()).build();
     // }
 
-    // private InternalUpdateUserStockRequest createUpdateUserStockRequest(String username, Long stockId, Long quantity, boolean add) {
-    //     return new InternalUpdateUserStockRequest(stockId, quantity, username, add);
+    // private UpdateUserStockRequest createUpdateUserStockRequest(String username, Long stockId, Long quantity, boolean add) {
+    //     return new UpdateUserStockRequest(stockId, quantity, username, add);
     // }
 
     // public NewWalletTransactionRequest createNewWalletTx(String username, boolean isDebit, Long amount){

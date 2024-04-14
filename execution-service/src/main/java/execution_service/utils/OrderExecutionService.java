@@ -27,40 +27,45 @@ public class OrderExecutionService {
         try {
             if (orderExecutionMessage.isExpired()) {
                 handleExpiredTransactions(orderExecutionMessage);
-            }
-            NewWalletTransactionRequest walletTXR = orderExecutionMessage.getNewWalletTransaction();
-            NewStockTransactionRequest stockTXR = orderExecutionMessage.getNewStockTransaction();
-            InternalUpdateUserStockRequest updateUserStockRequest = orderExecutionMessage.getUpdateUserStockRequest();
-
-            // Stock tx and wallet tx must have matching stock and wallet tx ids.
-            // Because they are separate requests, we must obtain one of the two ids before creating the transactions.
-            if (stockTXR.getWalletTXId() == null && walletTXR != null) {
-                Response createWalletTXIdRes = createWalletTXId();
-                Long walletTXId = Long.parseLong((String)createWalletTXIdRes.data());
-                stockTXR.setWalletTxId(walletTXId);
-                walletTXR.setWalletTXId(walletTXId);
-            }
-           
-            Response createStockTXRes = createStockTXRequest(stockTXR);
-            Long stockTXId = Long.parseLong((String)createStockTXRes.data());
-
-            if (walletTXR != null) {
-                walletTXR.setStockTXId(stockTXId); 
-                Response createWalletTXRes = createWalletTXRequest(walletTXR);
-
-                // Wallet updates for Market orders are done in matching engine
-                if (!(stockTXR.getOrderType() == OrderType.MARKET && stockTXR.isBuy() == false)) {
-                    Response updateWalletBalanceRes = updateWalletBalanceRequest(walletTXR);
-                }
-            }
-
-            if (updateUserStockRequest != null) {
-                if (!(stockTXR.getOrderType() == OrderType.MARKET && stockTXR.isBuy() == false)) {
-                    Response addStockToUserRes = updateUserStockRequest(updateUserStockRequest);
-                }
+            } else {
+                executeOrders(orderExecutionMessage);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    private void executeOrders(OrderExecutionMessage orderExecutionMessage) {
+        NewWalletTransactionRequest walletTXR = orderExecutionMessage.getNewWalletTransaction();
+        NewStockTransactionRequest stockTXR = orderExecutionMessage.getNewStockTransaction();
+        InternalUpdateUserStockRequest updateUserStockRequest = orderExecutionMessage.getUpdateUserStockRequest();
+
+        // Stock tx and wallet tx must have matching stock and wallet tx ids.
+        // Because they are separate requests, we must obtain one of the two ids before creating the transactions.
+        if (stockTXR.getWalletTXId() == null && walletTXR != null) {
+            Response createWalletTXIdRes = createWalletTXId();
+            Long walletTXId = Long.parseLong((String)createWalletTXIdRes.data());
+            stockTXR.setWalletTxId(walletTXId);
+            walletTXR.setWalletTXId(walletTXId);
+        }
+        
+        Response createStockTXRes = createStockTXRequest(stockTXR);
+        Long stockTXId = Long.parseLong((String)createStockTXRes.data());
+
+        if (walletTXR != null) {
+            walletTXR.setStockTXId(stockTXId); 
+            Response createWalletTXRes = createWalletTXRequest(walletTXR);
+
+            // Wallet updates for Market orders are done in matching engine
+            if (!(stockTXR.getOrderType() == OrderType.MARKET && stockTXR.isBuy() == false)) {
+                Response updateWalletBalanceRes = updateWalletBalanceRequest(walletTXR);
+            }
+        }
+
+        if (updateUserStockRequest != null) {
+            if (!(stockTXR.getOrderType() == OrderType.MARKET && stockTXR.isBuy() == false)) {
+                Response addStockToUserRes = updateUserStockRequest(updateUserStockRequest);
+            }
         }
     }
 
@@ -68,6 +73,7 @@ public class OrderExecutionService {
         NewWalletTransactionRequest walletTXR = orderExecutionMessage.getNewWalletTransaction();
         NewStockTransactionRequest stockTXR = orderExecutionMessage.getNewStockTransaction();
         InternalUpdateUserStockRequest updateUserStockRequest = orderExecutionMessage.getUpdateUserStockRequest();
+
         // Check if stocktx inprogress. Delete if so.
         if (stockTXR.getOrderStatus() == OrderStatus.IN_PROGRESS) {
             Response res = webClientBuilder.build()
@@ -75,7 +81,6 @@ public class OrderExecutionService {
                             .bodyValue(new InternalDeleteStockTXRequest(stockTXR.getStock_tx_id().intValue())).retrieve()
                             .bodyToMono(Response.class).block();
         }
-
 
         if (walletTXR != null) {
             Response updateWalletBalanceRes = updateWalletBalanceRequest(walletTXR);
@@ -87,7 +92,7 @@ public class OrderExecutionService {
         }  
 
         if (updateUserStockRequest != null) {
-            Response addStockToUserRes = updateUserStockRequest(updateUserStockRequest);
+            Response updateUserStockRes = updateUserStockRequest(updateUserStockRequest);
         }
     }
 
