@@ -18,4 +18,6 @@ public class AddStockToUserRequest implements Serializable {
     private Long quantity;
     @JsonProperty("username")
     private String username;
+    @JsonProperty("add")
+    private Boolean add;
 }

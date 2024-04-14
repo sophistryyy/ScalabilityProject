@@ -100,7 +100,7 @@ public class OrderExecutionService {
 
     private Response addStockToUserRequest(AddStockToUserRequest addStockR) {
         Response res = webClientBuilder.build()
-                .post().uri("http://stock-service/internal/addStockToUser")
+                .post().uri("http://stock-service/internal/updateUserStock")
                 .bodyValue(addStockR).retrieve()
                 .bodyToMono(Response.class).block();
         
