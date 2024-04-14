@@ -24,6 +24,7 @@ public class RabbitMQProducer {
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQProducer.class);
 
     public void sendMessage(OrderExecutionMessage orderExecutionMessage){
+        System.out.println("HEYLLO");
         rabbitTemplate.convertAndSend(exchange, routingKey, orderExecutionMessage);
         LOGGER.info(String.format("Message sent -> %s", orderExecutionMessage.toString()));
     }
