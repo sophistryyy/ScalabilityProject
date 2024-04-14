@@ -10,10 +10,10 @@ import seng468scalability.com.response.Response;
 import seng468scalability.com.stock.repositories.StockRepository;
 import seng468scalability.com.stock_transactions.entity.NewWalletTransactionRequest;
 import seng468scalability.com.stock_transactions.entity.StockTransaction;
+import seng468scalability.com.stock_transactions.entity.UpdateWalletBalance;
 import seng468scalability.com.stock_transactions.entity.enums.OrderStatus;
 import seng468scalability.com.stock_transactions.entity.enums.OrderType;
 import seng468scalability.com.stock_transactions.request.PlaceStockOrderRequest;
-import seng468scalability.com.stock_transactions.request.SubtractMoneyRequest;
 
 @RequiredArgsConstructor
 @Service
@@ -70,8 +70,8 @@ public class StockOrderUtil {
 
             Long toDeduct = order.getPrice() * order.getQuantity();
             try {
-                Response walletResponse = webClientBuilder.build().post().uri("http://wallet-service/internal/subtractMoneyFromWallet")
-                        .bodyValue(new SubtractMoneyRequest(username, order.getPrice())).retrieve().bodyToMono(Response.class).block();
+                Response walletResponse = webClientBuilder.build().post().uri("http://wallet-service/internal/updateWalletBalance")
+                        .bodyValue(new UpdateWalletBalance(username, order.getPrice(), true)).retrieve().bodyToMono(Response.class).block();
                 if (!walletResponse.success()) {
                     return walletResponse.data().toString();
                 }
