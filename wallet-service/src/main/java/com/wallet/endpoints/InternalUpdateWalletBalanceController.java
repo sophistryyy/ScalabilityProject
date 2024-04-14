@@ -2,7 +2,7 @@ package com.wallet.endpoints;
 
 import com.wallet.jpa.repository.WalletRepository;
 import com.wallet.models.entity.Wallet;
-import com.wallet.models.request.SubtractMoneyRequest;
+import com.wallet.models.request.UpdateWalletBalanced;
 import com.wallet.models.response.Response;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -12,19 +12,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class InternalSubtractMoneyController {
+public class InternalUpdateWalletBalanceController {
 
     private final WalletRepository walletRepository;
 
-    @PostMapping("/internal/subtractMoneyFromWallet")
+    @PostMapping("/internal/updateWalletBalance")
     @Transactional
-    public Response decrementWallet(@RequestBody SubtractMoneyRequest req){
+    public Response updateWalletBalance(@RequestBody UpdateWalletBalanced req){
         try{
-            Wallet wallet = walletRepository.findByUsername(req.username());
+            Wallet wallet = walletRepository.findByUsername(req.getUsername());
             if(wallet == null){
                 return Response.error("No user found.");
             }
-            wallet.decrementBalance(req.amount());
+            if (req.getIsDebit() == true) {
+                wallet.decrementBalance(req.getAmount());
+            } else {
+                wallet.incrementBalance(req.getAmount());
+            }
             //no error, so user has enough
             walletRepository.save(wallet);
             return Response.ok(null);
