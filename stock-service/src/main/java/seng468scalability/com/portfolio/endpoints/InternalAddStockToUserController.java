@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import seng468scalability.com.portfolio.entity.PortfolioEntry;
 import seng468scalability.com.portfolio.entity.PortfolioEntryId;
 import seng468scalability.com.portfolio.repository.PortfolioRepository;
-import seng468scalability.com.portfolio.request.AddStockToUserRequest;
 import seng468scalability.com.portfolio.request.InternalAddStockToUserRequest;
+import seng468scalability.com.portfolio.request.InternalUpdateUserStockRequest;
 import seng468scalability.com.response.Response;
 import seng468scalability.com.stock.entity.Stock;
 import seng468scalability.com.stock.repositories.StockRepository;
@@ -24,28 +24,34 @@ public class InternalAddStockToUserController {
     private final PortfolioRepository portfolioRepository;
     private final StockRepository stockRepository;
 
-    @PostMapping("/internal/addStockToUser")
-    public Response addStockToUser(@RequestBody InternalAddStockToUserRequest req) {
-        if(req.stockId() == null || req.stockId() <= 0 || req.quantity() == null || req.quantity() <= 0){
-            return Response.error("Invalid parameter. Either null, 0 or negative number");
+    @PostMapping("/internal/updateUserStock")
+    public Response addStockToUser(@RequestBody InternalUpdateUserStockRequest req) {
+        try {
+
+            
+            Stock stock = stockRepository.findStockById(req.stockId());
+            if (stock == null) {
+                return Response.error("Invalid Stock Id");
+            }
+
+            PortfolioEntry entry = portfolioRepository.findByPortfolioEntryId(new PortfolioEntryId(req.stockId(), req.username()));
+
+        
+            if (req.add()) {
+                entry.addQuantity(req.quantity());
+            } else {
+                if (req.quantity() > entry.getQuantity()) {
+                    return Response.error("Removing more stock than available");
+                }
+                entry.removeQuantity(req.quantity());
+            }
+
+            portfolioRepository.save(entry);
+
+            return Response.ok(null);
+        } catch (Exception e) {
+            return Response.error(e.getMessage());
         }
-        Stock stock = stockRepository.findStockById(req.stockId());
-
-        if (stock == null) {
-            return Response.error("Invalid Stock Id");
-        }
-
-        PortfolioEntry entry = portfolioRepository.findByPortfolioEntryId(new PortfolioEntryId(req.stockId(), req.username()));
-        if (entry == null) {
-            String stockName = stock.getName();
-            entry = new PortfolioEntry(new PortfolioEntryId(req.stockId(), req.username()), stockName, req.quantity());
-        } else {
-            entry.addQuantity(req.quantity());
-        }
-
-        portfolioRepository.save(entry);
-
-        return Response.ok(null);
     }
 
 

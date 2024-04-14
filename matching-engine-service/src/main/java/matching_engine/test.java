@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import matching_engine.entity.OrderExecutionMessage;
 import matching_engine.entity.enums.OrderStatus;
 import matching_engine.entity.enums.OrderType;
-import matching_engine.requests.AddStockToUserRequest;
+import matching_engine.requests.InternalUpdateUserStockRequest;
 import matching_engine.requests.NewStockTransactionRequest;
 import matching_engine.requests.NewWalletTransactionRequest;
 import matching_engine.util.RabbitMQConsumer;
@@ -31,8 +31,8 @@ public class test {
                 .walletTXid(null).stock_tx_id(null).build();
 
         NewWalletTransactionRequest walletTx = NewWalletTransactionRequest.builder().username("test").isDebit(true).amount(250L).build();
-        AddStockToUserRequest addStockToUserRequest = new AddStockToUserRequest("test", 1L, 10L);
-        OrderExecutionMessage message = new OrderExecutionMessage(childTX, walletTx, addStockToUserRequest);
+        InternalUpdateUserStockRequest updateUserStockRequest = new InternalUpdateUserStockRequest(1L, 10L, "test", true);
+        OrderExecutionMessage message = new OrderExecutionMessage(childTX, walletTx, updateUserStockRequest, false);
         producer.sendMessage(message);
     }
 }

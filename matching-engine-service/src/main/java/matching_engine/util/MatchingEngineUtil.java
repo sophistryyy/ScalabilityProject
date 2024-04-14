@@ -8,7 +8,7 @@ import matching_engine.entity.StockTransaction;
 import matching_engine.entity.enums.OrderStatus;
 import matching_engine.entity.enums.OrderType;
 import matching_engine.repositories.QueuedStockRepository;
-import matching_engine.requests.AddStockToUserRequest;
+import matching_engine.requests.InternalUpdateUserStockRequest;
 import matching_engine.requests.MarketOrderHandlerResponse;
 import matching_engine.requests.NewStockTransactionRequest;
 import matching_engine.requests.NewWalletTransactionRequest;
@@ -81,7 +81,7 @@ public class MatchingEngineUtil {
 
                     NewStockTransactionRequest stockTransactionRequest;
                     NewWalletTransactionRequest walletTransactionRequest;
-                    AddStockToUserRequest addStockToUserRequest;
+                    InternalUpdateUserStockRequest updateUserStockRequest;
                     OrderExecutionMessage orderMessage;
 
                     if(buyingStocks > sellingStocks) // user wants to buy more than top seller has
@@ -262,8 +262,8 @@ public class MatchingEngineUtil {
             NewStock, NewWallet Requests are not null. AddStockToUser is  null.
         Don't subtract money from Buyer, but Add money to Seller and add portoflio stock to Buyer
      */
-    private AddStockToUserRequest createNewAddStockToUserRequest(String username, Long stockId, Long quantity) {
-        return new AddStockToUserRequest(username, stockId, quantity);
+    private InternalUpdateUserStockRequest createUpdateUserStockRequest(String username, Long stockId, Long quantity) {
+        return new InternalUpdateUserStockRequest(stockId, quantity, username, true);
     }
 
     public NewStockTransactionRequest createNewChildStockTx(StockTransaction order, Long newQuantity, OrderStatus newOrderStatus, Long newPrice){
@@ -287,7 +287,7 @@ public class MatchingEngineUtil {
     public OrderExecutionMessage handleOrdersCompleted(StockTransaction order, Long quantity, Long price, Boolean isDebit) {
         NewStockTransactionRequest stockTransactionRequest;
         NewWalletTransactionRequest walletTransactionRequest = null;
-        AddStockToUserRequest addStockToUserRequest = null;
+        InternalUpdateUserStockRequest updateUserStockRequest = null;
 
         if(order.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED) {
             //create child stock tx
@@ -301,29 +301,29 @@ public class MatchingEngineUtil {
         if(!order.getIs_buy()) {
             walletTransactionRequest = createNewWalletTx(order.getUsername(), isDebit, price*quantity);
         }else{
-            addStockToUserRequest = createNewAddStockToUserRequest(order.getUsername(), order.getStock_id(), quantity);
+            updateUserStockRequest = createUpdateUserStockRequest(order.getUsername(), order.getStock_id(), quantity);
         }
 
         if(order.getOrderType() == OrderType.MARKET && order.getIs_buy()){
             walletTransactionRequest = createNewWalletTx(order.getUsername(), isDebit, price*quantity);
         }
 
-        return new OrderExecutionMessage(stockTransactionRequest, walletTransactionRequest, addStockToUserRequest );
+        return new OrderExecutionMessage(stockTransactionRequest, walletTransactionRequest, updateUserStockRequest, false);
     }
 
     public OrderExecutionMessage handleOrdersPartiallyFulfilled(StockTransaction order, Long quantity, Long price, Boolean isDebit ) {
         NewStockTransactionRequest stockTransactionRequest;
         NewWalletTransactionRequest walletTransactionRequest;
-        AddStockToUserRequest addStockToUserRequest = null;
+        InternalUpdateUserStockRequest updateUserStockRequest = null;
 
         stockTransactionRequest = createNewChildStockTx(order, quantity,  OrderStatus.COMPLETED, price);//stock_tx_id is null!
         walletTransactionRequest = createNewWalletTx(order.getUsername(), isDebit, price*quantity);
 
         if(order.getIs_buy()) {
-            addStockToUserRequest = createNewAddStockToUserRequest(order.getUsername(), order.getStock_id(), quantity);
+            updateUserStockRequest = createUpdateUserStockRequest(order.getUsername(), order.getStock_id(), quantity);
         }
 
-        return new OrderExecutionMessage(stockTransactionRequest, walletTransactionRequest, addStockToUserRequest );
+        return new OrderExecutionMessage(stockTransactionRequest, walletTransactionRequest, updateUserStockRequest, false);
     }
 
     public OrderExecutionMessage handleOriginalOrdersFromPartialToCompleted(StockTransaction order){
@@ -331,7 +331,7 @@ public class MatchingEngineUtil {
                 .stockId(order.getStock_id()).parent_stock_tx_id(null).orderStatus(OrderStatus.COMPLETED).isBuy(order.getIs_buy())
                 .price(order.getPrice()).quantity(order.getQuantity()).walletTXid(null).username(order.getUsername()).build();
 
-        return new OrderExecutionMessage(stockTransactionRequest, null, null );
+        return new OrderExecutionMessage(stockTransactionRequest, null, null, false);
     }
     public void deleteFromDb(Long stockId){
         stockRepository.deleteById(stockId);

@@ -18,5 +18,7 @@ public class OrderExecutionMessage implements Serializable {
     @JsonProperty("wallet_tx_request")
     private NewWalletTransactionRequest newWalletTransaction;
     @JsonProperty("add_stock_to_user_request")
-    private AddStockToUserRequest addStockToUserRequest;
+    private AddStockToUserRequest addStockToUserRequest;    
+    @JsonProperty("expired")
+    private boolean expired;
 }
