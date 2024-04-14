@@ -2,10 +2,8 @@ package matching_engine.util;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import matching_engine.configs.WebClientConfig;
 import matching_engine.requests.MarketOrderHandlerResponse;
-import matching_engine.requests.NewWalletTransactionRequest;
-import matching_engine.requests.SubtractMoneyRequest;
+import matching_engine.requests.UpdateWalletBalanced;
 import matching_engine.response.Response;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -43,8 +41,8 @@ public class MarketOrderChecker {
                 buyingStocks = sellingQuantity;
             }
             Long toDeduct = sellingPrice * buyingStocks;
-            Response walletDecrementResponse = webClientBuilder.build().post().uri("http://wallet-service/internal/subtractMoneyFromWallet")
-                    .bodyValue(new SubtractMoneyRequest(username, toDeduct))
+            Response walletDecrementResponse = webClientBuilder.build().post().uri("http://wallet-service/internal/updateWalletBalance")
+                    .bodyValue(new UpdateWalletBalanced(username, toDeduct, true))
                     .retrieve().bodyToMono(Response.class).block();
             if (!walletDecrementResponse.success()) {
                 log.info("Error decrementing wallet balance from the Matching Engine. " + walletResponse.data());
