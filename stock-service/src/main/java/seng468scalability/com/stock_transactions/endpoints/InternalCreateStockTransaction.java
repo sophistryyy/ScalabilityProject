@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import seng468scalability.com.response.Response;
+import seng468scalability.com.stock_transactions.entity.NewStockTransactionRequest;
 import seng468scalability.com.stock_transactions.entity.StockTransaction;
 import seng468scalability.com.stock_transactions.repositories.StockTransactionsRepository;
-import seng468scalability.com.stock_transactions.request.NewStockTransactionRequest;
 import seng468scalability.com.stock_transactions.util.StockOrderUtil;
 
 @RequiredArgsConstructor
@@ -29,14 +29,11 @@ public class InternalCreateStockTransaction {
     @PostMapping("/internal/createStockTransaction")
     public Response createStockTransaction(@RequestBody NewStockTransactionRequest req) {
         try {
-            // Receive timestamp in order execution or create in endpoint??
-            StockTransaction stockTransaction = stockUtil.createNewStockTx(req.getStockId(), req.isBuy(), req.getOrderType(),
-                                                     req.getQuantity(), req.getPrice(), req.getUsername());
+            StockTransaction stockTransaction = stockUtil.createStockTX(req.getStockTXId(), req.getStockId(), req.getParentStockTXId(), req.getWalletTXid(),
+                                                        req.isBuy(), req.getOrderType(), req.getQuantity(), req.getPrice(), req.getOrderStatus(), req.getUsername());
             stockTransactionsRepository.save(stockTransaction);
 
-            Map<String, Object> data = new HashMap<String, Object>();
-            data.put("stock_id", stockTransaction.getStock_id());
-            return Response.ok(data);
+            return Response.ok(stockTransaction.getStock_tx_id().toString());
         } catch (Exception e) {
         return Response.error(e.getMessage());
         }
