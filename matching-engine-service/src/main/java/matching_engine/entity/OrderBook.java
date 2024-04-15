@@ -85,7 +85,7 @@ public class OrderBook {
                 this.buy_orders.put(stockId, new LinkedList<>());
                 this.sell_orders.put(stockId, new LinkedList<>());
             }
-            if(isBuy && newOrder.getOrderType() == OrderType.LIMIT){
+            else if(isBuy && newOrder.getOrderType() == OrderType.LIMIT){
                 this.buy_market_orders.put(stockId, new LinkedList<>());
                 this.buy_orders.put(stockId, modifiedStockTransactions);
                 this.sell_orders.put(stockId, new LinkedList<>());
