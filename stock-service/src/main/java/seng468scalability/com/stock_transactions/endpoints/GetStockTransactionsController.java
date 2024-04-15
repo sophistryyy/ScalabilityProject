@@ -39,7 +39,7 @@ public class GetStockTransactionsController {
             Map<String, Object> entryMap =  new LinkedHashMap<>();
             entryMap.put("stock_tx_id", entry.getStock_tx_id());
             entryMap.put("parent_stock_tx_id", entry.getParent_stock_tx_id());
-            entryMap.put("stock_id", entry.getStock_id());
+            entryMap.put("stock_id", entry.getStockId());
             entryMap.put("wallet_tx_id", entry.getWalletTXid());
             entryMap.put("order_status", entry.getOrderStatus().toString());
             entryMap.put("is_buy", entry.is_buy());
