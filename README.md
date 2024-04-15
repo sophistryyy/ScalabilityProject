@@ -17,7 +17,7 @@ http://localhost:8761
 
     8761 - discovery/eureka server
     
-    5432 - postgres (wallet)
+    5432 - postgres (wallet, matching engine back up stock tx)
     
     27017 -  mongo (user, portfolio, wallet tx)
     

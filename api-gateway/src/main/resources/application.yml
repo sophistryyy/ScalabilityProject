@@ -73,3 +73,10 @@ spring:
             - AuthenticationFilter
 
 
+        - id: stock-service-getStockPrices-route
+          uri: lb://stock-service
+          predicates:
+            - Path=/getStockPrices/**
+          filters:
+            - AuthenticationFilter
+
