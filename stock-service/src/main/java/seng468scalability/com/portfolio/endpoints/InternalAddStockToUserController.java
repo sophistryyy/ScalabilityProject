@@ -27,7 +27,6 @@ public class InternalAddStockToUserController {
     @PostMapping("/internal/updateUserStock")
     public Response addStockToUser(@RequestBody InternalUpdateUserStockRequest req) {
         try {
-            System.out.println(req);
             Stock stock = stockRepository.findStockById(req.stockId());
             if (stock == null) {
                 return Response.error("Invalid Stock Id");

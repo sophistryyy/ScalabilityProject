@@ -60,8 +60,9 @@ public class GetStockPricesController {
 
     @PostMapping(path="/internal/updateStockPrices")
     public void updateCacheValues(@RequestBody StockPrices entry){
+        System.out.println("Adding value to cache (2) "  + entry.toString());
         if(entry != null && entry.getPrice() != null && entry.getStockId() != null){
-            System.out.println("Adding value to cache (2) "  + entry.toString());
+
             pricesService.updateStockPrice(entry.getStockId(), entry.getPrice());
         }
     }
