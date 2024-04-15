@@ -33,15 +33,13 @@ public class GetStockPricesService {
 
     @Cacheable(value = "stockPriceCache", key="#p0", condition="#p0!=null")
     public Long getStockPriceWithCache(Long stockId){
+        System.out.println("native cache " + stockPriceCache.getNativeCache());
         return null;
     }
 
     public Long searchCompletedStockTransactions(Long stock_id){
         List<StockTransaction> lastCompletedTransactions = stockTransactionsRepository.findByStockIdAndOrderStatusOrderByTimestampDesc
                 (stock_id, OrderStatus.COMPLETED);
-        System.out.println("!!!!!!!!!!!!!!");
-        System.out.println(lastCompletedTransactions);
-        System.out.println("!!!!!!!!!!!!!!");
         if (lastCompletedTransactions == null || lastCompletedTransactions.isEmpty()) {
             return null;
         }
@@ -57,9 +55,6 @@ public class GetStockPricesService {
     public Long searchInProgressStockTransactions(Long stock_id){
         List<StockTransaction> lastCompletedTransactions = stockTransactionsRepository.findByStockIdAndOrderStatusOrderByPriceAsc
                 (stock_id, OrderStatus.IN_PROGRESS);
-        System.out.println("!!!!!!!!!!!!!!");
-        System.out.println(lastCompletedTransactions);
-        System.out.println("!!!!!!!!!!!!!!");
         if (lastCompletedTransactions == null || lastCompletedTransactions.isEmpty()) {
             return null;
         }
