@@ -77,6 +77,9 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+    depends_on:
+      - matching-engine-service
+      - rabbitmq
 
   matching-engine-service:
     build:
@@ -87,7 +90,11 @@ services:
       - "spring_datasource_url=jdbc:postgresql://postgres-docker:5432/postgres_db"
       - "eureka_instance_hostname=matching-engine-service"
       - "spring_rabbitmq_host=rabbitmq"
-
+    depends_on:
+      - stock-service
+      - execution-service
+      - rabbitmq
+      - postgres-docker
   postgres-docker:
     container_name: postgres-docker
     image: postgres
@@ -124,3 +131,4 @@ services:
     volumes:
       - ./rabbitmq/data/:/var/lib/rabbitmq/
       - ./rabbitmq/log/:/var/log/rabbitmq
+    restart: always
