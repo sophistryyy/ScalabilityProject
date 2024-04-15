@@ -392,7 +392,7 @@ public class MatchingEngineUtil {
         NewWalletTransactionRequest walletTransactionRequest = null;
         UpdateUserStockRequest addStockToUserRequest = null;
 
-        stockTransactionRequest = NewStockTransactionRequest.builder().stock_tx_id(order.getStock_tx_id())
+        stockTransactionRequest = NewStockTransactionRequest.builder().stock_tx_id(order.getStock_tx_id()).orderType(order.getOrderType())
                 .stockId(order.getStock_id()).parent_stock_tx_id(null).orderStatus(OrderStatus.COMPLETED).isBuy(order.getIs_buy())
                 .price(price).quantity(quantity).walletTXid(order.getWalletTXid()).username(order.getUsername()).build();
 
@@ -409,7 +409,7 @@ public class MatchingEngineUtil {
     }
 
     public OrderExecutionMessage handleOriginalOrdersFromInProgressToPartial(StockTransaction order){
-        NewStockTransactionRequest stockTransactionRequest = NewStockTransactionRequest.builder().stock_tx_id(order.getStock_tx_id())
+        NewStockTransactionRequest stockTransactionRequest = NewStockTransactionRequest.builder().stock_tx_id(order.getStock_tx_id()).orderType(order.getOrderType())
                 .stockId(order.getStock_id()).parent_stock_tx_id(null).orderStatus(OrderStatus.PARTIAL_FULFILLED).isBuy(order.getIs_buy())
                 .price(order.getPrice()).quantity(order.getQuantity()).walletTXid(order.getWalletTXid()).username(order.getUsername()).build();
 
@@ -435,7 +435,7 @@ public class MatchingEngineUtil {
 
     public OrderExecutionMessage handleOriginalOrdersFromPartialToCompleted(StockTransaction order){
         NewStockTransactionRequest stockTransactionRequest = NewStockTransactionRequest.builder().stock_tx_id(order.getStock_tx_id())
-                .stockId(order.getStock_id()).parent_stock_tx_id(null).orderStatus(OrderStatus.COMPLETED).isBuy(order.getIs_buy())
+                .stockId(order.getStock_id()).parent_stock_tx_id(null).orderStatus(OrderStatus.COMPLETED).isBuy(order.getIs_buy()).orderType(order.getOrderType())
                 .price(order.getPrice()).quantity(order.getQuantity()).walletTXid(order.getWalletTXid()).username(order.getUsername()).build();
 
         return new OrderExecutionMessage(stockTransactionRequest, null, null, false );
@@ -454,6 +454,7 @@ public class MatchingEngineUtil {
                 isBuy(order.getIs_buy())
                 .orderType(order.getOrderType())
                 .quantity(newQuantity).price(newPrice)
+                .orderType(order.getOrderType())
                 .orderStatus(newOrderStatus)
                 .username(order.getUsername())
                 .parent_stock_tx_id(parent_stock_tx_id)
