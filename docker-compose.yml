@@ -29,10 +29,14 @@ services:
       - "eureka_client_serviceurl_defaultzone=http://discovery-server:8761/eureka"
       - "spring_data_mongodb_host=mongodb-docker"
       - "eureka_instance_hostname=stock-service"
+      - "spring_rabbitmq_host=rabbitmq"
     depends_on:
       - discovery-server
       - mongodb-docker
       - postgres-docker
+    deploy:
+      mode: replicated
+      replicas: 1
   user-service:
     build:
       context: .
@@ -41,6 +45,9 @@ services:
       - "eureka_client_serviceurl_defaultzone=http://discovery-server:8761/eureka"
       - "spring_data_mongodb_host=mongodb-docker"
       - "eureka_instance_hostname=user-service"
+    deploy:
+      mode: replicated
+      replicas: 2
     depends_on:
       - discovery-server
       - mongodb-docker
@@ -56,6 +63,30 @@ services:
     depends_on:
       - discovery-server
       - mongodb-docker
+    deploy:
+      mode: replicated
+      replicas: 2
+  execution-service:
+    build:
+      context: .
+      dockerfile: ./execution-service/Dockerfile
+    environment:
+      - "eureka_client_serviceurl_defaultzone=http://discovery-server:8761/eureka"
+      - "eureka_instance_hostname=execution-service"
+      - "spring_rabbitmq_host=rabbitmq"
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  matching-engine-service:
+    build:
+      context: .
+      dockerfile: ./matching-engine-service/Dockerfile
+    environment:
+      - "eureka_client_serviceurl_defaultzone=http://discovery-server:8761/eureka"
+      - "spring_datasource_url=jdbc:postgresql://postgres-docker:5432/postgres_db"
+      - "eureka_instance_hostname=matching-engine-service"
+      - "spring_rabbitmq_host=rabbitmq"
 
   postgres-docker:
     container_name: postgres-docker
@@ -93,9 +124,3 @@ services:
     volumes:
       - ./rabbitmq/data/:/var/lib/rabbitmq/
       - ./rabbitmq/log/:/var/log/rabbitmq
-    networks:
-      - rabbitmq_net
-
-networks:
-  rabbitmq_net:
-    driver: bridge

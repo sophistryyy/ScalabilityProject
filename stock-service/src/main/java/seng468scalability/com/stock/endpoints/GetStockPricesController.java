@@ -26,35 +26,36 @@ public class GetStockPricesController {
 
     @GetMapping(path="/getStockPrices")
     public Response getStockPrices( ) {
-        try{
-            List<Stock> stocks = stockRepository.findAll();
-            List<StockPrices> entries = new LinkedList<>();
-            for(Stock curStock: stocks){
-                Long price;
-                System.out.println(curStock);
-                try {
-                    price = pricesService.getStockPriceWithCache(curStock.getId());
-                }catch(Exception e){
-                    System.out.println(e.getMessage());
-                    return Response.error("test");
-                }
-                if(price == null){//not in cache
-                    price = pricesService.searchCompletedStockTransactions(curStock.getId());
-                }
+        // try{
+        //     List<Stock> stocks = stockRepository.findAll();
+        //     List<StockPrices> entries = new LinkedList<>();
+        //     for(Stock curStock: stocks){
+        //         Long price;
+        //         System.out.println(curStock);
+        //         try {
+        //             price = pricesService.getStockPriceWithCache(curStock.getId());
+        //         }catch(Exception e){
+        //             System.out.println(e.getMessage());
+        //             return Response.error("test");
+        //         }
+        //         if(price == null){//not in cache
+        //             price = pricesService.searchCompletedStockTransactions(curStock.getId());
+        //         }
 
-                if(price == null){
-                    price = pricesService.searchInProgressStockTransactions(curStock.getId());
-                }
-                if(price != null) {
-                    StockPrices stockPrice = new StockPrices(curStock.getName(), curStock.getId(), price);
-                    entries.add(stockPrice);
-                }
-            }
-            return Response.ok(formatData(entries));
-        }catch (Exception e){
-            log.info("getStockPrices error. " +e.getMessage());
-            return Response.error("Error with getting stock prices.");
-        }
+        //         if(price == null){
+        //             price = pricesService.searchInProgressStockTransactions(curStock.getId());
+        //         }
+        //         if(price != null) {
+        //             StockPrices stockPrice = new StockPrices(curStock.getName(), curStock.getId(), price);
+        //             entries.add(stockPrice);
+        //         }
+        //     }
+        //     return Response.ok(formatData(entries));
+        // }catch (Exception e){
+        //     log.info("getStockPrices error. " +e.getMessage());
+        //     return Response.error("Error with getting stock prices.");
+        // }
+        return Response.error("s");
     }
 
     @PostMapping(path="/internal/updateStockPrices")

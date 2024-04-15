@@ -31,13 +31,14 @@ public class ValidateTokenController {
             try {
                 username = jwtUtil.extractUsername(jwtToken);
             } catch (Exception e) {
-
                 Response.error("Error extracting username from token: " + e.getMessage());
             }
         }else{
             Response.error("Invalid token");
         }
-
+        System.out.println("START");
+        System.out.println(jwtToken);
+        System.out.println(username);
         // Authenticate user is possible
         if (username != null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
