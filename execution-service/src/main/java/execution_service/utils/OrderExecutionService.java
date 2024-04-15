@@ -35,6 +35,10 @@ public class OrderExecutionService {
                                     .post().uri("http://stock-service/internal/deleteStockTransaction")
                                     .bodyValue(new InternalDeleteStockTXRequest(stockTXR.getStock_tx_id().intValue())).retrieve()
                                     .bodyToMono(Response.class).block();
+
+                    if(stockTXR.getWalletTXId() != null){
+                        //return money
+                    }
                 }
 
 
@@ -50,7 +54,8 @@ public class OrderExecutionService {
                 if (addStockR != null) {
                     Response addStockToUserRes = addStockToUserRequest(addStockR);
                 }
-            }
+            }//else {}?
+
 
 
             // Stock tx and wallet tx must have matching stock and wallet tx ids.
@@ -61,7 +66,7 @@ public class OrderExecutionService {
                 stockTXR.setWalletTxId(walletTXId);
                 walletTXR.setWalletTXId(walletTXId);
             }
-           
+
             Response createStockTXRes = createStockTXRequest(stockTXR);
             Long stockTXId = Long.parseLong((String)createStockTXRes.data());
 
@@ -70,13 +75,13 @@ public class OrderExecutionService {
                 Response createWalletTXRes = createWalletTXRequest(walletTXR);
 
                 // Wallet updates for Market orders are done in matching engine
-                if (!(stockTXR.getOrderType() == OrderType.MARKET && stockTXR.isBuy() == false)) {
+                if (!stockTXR.isBuy()) {
                     Response updateWalletBalanceRes = updateWalletBalanceRequest(walletTXR);
                 }
             }
 
             if (addStockR != null) {
-                if (!(stockTXR.getOrderType() == OrderType.MARKET && stockTXR.isBuy() == false)) {
+                if (stockTXR.isBuy()) {
                     Response addStockToUserRes = addStockToUserRequest(addStockR);
                 }
             }
@@ -86,7 +91,8 @@ public class OrderExecutionService {
     }
 
     private Response createWalletTXId() {
-        Response res = webClientBuilder.build().post().uri("http://wallet-service/internal/createWalletTransactionId").retrieve().bodyToMono(Response.class).block();
+        Response res = webClientBuilder.build().post().uri("http://wallet-service/internal/createWalletTransactionId").retrieve().
+                bodyToMono(Response.class).block();
         return res;
     }
         
