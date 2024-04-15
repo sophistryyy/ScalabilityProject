@@ -99,7 +99,7 @@ public class StockOrderUtil {
         else if(!order.is_buy())
         {
 
-            return removeStockFromPortfolio(username, order.getStock_id(), order.getQuantity()); //might return error
+            return removeStockFromPortfolio(username, order.getStockId(), order.getQuantity()); //might return error
 
         }
 

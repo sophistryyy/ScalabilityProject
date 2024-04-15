@@ -1,17 +1,16 @@
-package seng468scalability.com.stock.entity;
+package execution_service.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.io.Serializable;
 
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
-public class StockPrices {
-    String stockName;
+public class UpdateStockPricesRequest implements Serializable {
     @JsonProperty("stock_id")
     Long stockId;
     @JsonProperty("price")

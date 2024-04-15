@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import seng468scalability.com.stock_transactions.entity.enums.OrderStatus;
 import seng468scalability.com.stock_transactions.entity.enums.OrderType;
 
@@ -25,8 +26,9 @@ public class StockTransaction {
     @Id
     private Long stock_tx_id;
 
+
     @JsonProperty("stock_id")
-    private Long stock_id;
+    private Long stockId;
     @JsonProperty("is_buy")
     private boolean is_buy;
     @JsonProperty("order_type")
@@ -54,7 +56,7 @@ public class StockTransaction {
         this.stock_tx_id = stock_tx_id;
         this.parent_stock_tx_id = parentStockTXId;
         this.walletTXid = walletTXId;
-        this.stock_id = stock_id;
+        this.stockId = stock_id;
         this.is_buy = is_buy;
         this.orderType = orderType;
         this.quantity = quantity;
@@ -67,14 +69,6 @@ public class StockTransaction {
     }
 
 
-    public StockTransaction createCopy(Long newQuantity, OrderStatus newOrderStatus) {
-        StockTransaction copy = StockTransaction.builder().stock_id(this.stock_id).is_buy(this.is_buy).orderType(this.orderType).quantity(newQuantity)
-                .price(this.price).timestamp(LocalDateTime.now()).orderStatus(newOrderStatus).username(this.username).walletTXid(null)
-                .expired(false).trueRemainingQuantity(0L).build();
-        copy.parent_stock_tx_id = this.parent_stock_tx_id == null ? this.stock_tx_id
-                                                                  : this.parent_stock_tx_id; //reference true parent
-        return copy;
-    }
 
 
 }

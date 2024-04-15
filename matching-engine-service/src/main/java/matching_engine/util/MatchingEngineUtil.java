@@ -188,7 +188,6 @@ public class MatchingEngineUtil {
 
                         if(sellOrder.getOrderStatus() == OrderStatus.IN_PROGRESS) {//in progress to partial
                             orderMessage = handleOriginalOrdersFromInProgressToPartial(sellOrder);
-
                             producer.sendMessage(orderMessage);//update from in progress to partial
                         }
                         sellOrder.setOrderStatus(OrderStatus.PARTIAL_FULFILLED);
