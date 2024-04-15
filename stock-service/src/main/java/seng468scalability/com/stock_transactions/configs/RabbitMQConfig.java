@@ -21,9 +21,19 @@ public class RabbitMQConfig {
     @Value("${rabbitmq.routing_key.name}")
     private String routingKey;
 
+    @Value("${rabbitmq.cancelorder.queue.name}")
+    private String cancelOrderQueue;
+
+    @Value("${rabbitmq.cancelorder.routing_key.name}")
+    private String cancelOrderRoutingKey;
     @Bean
     public Queue mqueue(){
         return new Queue(queue);
+    }
+
+    @Bean
+    public Queue cancelOrderQueue(){
+        return new Queue(cancelOrderQueue);
     }
 
     @Bean
@@ -36,6 +46,13 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(mqueue()).
                 to(topicExchange())
                 .with(routingKey);
+    }
+
+    @Bean
+    public Binding cancelOrderBinding(){
+        return BindingBuilder.bind(cancelOrderQueue()).
+                to(topicExchange())
+                .with(cancelOrderRoutingKey);
     }
 
     @Bean
