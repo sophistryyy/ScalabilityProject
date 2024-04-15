@@ -26,14 +26,11 @@ public class GetStockPricesService {
     @CachePut(value = "stockPriceCache", key="#p0", condition="#p0!=null")
     public Long updateStockPrice(Long stockId, Long newPrice){
         stockPriceCache.put(stockId, newPrice);
-        System.out.println("Updated cache");
-        System.out.println("native cache after updating " + stockPriceCache.getNativeCache());
         return newPrice;
     }
 
     @Cacheable(value = "stockPriceCache", key="#p0", condition="#p0!=null")
     public Long getStockPriceWithCache(Long stockId){
-        System.out.println("native cache " + stockPriceCache.getNativeCache());
         return null;
     }
 

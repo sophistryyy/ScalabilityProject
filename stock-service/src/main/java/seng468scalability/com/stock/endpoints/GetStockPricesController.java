@@ -32,24 +32,19 @@ public class GetStockPricesController {
             for(Stock curStock: stocks){
                 Long price;
 
-                System.out.println("---------------!");
                 price = pricesService.getStockPriceWithCache(curStock.getId());
 
-                System.out.println("Price returned: " + price);
                 if(price == null){//not in cache
-                    System.out.println("used search! 1");
                     price = pricesService.searchCompletedStockTransactions(curStock.getId());
                 }
 
                 if(price == null){
-                    System.out.println("used search! 2");
                     price = pricesService.searchInProgressStockTransactions(curStock.getId());
                 }
                 if(price != null) {
                     StockPrices stockPrice = new StockPrices(curStock.getName(), curStock.getId(), price);
                     entries.add(stockPrice);
                 }
-                System.out.println("---------------!");
             }
             return Response.ok(formatData(entries));
         }catch (Exception e){
@@ -60,7 +55,6 @@ public class GetStockPricesController {
 
     @PostMapping(path="/internal/updateStockPrices")
     public void updateCacheValues(@RequestBody StockPrices entry){
-        System.out.println("Adding value to cache (2) "  + entry.toString());
         if(entry != null && entry.getPrice() != null && entry.getStockId() != null){
 
             pricesService.updateStockPrice(entry.getStockId(), entry.getPrice());

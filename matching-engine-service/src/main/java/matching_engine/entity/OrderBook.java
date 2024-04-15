@@ -43,8 +43,6 @@ public class OrderBook {
                 this.buy_market_orders.put(stockId, buyMarketStockTransactions);
             }
         }
-        System.out.println("Initialized order book");
-        System.out.println(this);
     }
 
     public boolean isLimitOrdersMatchPossible(Long stock_id)

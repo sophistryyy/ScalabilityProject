@@ -36,9 +36,6 @@ public class ValidateTokenController {
         }else{
             Response.error("Invalid token");
         }
-        System.out.println("START");
-        System.out.println(jwtToken);
-        System.out.println(username);
         // Authenticate user is possible
         if (username != null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
