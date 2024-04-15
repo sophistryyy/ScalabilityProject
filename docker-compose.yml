@@ -36,7 +36,7 @@ services:
       - postgres-docker
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 2
   user-service:
     build:
       context: .
@@ -76,7 +76,7 @@ services:
       - "spring_rabbitmq_host=rabbitmq"
     deploy:
       mode: replicated
-      replicas: 1
+      replicas: 2
     depends_on:
       - matching-engine-service
       - rabbitmq
