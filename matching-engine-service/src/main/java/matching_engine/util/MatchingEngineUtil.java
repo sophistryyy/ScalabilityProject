@@ -29,7 +29,6 @@ public class MatchingEngineUtil {
     public void receiveNewElement(StockTransaction transaction){
         try {
             orderBook.addStockTransaction(transaction);
-            System.out.println("New element added successfully\n" + orderBook);
         }catch (Exception e){
             log.info("Error add stock to orderBook. " + e.getMessage());
             return;
@@ -383,7 +382,6 @@ public class MatchingEngineUtil {
                 deleteFromDb(buyOrder.getStock_tx_id());
             }
             match(stockId);
-            System.out.println("\n" + orderBook.toString() + "\n");
         }
 
     }
