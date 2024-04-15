@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class NewWalletTransactionRequest implements Serializable {
     @JsonProperty("username")
     private String username;
-    @JsonProperty("isDebit")
+    @JsonProperty("is_debit")
     private boolean isDebit;
     @JsonProperty("amount")
     private Long amount;

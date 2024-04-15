@@ -31,8 +31,6 @@ public class InternalCreateStockTransaction {
         try {
             StockTransaction stockTransaction = stockUtil.createStockTX(req.getStockTXId(), req.getStockId(), req.getParentStockTXId(), req.getWalletTXid(),
                                                         req.isBuy(), req.getOrderType(), req.getQuantity(), req.getPrice(), req.getOrderStatus(), req.getUsername());
-            System.out.println(stockTransaction.getOrderStatus());
-            System.out.println(stockTransaction.getWalletTXid());
             stockTransactionsRepository.save(stockTransaction);
 
             return Response.ok(stockTransaction.getStock_tx_id().toString());

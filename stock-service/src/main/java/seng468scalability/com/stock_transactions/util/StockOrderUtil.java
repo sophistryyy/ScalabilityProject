@@ -71,7 +71,7 @@ public class StockOrderUtil {
             Long toDeduct = order.getPrice() * order.getQuantity();
             try {
                 Response walletResponse = webClientBuilder.build().post().uri("http://wallet-service/internal/updateWalletBalance")
-                        .bodyValue(new UpdateWalletBalance(username, order.getPrice(), true)).retrieve().bodyToMono(Response.class).block();
+                        .bodyValue(new UpdateWalletBalance(username, toDeduct, true)).retrieve().bodyToMono(Response.class).block();
                 if (!walletResponse.success()) {
                     return walletResponse.data().toString();
                 }

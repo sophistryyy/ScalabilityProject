@@ -30,6 +30,9 @@ public class OrderExecutionService {
             } else {
                 executeOrders(orderExecutionMessage);
             }
+
+
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -40,33 +43,34 @@ public class OrderExecutionService {
         NewStockTransactionRequest stockTXR = orderExecutionMessage.getNewStockTransaction();
         InternalUpdateUserStockRequest updateUserStockRequest = orderExecutionMessage.getUpdateUserStockRequest();
 
-        // Stock tx and wallet tx must have matching stock and wallet tx ids.
-        // Because they are separate requests, we must obtain one of the two ids before creating the transactions.
-        if (stockTXR.getWalletTXId() == null && walletTXR != null) {
-            Response createWalletTXIdRes = createWalletTXId();
-            Long walletTXId = Long.parseLong((String)createWalletTXIdRes.data());
-            stockTXR.setWalletTxId(walletTXId);
-            walletTXR.setWalletTXId(walletTXId);
-        }
         
-        Response createStockTXRes = createStockTXRequest(stockTXR);
-        Long stockTXId = Long.parseLong((String)createStockTXRes.data());
-
-        if (walletTXR != null) {
-            walletTXR.setStockTXId(stockTXId); 
-            Response createWalletTXRes = createWalletTXRequest(walletTXR);
-
-            // Wallet updates for Market orders are done in matching engine
-            if (!(stockTXR.getOrderType() == OrderType.MARKET && stockTXR.isBuy() == false)) {
-                Response updateWalletBalanceRes = updateWalletBalanceRequest(walletTXR);
+            // Stock tx and wallet tx must have matching stock and wallet tx ids.
+            // Because they are separate requests, we must obtain one of the two ids before creating the transactions.
+            if (stockTXR.getWalletTXId() == null && walletTXR != null) {
+                Response createWalletTXIdRes = createWalletTXId();
+                Long walletTXId = Long.parseLong((String)createWalletTXIdRes.data());
+                stockTXR.setWalletTxId(walletTXId);
+                walletTXR.setWalletTXId(walletTXId);
             }
-        }
 
-        if (updateUserStockRequest != null) {
-            if (!(stockTXR.getOrderType() == OrderType.MARKET && stockTXR.isBuy() == false)) {
-                Response addStockToUserRes = updateUserStockRequest(updateUserStockRequest);
+            Response createStockTXRes = createStockTXRequest(stockTXR);
+            Long stockTXId = Long.parseLong((String)createStockTXRes.data());
+
+            if (walletTXR != null) {
+                walletTXR.setStockTXId(stockTXId); 
+                Response createWalletTXRes = createWalletTXRequest(walletTXR);
+
+                // Wallet updates for Market orders are done in matching engine
+                if (!stockTXR.isBuy()) {
+                    Response updateWalletBalanceRes = updateWalletBalanceRequest(walletTXR);
+                }
             }
-        }
+
+            if (updateUserStockRequest != null) {
+                if (stockTXR.isBuy()) {
+                    Response updateUserStockRes = updateUserStockRequest(updateUserStockRequest);
+                }
+            }
     }
 
     private void handleExpiredTransactions(OrderExecutionMessage orderExecutionMessage) {
@@ -97,7 +101,8 @@ public class OrderExecutionService {
     }
 
     private Response createWalletTXId() {
-        Response res = webClientBuilder.build().post().uri("http://wallet-service/internal/createWalletTransactionId").retrieve().bodyToMono(Response.class).block();
+        Response res = webClientBuilder.build().post().uri("http://wallet-service/internal/createWalletTransactionId").retrieve().
+                bodyToMono(Response.class).block();
         return res;
     }
         
