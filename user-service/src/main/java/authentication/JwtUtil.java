@@ -6,15 +6,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.function.Function;
 
 @Component
 public class JwtUtil {
-
-    private final SecretKey KEY = Jwts.SIG.HS256.key().build();
+    private static final String SECRET_KEY = "your_secret_key_hereyour_secret_key_hereyour_secret_key_hereyour_secret_key_hereyour_secret_key_here";
+    private final SecretKey KEY = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
     private final long EXPIRATION_TIME = 1_200_000; // 20 minutes
-    
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }

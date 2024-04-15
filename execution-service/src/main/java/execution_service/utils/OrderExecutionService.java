@@ -66,7 +66,7 @@ public class OrderExecutionService {
                 }
             }
 
-            if(stockTXR.getOrderStatus() == OrderStatus.COMPLETED && stockTXR.getPrice() != null){
+            if(stockTXR.getOrderStatus() == OrderStatus.COMPLETED && stockTXR.getPrice() != null && !stockTXR.isBuy()){
                 updateStockPrice(stockTXR.getStockId(), stockTXR.getPrice());
             }
     }
@@ -105,7 +105,9 @@ public class OrderExecutionService {
     }
 
     private void updateStockPrice(Long stockId, Long price){
-        webClientBuilder.build().post().uri("http://stock-service/internal/updateStockPrices").bodyValue(new UpdateStockPricesRequest(stockId, price));
+        System.out.println("Adding value to cache (1)");
+        webClientBuilder.build().post().uri("http://stock-service/internal/updateStockPrices").
+                bodyValue(new UpdateStockPricesRequest(stockId, price)).retrieve().bodyToMono(Void.class).block();
     }
         
     private Response createStockTXRequest(NewStockTransactionRequest stockTXR) {
@@ -137,7 +139,7 @@ public class OrderExecutionService {
         Response res = webClientBuilder.build()
                 .post().uri("http://wallet-service/internal/updateWalletBalance")
                 .bodyValue(new UpdateWalletBalance(walletTXR.getUsername(), walletTXR.getAmount(), walletTXR.isDebit())).retrieve()
-                .bodyToMono(Response.class).block(); 
+                .bodyToMono(Response.class).block();
         return res;
     }
 }

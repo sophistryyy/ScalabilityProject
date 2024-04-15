@@ -6,6 +6,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import seng468scalability.com.portfolio.entity.PortfolioEntry;
 import seng468scalability.com.portfolio.entity.PortfolioEntryId;
 import seng468scalability.com.portfolio.repository.PortfolioRepository;
+import seng468scalability.com.portfolio.request.AddStockToUserRequest;
+import seng468scalability.com.portfolio.util.AddStockToUserService;
 import seng468scalability.com.response.Response;
 import seng468scalability.com.stock.repositories.StockRepository;
 import seng468scalability.com.stock_transactions.entity.NewWalletTransactionRequest;
@@ -13,7 +15,10 @@ import seng468scalability.com.stock_transactions.entity.StockTransaction;
 import seng468scalability.com.stock_transactions.entity.UpdateWalletBalance;
 import seng468scalability.com.stock_transactions.entity.enums.OrderStatus;
 import seng468scalability.com.stock_transactions.entity.enums.OrderType;
+import seng468scalability.com.stock_transactions.request.InternalDeleteWalletTXRequest;
 import seng468scalability.com.stock_transactions.request.PlaceStockOrderRequest;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -23,7 +28,7 @@ public class StockOrderUtil {
     private final StockRepository stockRepository;
     private final WebClient.Builder webClientBuilder;
     private final PortfolioRepository portfolioRepository;
-
+    private final AddStockToUserService addStockToUserService;
     public StockTransaction createStockTX(Long stockTXId, Long stockId, Long parentStockTXId, Long walletTXId, boolean isBuy, OrderType orderType, Long quantity, Long price, OrderStatus orderStatus, String username){
         if (stockTXId == null) {
             stockTXId = generator.getSequenceNumber(StockTransaction.SEQUENCE_NAME);
@@ -123,6 +128,46 @@ public class StockOrderUtil {
         }catch(Exception e){
             return e.getMessage();
         }
+    }
+
+    public void addStockToUser(AddStockToUserRequest req, String username){
+        addStockToUserService.addStockToUserService(req, username);
+    }
+
+    public void returnMoney(StockTransaction foundOrder, List<StockTransaction> childOrders){
+        System.out.println("1");
+        if(childOrders == null || childOrders.isEmpty()){
+            System.out.println("2");
+            updateWalletBalanceRequest(foundOrder.getUsername(), foundOrder.getPrice() * foundOrder.getQuantity());
+        }else{
+            System.out.println("3");
+            Long toAdd = foundOrder.getPrice() * foundOrder.getQuantity();
+            for(StockTransaction childOrder: childOrders){
+                toAdd -= (childOrder.getPrice() * childOrder.getQuantity());
+            }
+            updateWalletBalanceRequest(foundOrder.getUsername(), toAdd);
+        }
+
+        if(foundOrder.getWalletTXid() != null){
+            deleteWalletTx(foundOrder.getWalletTXid());
+        }
+        //delete wallet tx id
+    }
+
+    private void updateWalletBalanceRequest(String username, Long amount) {
+        System.out.println("4");
+        Response r = webClientBuilder.build()
+                .post().uri("http://wallet-service/internal/updateWalletBalance")
+                .bodyValue(new UpdateWalletBalance(username, amount, false)).retrieve().bodyToMono(Response.class).block();
+        System.out.println("4 response: "+ r.toString());
+    }
+
+    private void deleteWalletTx(Long walletTxid) {
+        System.out.println("5");
+        Response r = webClientBuilder.build()
+                .post().uri("http://wallet-service/internal/deleteWalletTransaction")
+                .bodyValue(new InternalDeleteWalletTXRequest(walletTxid)).retrieve().bodyToMono(Response.class).block();
+        System.out.println("5 response: "+ r.toString());
     }
 
 }

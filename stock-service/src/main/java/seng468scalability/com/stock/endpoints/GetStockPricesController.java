@@ -26,41 +26,43 @@ public class GetStockPricesController {
 
     @GetMapping(path="/getStockPrices")
     public Response getStockPrices( ) {
-        // try{
-        //     List<Stock> stocks = stockRepository.findAll();
-        //     List<StockPrices> entries = new LinkedList<>();
-        //     for(Stock curStock: stocks){
-        //         Long price;
-        //         System.out.println(curStock);
-        //         try {
-        //             price = pricesService.getStockPriceWithCache(curStock.getId());
-        //         }catch(Exception e){
-        //             System.out.println(e.getMessage());
-        //             return Response.error("test");
-        //         }
-        //         if(price == null){//not in cache
-        //             price = pricesService.searchCompletedStockTransactions(curStock.getId());
-        //         }
+        try{
+            List<Stock> stocks = stockRepository.findAll();
+            List<StockPrices> entries = new LinkedList<>();
+            for(Stock curStock: stocks){
+                Long price;
 
-        //         if(price == null){
-        //             price = pricesService.searchInProgressStockTransactions(curStock.getId());
-        //         }
-        //         if(price != null) {
-        //             StockPrices stockPrice = new StockPrices(curStock.getName(), curStock.getId(), price);
-        //             entries.add(stockPrice);
-        //         }
-        //     }
-        //     return Response.ok(formatData(entries));
-        // }catch (Exception e){
-        //     log.info("getStockPrices error. " +e.getMessage());
-        //     return Response.error("Error with getting stock prices.");
-        // }
-        return Response.error("s");
+                System.out.println("---------------!");
+                price = pricesService.getStockPriceWithCache(curStock.getId());
+
+                System.out.println("Price returned: " + price);
+                if(price == null){//not in cache
+                    System.out.println("used search! 1");
+                    price = pricesService.searchCompletedStockTransactions(curStock.getId());
+                }
+
+                if(price == null){
+                    System.out.println("used search! 2");
+                    price = pricesService.searchInProgressStockTransactions(curStock.getId());
+                }
+                if(price != null) {
+                    StockPrices stockPrice = new StockPrices(curStock.getName(), curStock.getId(), price);
+                    entries.add(stockPrice);
+                }
+                System.out.println("---------------!");
+            }
+            return Response.ok(formatData(entries));
+        }catch (Exception e){
+            log.info("getStockPrices error. " +e.getMessage());
+            return Response.error("Error with getting stock prices.");
+        }
     }
 
     @PostMapping(path="/internal/updateStockPrices")
     public void updateCacheValues(@RequestBody StockPrices entry){
+        System.out.println("Adding value to cache (2) "  + entry.toString());
         if(entry != null && entry.getPrice() != null && entry.getStockId() != null){
+
             pricesService.updateStockPrice(entry.getStockId(), entry.getPrice());
         }
     }

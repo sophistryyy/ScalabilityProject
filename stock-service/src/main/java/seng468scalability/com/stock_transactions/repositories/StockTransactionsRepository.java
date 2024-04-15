@@ -13,9 +13,11 @@ public interface StockTransactionsRepository extends MongoRepository<StockTransa
     List<StockTransaction> findAllByUsername(String username);
 
 
-    StockTransaction findByStockIdAndOrderStatusOrderByTimestampDesc(Long stockId, OrderStatus orderStatus);
+    List<StockTransaction> findByStockIdAndOrderStatusOrderByTimestampDesc(Long stockId, OrderStatus orderStatus);
 
-    StockTransaction findByStockIdAndOrderStatusOrderByPriceAsc(Long stockId, OrderStatus orderStatus);
+    List<StockTransaction> findByStockIdAndOrderStatusOrderByPriceAsc(Long stockId, OrderStatus orderStatus);
+
+
     /*
     @Modifying
     @Transactional
