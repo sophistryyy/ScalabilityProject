@@ -5,6 +5,7 @@ import matching_engine.entity.OrderExecutionMessage;
 import matching_engine.entity.StockTransaction;
 import matching_engine.entity.enums.OrderStatus;
 import matching_engine.entity.enums.OrderType;
+import matching_engine.requests.CancelOrderRequest;
 import matching_engine.requests.NewStockTransactionRequest;
 import matching_engine.requests.NewWalletTransactionRequest;
 
@@ -20,6 +21,7 @@ public class RabbitMQConsumer {
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQConsumer.class);
 
     private final MatchingEngineUtil matchingEngineUtil;
+    private final CancelOrderService cancelOrderService;
 
     @RabbitListener(queues = {"${rabbitmq.queue_listener.name}"})
     public void consumeMessage(StockTransaction order){
@@ -27,5 +29,10 @@ public class RabbitMQConsumer {
         matchingEngineUtil.receiveNewElement(order);
     }
 
+    @RabbitListener(queues = {"${rabbitmq.cancelorder_queue_listener.name}"})
+    public void consumeCancelOrderMessage(CancelOrderRequest request){
+        LOGGER.info(String.format("Received message to cancel order -> %s", request.toString()));
+        cancelOrderService.try_cancelling(request);
+    }
 
 }

@@ -163,6 +163,35 @@ public class OrderBook {
         }
     }
 
+    public void removeBuyOrder(Long stock_tx_id, Long stock_id){
+        LinkedList<StockTransaction> orders = this.buy_orders.get(stock_id);
+        for(StockTransaction order: orders){
+            if(order.getStock_tx_id() != null && order.getStock_tx_id().equals(stock_tx_id)){
+                orders.remove(order);
+                break;
+            }
+        }
+    }
+
+    public void removeMarketBuyOrder(Long stock_tx_id, Long stock_id){
+        LinkedList<StockTransaction> orders = this.buy_market_orders.get(stock_id);
+        for(StockTransaction order: orders){
+            if(order.getStock_tx_id() != null && order.getStock_tx_id().equals(stock_tx_id)){
+                orders.remove(order);
+                break;
+            }
+        }
+    }
+
+    public void removeSellOrder(Long stock_tx_id, Long stock_id){
+        LinkedList<StockTransaction> orders = this.sell_orders.get(stock_id);
+        for(StockTransaction order: orders){
+            if(order.getStock_tx_id() != null && order.getStock_tx_id().equals(stock_tx_id)){
+                orders.remove(order);
+                break;
+            }
+        }
+    }
 
     @Override
     public String toString() {
