@@ -38,11 +38,13 @@ spring:
           filters:
             - AuthenticationFilter
 
-
         - id: stock-service-createStock-route
           uri: lb://stock-service
           predicates:
             - Path=/createStock/**
+          filters:
+            - AuthenticationFilter
+
 
         - id: stock-service-placeStockOrder-route
           uri: lb://stock-service
@@ -77,6 +79,13 @@ spring:
           uri: lb://stock-service
           predicates:
             - Path=/getStockPrices/**
+          filters:
+            - AuthenticationFilter
+
+        - id: stock-service-cancelOrder-route
+          uri: lb://stock-service
+          predicates:
+            - Path=/cancelStockTransaction/**
           filters:
             - AuthenticationFilter
 
