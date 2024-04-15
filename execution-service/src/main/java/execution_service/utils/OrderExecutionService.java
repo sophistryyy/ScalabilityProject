@@ -37,7 +37,6 @@ public class OrderExecutionService {
         NewWalletTransactionRequest walletTXR = orderExecutionMessage.getNewWalletTransaction();
         NewStockTransactionRequest stockTXR = orderExecutionMessage.getNewStockTransaction();
         InternalUpdateUserStockRequest updateUserStockRequest = orderExecutionMessage.getUpdateUserStockRequest();
-
         
             // Stock tx and wallet tx must have matching stock and wallet tx ids.
             // Because they are separate requests, we must obtain one of the two ids before creating the transactions.

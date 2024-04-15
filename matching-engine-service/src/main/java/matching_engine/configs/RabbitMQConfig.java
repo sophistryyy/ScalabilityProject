@@ -23,7 +23,7 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue mqueue(){
-        return new Queue(queue);
+        return new Queue("stock-service-queue");
     }
 
     @Bean

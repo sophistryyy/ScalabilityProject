@@ -11,9 +11,10 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
+
     private final SecretKey KEY = Jwts.SIG.HS256.key().build();
     private final long EXPIRATION_TIME = 1_200_000; // 20 minutes
-
+    
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
