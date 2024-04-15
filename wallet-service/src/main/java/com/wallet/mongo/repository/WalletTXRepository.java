@@ -11,6 +11,8 @@ import java.util.List;
 public interface WalletTXRepository extends MongoRepository<WalletTX, Long> {
     List<WalletTX> findAllByUsername(String username);
 
+    void deleteByWalletTXId(Long aLong);
+
     /*
     List<WalletTX> findAllByUsername(String username);
     WalletTX findByWalletTXId(Long walletTXId);

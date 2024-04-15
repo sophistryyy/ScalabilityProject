@@ -37,7 +37,7 @@ public class CancelOrderService {
             req.setIsBuy(foundOrder.is_buy());
             req.setStock_id(foundOrder.getStockId());
             producer.cancelOrderMessage(req);
-            if(foundOrder.is_buy() && foundOrder.getOrderType() != OrderType.MARKET){
+            if(foundOrder.is_buy() && foundOrder.getOrderType() == OrderType.LIMIT){
                 //return money to limit orders
                 List<StockTransaction> childOrders = null;
                 if(foundOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){
@@ -47,13 +47,15 @@ public class CancelOrderService {
             }else{
                 //return stock portfolio
                 Long toReturnQuantity = foundOrder.getQuantity();
+
                 List<StockTransaction> childOrders = null;
                 if(foundOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){
                     childOrders = getChildOrders(foundOrder.getStock_tx_id());
+                    for(StockTransaction childOrder: childOrders){
+                        toReturnQuantity -= childOrder.getQuantity();
+                    }
                 }
-                for(StockTransaction childOrder: childOrders){
-                    toReturnQuantity -= childOrder.getQuantity();
-                }
+
                 AddStockToUserRequest addStockToUserRequest = new AddStockToUserRequest(foundOrder.getStockId(), toReturnQuantity);
                 stockOrderUtil.addStockToUser(addStockToUserRequest, username);
             }
