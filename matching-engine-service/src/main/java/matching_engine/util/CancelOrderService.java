@@ -24,7 +24,6 @@ public class CancelOrderService {
         }else{
             orderBook.removeMarketBuyOrder(request.getStock_tx_id(), request.getStock_id());
         }
-        System.out.println(orderBook);
     }
 
 }

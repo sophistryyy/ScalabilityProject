@@ -135,12 +135,9 @@ public class StockOrderUtil {
     }
 
     public void returnMoney(StockTransaction foundOrder, List<StockTransaction> childOrders){
-        System.out.println("1");
         if(childOrders == null || childOrders.isEmpty()){
-            System.out.println("2");
             updateWalletBalanceRequest(foundOrder.getUsername(), foundOrder.getPrice() * foundOrder.getQuantity());
         }else{
-            System.out.println("3");
             Long toAdd = foundOrder.getPrice() * foundOrder.getQuantity();
             for(StockTransaction childOrder: childOrders){
                 toAdd -= (childOrder.getPrice() * childOrder.getQuantity());
@@ -155,19 +152,15 @@ public class StockOrderUtil {
     }
 
     private void updateWalletBalanceRequest(String username, Long amount) {
-        System.out.println("4");
         Response r = webClientBuilder.build()
                 .post().uri("http://wallet-service/internal/updateWalletBalance")
                 .bodyValue(new UpdateWalletBalance(username, amount, false)).retrieve().bodyToMono(Response.class).block();
-        System.out.println("4 response: "+ r.toString());
     }
 
     private void deleteWalletTx(Long walletTxid) {
-        System.out.println("5");
         Response r = webClientBuilder.build()
                 .post().uri("http://wallet-service/internal/deleteWalletTransaction")
                 .bodyValue(new InternalDeleteWalletTXRequest(walletTxid)).retrieve().bodyToMono(Response.class).block();
-        System.out.println("5 response: "+ r.toString());
     }
 
 }

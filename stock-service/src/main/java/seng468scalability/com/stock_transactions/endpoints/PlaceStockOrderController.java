@@ -45,7 +45,6 @@ public class PlaceStockOrderController {
                     return Response.error(message);
                 }
             }
-            System.out.println(order.getStock_tx_id());
             stockTransactionsRepository.save(order);
             producer.sendMessage(order);
             return Response.ok(null);
