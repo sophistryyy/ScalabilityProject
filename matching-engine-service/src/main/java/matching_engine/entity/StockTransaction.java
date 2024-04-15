@@ -52,7 +52,7 @@ public class StockTransaction implements Serializable{
     private Long walletTXid;
 
     @Enumerated(EnumType.STRING)
-    @JsonProperty("orderStatus")
+    @JsonProperty("order_status")
     private OrderStatus orderStatus;
 
     @JsonProperty("timestamp")

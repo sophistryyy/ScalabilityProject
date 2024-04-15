@@ -154,6 +154,10 @@ public class MatchingEngineUtil {
 
                     OrderExecutionMessage orderMessage;
 
+                    System.out.println("Buying stocks " +buyingStocks);
+                    System.out.println("True remaining stocks " + marketBuyOrder.getTrueRemainingQuantity());
+                    System.out.println("selling stocks " +sellingStocks);
+
                     if(buyingStocks > sellingStocks) // user wants to buy more than top seller has
                     {
                         if(sellOrder.getOrderStatus() == OrderStatus.PARTIAL_FULFILLED){ //if from partial to complete
@@ -185,8 +189,13 @@ public class MatchingEngineUtil {
 
                     }else if(buyingStocks < sellingStocks){ //user either can't afford all of the stocks or just doesn't want to buy that many
                         //SELL is partially completed
+                        System.out.println("seller here 2");
+
                         if(sellOrder.getOrderStatus() == OrderStatus.IN_PROGRESS) {//in progress to partial
                             orderMessage = handleOriginalOrdersFromInProgressToPartial(sellOrder);
+                            System.out.println("seller");
+                            System.out.println(orderMessage);
+
                             producer.sendMessage(orderMessage);//update from in progress to partial
                         }
                         sellOrder.setOrderStatus(OrderStatus.PARTIAL_FULFILLED);
@@ -317,6 +326,7 @@ public class MatchingEngineUtil {
                     orderMessage = handleOriginalOrdersFromInProgressToPartial(buyOrder);
                     producer.sendMessage(orderMessage);//update from inprogress to partial
                 }//if from partial to partial no updates
+
                 buyOrder.setOrderStatus(OrderStatus.PARTIAL_FULFILLED);
                 buyOrder.setTrueRemainingQuantity(buyingStocks - sellingStocks);//still more to go
                 orderMessage = createChildStockTx(buyOrder,sellingStocks, sellingPrice, true);
