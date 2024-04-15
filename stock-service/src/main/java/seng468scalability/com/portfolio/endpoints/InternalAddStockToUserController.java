@@ -27,8 +27,7 @@ public class InternalAddStockToUserController {
     @PostMapping("/internal/updateUserStock")
     public Response addStockToUser(@RequestBody InternalUpdateUserStockRequest req) {
         try {
-
-            
+            System.out.println(req);
             Stock stock = stockRepository.findStockById(req.stockId());
             if (stock == null) {
                 return Response.error("Invalid Stock Id");
@@ -36,9 +35,11 @@ public class InternalAddStockToUserController {
 
             PortfolioEntry entry = portfolioRepository.findByPortfolioEntryId(new PortfolioEntryId(req.stockId(), req.username()));
 
-        
             if (req.add()) {
-                entry.addQuantity(req.quantity());
+                if (entry == null) {
+                    String stockName = stock.getName();
+                    entry = new PortfolioEntry(new PortfolioEntryId(req.stockId(), req.username()), stockName, req.quantity());
+                }
             } else {
                 if (req.quantity() > entry.getQuantity()) {
                     return Response.error("Removing more stock than available");

@@ -211,7 +211,7 @@ public class MatchingEngineUtil {
                             }
                             marketBuyOrder.setOrderStatus(OrderStatus.COMPLETED);
                             marketBuyOrder.setTrueRemainingQuantity(0L);
-                            orderBook.popBuyOrder(stockId);
+                            orderBook.popBuyMarketOrder(stockId);
                             deleteFromDb(marketBuyOrder.getStock_tx_id());
 
                         }//partially fulfilled but user doesn't have enought to pay
@@ -256,7 +256,7 @@ public class MatchingEngineUtil {
                             }
                             marketBuyOrder.setOrderStatus(OrderStatus.COMPLETED);
                             marketBuyOrder.setTrueRemainingQuantity(0L);
-                            orderBook.popBuyOrder(stockId);
+                            orderBook.popBuyMarketOrder(stockId);
                             deleteFromDb(marketBuyOrder.getStock_tx_id());
 
                         }//partially fulfilled but user doesn't have enought to pay
