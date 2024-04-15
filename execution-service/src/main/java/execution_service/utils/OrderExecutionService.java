@@ -105,6 +105,7 @@ public class OrderExecutionService {
     }
 
     private void updateStockPrice(Long stockId, Long price){
+        System.out.println("Adding value to cache (1)");
         webClientBuilder.build().post().uri("http://stock-service/internal/updateStockPrices").bodyValue(new UpdateStockPricesRequest(stockId, price));
     }
         
