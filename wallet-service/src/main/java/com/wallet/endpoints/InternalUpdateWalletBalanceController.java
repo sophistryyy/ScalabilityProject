@@ -20,6 +20,7 @@ public class InternalUpdateWalletBalanceController {
     @Transactional
     public Response updateWalletBalance(@RequestBody UpdateWalletBalanced req){
         try{
+            System.out.println("Wallet balance update "+ req);
             Wallet wallet = walletRepository.findByUsername(req.getUsername());
             if(wallet == null){
                 return Response.error("No user found.");

@@ -19,8 +19,9 @@ public class InternalDeleteWalletTransaction {
 
     @PostMapping("/internal/deleteWalletTransaction")
     public Response deleteWalletTransaction(@RequestBody InternalDeleteWalletTXRequest req) {
-        try { 
-            walletTXRepository.deleteById(req.walletTXId());
+        try {
+            System.out.println("Wallet tx: " + req.toString());
+            walletTXRepository.deleteByWalletTXId(req.walletTXId());
             return Response.ok("Success");
         } catch (Exception e) {
             return Response.error(e.getMessage());
