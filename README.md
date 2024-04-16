@@ -1,12 +1,4 @@
 
-### Eureka server:
-
-To check instances:
-```
-http://localhost:8761
-```
-
-
 # Ports:
 
     8080 - api gateway
@@ -21,7 +13,23 @@ http://localhost:8761
     
     27017 -  mongo (user, portfolio, wallet tx)
     
-    random - the rest
+    random - wallet-service, user-service, stock-service, matching engine, order execution service
+
+
+# How to run:
+
+```
+docker-compose build
+docker-compose up
+```
+# For developers:
+
+### Eureka server:
+
+To check instances:
+```
+http://localhost:8761
+```
 
 # Docker:
 
