@@ -1,5 +1,5 @@
 
-### Eureka server** :
+### Eureka server:
 
 To check instances:
 ```
