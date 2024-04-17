@@ -18,6 +18,7 @@
 
 # How to run:
 
+Wait 30s-60s after containers are initialized for paths to be created
 ```
 docker-compose build
 docker-compose up
