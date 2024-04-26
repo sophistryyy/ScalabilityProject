@@ -92,7 +92,6 @@ services:
       - "spring_rabbitmq_host=rabbitmq"
     depends_on:
       - stock-service
-      - execution-service
       - rabbitmq
       - postgres-docker
   postgres-docker:

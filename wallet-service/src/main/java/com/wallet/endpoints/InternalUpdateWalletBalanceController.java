@@ -20,7 +20,6 @@ public class InternalUpdateWalletBalanceController {
     @Transactional
     public Response updateWalletBalance(@RequestBody UpdateWalletBalanced req){
         try{
-            System.out.println("Wallet balance update "+ req);
             Wallet wallet = walletRepository.findByUsername(req.getUsername());
             if(wallet == null){
                 return Response.error("No user found.");
@@ -30,7 +29,6 @@ public class InternalUpdateWalletBalanceController {
             } else {
                 wallet.incrementBalance(req.getAmount());
             }
-            System.out.println("TEST: " + wallet.getBalance());
             //no error, so user has enough
             walletRepository.save(wallet);
             return Response.ok(null);

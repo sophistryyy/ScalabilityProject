@@ -26,25 +26,12 @@ public class RegisterController {
     public Response registerUser(@RequestBody RegisterRequest req) {
         try {
             if(req.getUser_name().isEmpty() || req.getPassword().isEmpty() || req.getName().isEmpty()){
+                System.out.println("The request body contains empty parameters");
                 return Response.error("The request body contains empty parameters");
             }
             User user = new User(req.getUser_name(), req.getPassword(), req.getName());
             userService.saveUser(user);
 
-            //post request to save new wallet
-            /*
-            Mono<Response> walletResponseMono = webClientBuilder.build().post().uri("http://wallet-service/saveNewWallet")
-                    .bodyValue(new NewWalletRequest(req.getUser_name())).retrieve().bodyToMono(Response.class);
-            walletResponseMono.subscribe(walletResponse -> {
-                if (walletResponse == null || !walletResponse.success()) {
-                    // Retry logic or handle the error
-                    log.info("Error creating a new wallet (1). " + walletResponse.data());
-
-                }else{
-                    log.info("New wallet is created succesfully for " + req.getUser_name());
-                }
-            }, error ->  log.info("Error creating a new wallet (2). " + error));
-            */
 
             //waiting for response because if error happened then can't send Response.ok so it's slower, so should look into this.
             Response walletResponse = webClientBuilder.build().post().uri("http://wallet-service/internal/saveNewWallet")
@@ -55,6 +42,7 @@ public class RegisterController {
                 return Response.error(walletResponse.data().toString());
             }
 
+            System.out.println("User registered. ");
             return Response.ok(null);
         } catch (Exception e) {
             return Response.error(e.getMessage());
