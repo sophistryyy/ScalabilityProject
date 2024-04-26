@@ -27,6 +27,11 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue cancelqueue() {
+        return new Queue("stock-service-cancelorder-queue");
+    }
+
+    @Bean
     public TopicExchange topicExchange(){
         return new TopicExchange(exchange);
     }
